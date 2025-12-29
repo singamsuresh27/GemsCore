@@ -1,0 +1,330 @@
+<apex:page controller="ApprovalController" standardStylesheets="true" sidebar="false" showHeader="false" docType="html-5.0" lightningStylesheets="true">  
+    <apex:form > 
+        <apex:stylesheet value="{!URLFOR($Resource.slds,'/assets/styles/salesforce-lightning-design-system.css')}"/>  
+ 
+        <!-- To show lightning Spinner -->
+        <apex:actionStatus id="Loading">
+            <apex:facet name="start">    
+                <div class="slds-spinner_container" >
+                    <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand ">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </apex:facet>
+        </apex:actionStatus>
+       
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"/> 
+       
+        <apex:slds />  
+            <!-- JQuery for toggle collapse and expand the different approval sections -->
+                
+                <script>
+                
+                $(document).ready(function(){
+                    $(".b1").click(function(){
+                        $("table.tab1").toggle(1000);
+                        $(this).val( $(this).val() == '-' ? '+' : '-' );    
+                    });
+                });
+                  $(document).ready(function(){
+                      $(".b2").click(function(){
+                          $("table.tab2").toggle(1000);   
+                          $(this).val( $(this).val() == '-' ? '+' : '-' );
+                      });
+                  });
+                  $(document).ready(function(){
+                    $(".b3").click(function(){
+                        $("table.tab3").toggle(1000);  
+                        $(this).val( $(this).val() == '-' ? '+' : '-' );
+                    });
+                });
+        
+   
+        </script>   
+        <table width="100%">
+            <tr>
+                <td>
+                    <!--- To show lightning header in custom page -->
+                    <div class="slds-media__figure slds-page-header slds-media slds-grow slds-page-header__title"> 
+                        <svg aria-hidden="true" class="slds-icon  slds-icon__container slds-icon_large slds-icon-standard-opportunity " style="margin-left:2%">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.slds, 'assets/icons/standard-sprite/svg/symbols.svg#opportunity')}" />
+                        </svg> 
+                        <div class="slds-media__body" >
+                            <h1 class="slds-page-header__title" style="margin-left: 18px;">Pending Approvals </h1>      
+                        </div> 
+                        
+                        <!--- Save button in header for all sections -->
+                        <apex:commandButton id="tab" action="{!save}" value="Save" style="margin-right:20% " styleClass="slds-button slds-button--brand" status="Loading" reRender="msg"/>         
+                    </div>
+                    <apex:PageMessages id="msg"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="slds-section-title--divider">
+                    <h3 >
+                        
+                        <!--- Opportunity  Approval Section starts from here -->
+                        <input type="button" class="b1" value="-"/>  &nbsp; Opportunity  Approval Section </h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table class="slds-table slds-table--bordered slds-table--cell-buffer tab1">
+                        <thead>
+                            <tr class="slds-text-title--caps">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Opportunity Owner" >Opportunity Owner</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Commision Approval Status" >Commision Approval Status</div>
+                                </th>
+                                
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Commision Pay Date" >Commision Pay Date</div>
+                                </th>
+                                
+                                <th scope="col">
+                                    <div class="slds-truncate" title=" Opportunity Name"> Opportunity Name</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Opp No"> Opp No </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title=" Account Name "> Account Name</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title=" Project Manager">Project Manager</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title=" Est. Amount($)"> Est. Amount($)</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title=" Total New Business">Total New Business</div>
+                                </th>
+                                
+                                <th scope="col">
+                                    <div class="slds-truncate" title="  Clock Start Date"> Clock Start Date</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="  Clock End Date">  Clock End Date</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title=" PM Com rate "> PM Com rate </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title=" TM Com rate "> TM Com rate </div>
+                                </th> 
+                            </tr>   
+                        </thead>
+                        <tbody> 
+                            <!--- To show the detailed values of OPPORTUNITY APPROVAL SECTION values -->
+                            <apex:repeat value="{!mdlist}" var="opportunity">
+                                <div >
+                                    <tr> 
+                                        <td data-label="Opportunity Owner">
+                                            <div class="slds-truncate" >{!opportunity.oppobj.OPP_Owners_Name__c}</div>
+                                        </td> 
+                                        <td data-label="commision Approval Status">               
+                                            <div class="slds-truncate" style="min-width: 200 px; max-width: 212px;">
+                                                <apex:inputField value="{!opportunity.oppobj.OPP_Approval_Status__c}" styleClass="slds-select slds-input slds-input--small"/>
+                                            </div>
+                                        </td >
+                           
+                                        <td data-label="commision Pay Date">
+                                            <div class="slds-truncate" >
+                                            <apex:input type="date" value="{!opportunity.dateobj}" styleClass="slds-select slds-input slds-input--small" />
+                                            </div> 
+                                        </td>
+                        
+                                        <td data-label="Opportunity Name">
+                                            <div class="slds-truncate"> <a href="/{!opportunity.oppobj.Id}" id="{!opportunity.oppobj.Id}" onblur="LookupHoverDetail.getHover('{!opportunity.oppobj.Id}').hide();" onfocus="LookupHoverDetail.getHover('{!opportunity.oppobj.Id}', '/{!opportunity.oppobj.Id}/m?retURL=%2F{!opportunity.oppobj.Id}&isAjaxRequest=1').show();" onmouseout="LookupHoverDetail.getHover('{!opportunity.oppobj.Id}').hide();" onmouseover="LookupHoverDetail.getHover('{!opportunity.oppobj.Id}', '/{!opportunity.oppobj.Id}/m?retURL=%2F{!opportunity.oppobj.Id}&isAjaxRequest=1').show();" target="_blank"> {!LEFT(opportunity.oppobj.name,16)}</a></div>
+                                        </td>
+                                        <!--<a href="{!'/'+ opportunity.oppobj.Id  }" target="_blank">-->
+                                        <td data-label="Opp No">               
+                                            <div class="slds-truncate" >
+                                                <apex:outputField value="{!opportunity.oppobj.Opportunity_Number__c}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="Account Name">
+                                            <div class="slds-truncate" >{!LEFT(opportunity.oppobj.account.name,16)}</div>
+                                        </td> 
+                                         <td data-label="project manager">
+                                            <div class="slds-truncate" >{!opportunity.oppobj.Project_Managers_Name__c}</div>
+                                        </td>
+                                        <td data-label="Estimated Amount (PAV)">               
+                                            <div class="slds-truncate" >
+                                                <apex:outputField value="{!opportunity.oppobj.Estimated_Amount__c}"/>
+                                            </div>
+                                        </td>  
+                                        <td data-label="Total New Business">
+                                            <div class="slds-truncate" >
+                                                <apex:outputField value="{!opportunity.oppobj.Total_New_Business__c}"/>
+                                            </div>
+                                        </td>                                         
+                                        <td data-label="Clock Start Date">               
+                                            <div class="slds-truncate" >
+                                                <apex:outputField value="{!opportunity.oppobj.Clock_Start_Date__c}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="Clock End Date">
+                                            <div class="slds-truncate" >
+                                                <apex:outputField value="{!opportunity.oppobj.Clock_End_date__c}"/>
+                                            </div>
+                                        </td>  
+                                         <td data-label="PM Com Rate">
+                                            <div class="slds-truncate" style="max-width:80%;min-width:75%" >
+                                                <apex:inputField value="{!opportunity.oppobj.PM_Com_rate__c}" styleClass="slds-lookup__search-input slds-input"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="TM Com Rate">
+                                            <div class="slds-truncate" style="max-width:80%;min-width:75%" >
+                                                <apex:inputField value="{!opportunity.oppobj.TM_Com_Rate__c}" styleClass="slds-lookup__search-input slds-input"/>
+                                            </div>
+                                        </td>    
+                                    </tr>
+                                </div>
+                            </apex:repeat>
+                            <div>
+                                <td colspan="12">
+                                    <apex:commandButton action="{!save}" value="Save" style="margin-left:2%" styleClass="slds-button slds-button--brand" status="Loading" reRender="msg" />
+                                </td>                              
+                            </div>
+                        </tbody>
+                    </table>
+                    <hr/> 
+                </td>
+            </tr>
+            
+            
+            <tr>
+                <td class="slds-section-title--divider">
+                    
+                    <!--- Additional Ship To Approval section starts from here -->
+                    <h3 >
+                        <input type="button" class="b3" value="-"/> &nbsp; Additional Ship To Approval section  </h3>
+                </td>
+            </tr>      
+            <tr>
+                <td>
+                    <table class="slds-table slds-table--bordered slds-table--cell-buffer tab3">
+                        <thead class="thead3">
+                            <tr class="slds-text-title--caps">  
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Commission Approval Status">Commission Approval Status</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title=" Account (JDE Ship To) "> Account (JDE Ship To) </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title=" Account Number "> Account Number </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Opportunity Name">Opportunity Name</div>
+                                </th> 
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Opportunity Number">Opportunity Number</div>
+                                </th> 
+                            </tr>
+                        </thead> 
+                        <tbody>
+                            
+                            <!--- To show the detailed values of Additional Ship To Approval section -->
+                            <apex:repeat value="{!shiplist}" var="shipto">
+                                <tr id="details">
+                                    <td data-label="commision approval status">
+                                        <div class="slds-truncate" style="min-width: 200 px; max-width: 212px;">
+                                            <apex:inputField value="{!shipto.Commission_Approval_Status__c}" styleClass="slds-select slds-input slds-input--small"/>
+                                        </div>
+                                    </td>
+                                    <td data-label="Ship to Account">
+                                        <div class="slds-truncate"> <a href="/{!shipto.Account__r.Id}" id="{!shipto.Account__r.Id}" onblur="LookupHoverDetail.getHover('{!shipto.Account__r.Id}').hide();" onfocus="LookupHoverDetail.getHover('{!shipto.Account__r.Id}', '/{!shipto.Account__r.Id}/m?retURL=%2F{!shipto.Account__r.Id}&isAjaxRequest=1').show();" onmouseout="LookupHoverDetail.getHover('{!shipto.Account__r.Id}').hide();" onmouseover="LookupHoverDetail.getHover('{!shipto.Account__r.Id}', '/{!shipto.Account__r.Id}/m?retURL=%2F{!shipto.Account__r.Id}&isAjaxRequest=1').show();" target="_blank">{!shipto.Account__r.Name}</a> </div>
+                                    </td>
+                                    <!--{!shipto.Account__r.Id}
+                                    <div class="slds-truncate"> <a href="/{!shipto.Account__r.Id}" id="{!shipto.Account__r.Id}" onblur="LookupHoverDetail.getHover('{!shipto.Account__r.Id}').hide();" onfocus="LookupHoverDetail.getHover('{!shipto.Account__r.Id}', '/{!shipto.Account__r.Id}/m?retURL=%2F{!shipto.Account__r.Id}&isAjaxRequest=1').show();" onmouseout="LookupHoverDetail.getHover('{!shipto.Account__r.Id}').hide();" onmouseover="LookupHoverDetail.getHover('{!shipto.Account__r.Id}', '/{!shipto.Account__r.Id}/m?retURL=%2F{!shipto.Account__r.Id}&isAjaxRequest=1').show();" target="_blank">{!shipto.Account__r.Name}</a> </div>
+                                    <a href="{!'/'+ shipto.Id  }" target="_blank">{!shipto.account__r.name }</a>-->
+                                    <td scope="row" data-label="Account Number">
+                                        <div class="slds-truncate" > {!shipto.Account__r.AccountNumber}</div>
+                                    </td>
+                                    <td scope="row" data-label="shipto opportunity">
+                                        <div class="slds-truncate" > <a href="/{!shipto.Opportunityid__r.Id}" id="{!shipto.Opportunityid__r.Id}" onblur="LookupHoverDetail.getHover('{!shipto.Opportunityid__r.Id}').hide();" onfocus="LookupHoverDetail.getHover('{!shipto.Opportunityid__r.Id}', '/{!shipto.Opportunityid__r.Id}/m?retURL=%2F{!shipto.Opportunityid__r.Id}&isAjaxRequest=1').show();" onmouseout="LookupHoverDetail.getHover('{!shipto.Opportunityid__r.Id}').hide();" onmouseover="LookupHoverDetail.getHover('{!shipto.Opportunityid__r.Id}', '/{!shipto.Opportunityid__r.Id}/m?retURL=%2F{!shipto.Opportunityid__r.Id}&isAjaxRequest=1').show();" target="_blank">{!shipto.Opportunityid__r.name}</a></div>
+                                    </td>
+                                    
+                                    <td scope="row" data-label="shipto opportunity number">
+                                        <div class="slds-truncate" >  {!shipto.Opportunityid__r.Opportunity_Number__c }</div>
+                                    </td>
+                                </tr>
+                            </apex:repeat>   
+                            <td  colspan="4">
+                                <apex:commandButton action="{!save}" value="Save" style="margin-left:2% " styleClass="slds-button slds-button--brand" status="Loading" reRender="msg"/>
+                            </td>
+                        </tbody>
+                        
+                    </table>
+                    <hr/>
+                </td>
+            </tr>  
+            <tr>
+                <td class="slds-section-title--divider">    
+                    <h3 >
+                        
+                        <!---  Opportunity Product Section starts from here -->
+                        <input type="button" class="b2" value="-"/> &nbsp; Opportunity Product Section  
+                    </h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table class="slds-table slds-table--bordered slds-table--cell-buffer tab2"  >
+                        <thead class="thead2" >
+                            <tr class="slds-text-title--caps" >                        
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="Commission Approval Status" >Commission Approval Status</div>
+                                </th> 
+                         
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="Product2 Name" >Product 2 name</div>
+                                </th>
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="Product Code" >Product code</div>
+                                </th>
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="Opportunity Name" >Opportunity Name</div>
+                                </th>
+                                <th scope="col" >
+                                    <div class="slds-truncate" title="Opportunity Number" >Opportunity Number</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>  
+                            
+                            <!--- To show the values for Opportunity Product Section -->
+                            <apex:repeat value="{!oppline}" var="line">
+                                <tr >
+                                    <td data-label="commision approval status">
+                                        <div class="slds-truncate" style="min-width: 200 px; max-width: 210px;"><apex:inputField value="{!line.Commission_Approval_Status__c}" styleClass="slds-select slds-input slds-input--small"/></div>
+                                    </td>
+                            
+                                    <td data-label="Product Code" >
+                                        <div class="slds-truncate" >{!line.product2.name}</div>
+                                    </td>
+                                    <td data-label="Product Code" >
+                                        <div class="slds-truncate" >{!line.ProductCode}</div>
+                                    </td>
+                                    <td scope="row" data-label="Opportunity Name" >
+                                        <a href="/{!Line.Opportunity.id}" id="{!Line.Opportunity.id}" onblur="LookupHoverDetail.getHover('{!Line.Opportunity.id}').hide();" onfocus="LookupHoverDetail.getHover('{!Line.Opportunity.id}', '/{!Line.Opportunity.id}/m?retURL=%2F{!Line.Opportunity.id}&isAjaxRequest=1').show();" onmouseout="LookupHoverDetail.getHover('{!Line.Opportunity.id}').hide();" onmouseover="LookupHoverDetail.getHover('{!Line.Opportunity.id}', '/{!Line.Opportunity.id}/m?retURL=%2F{!Line.Opportunity.id}&isAjaxRequest=1').show();" target="_blank">{!line.Opportunity.name}</a>
+                                    </td>
+                                    <td scope="row" data-label="Opportunity Number"> {!line.opportunity.opportunity_number__c}</td>
+                                </tr>
+                            </apex:repeat>
+                            <td colspan="5">
+                                <apex:commandButton action="{!save}" value="Save" style="margin-left:2% " styleClass="slds-button slds-button--brand" status="Loading" reRender="msg"/>
+                            </td> 
+                        </tbody>    
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </apex:form>
+</apex:page>

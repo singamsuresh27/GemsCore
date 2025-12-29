@@ -1,0 +1,74 @@
+<apex:page sidebar="false" controller="CaseForPaperCreditController" showheader="false" title="Paper Credit Request-Web Page" id="pg">
+    <apex:form id="frm">
+        
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:outputPanel rendered="{!isSubmiting}" >
+        <div style="background-color:white;margin:10px 10px 0px 10px;">
+            <div style="text-align:center;font-size:240%;font-weight:normal;color:#9B2A2D;"> <h1> Credit Memo Request </h1> </div> <br/>
+                <table id="tab1" border="1" width="100%" cellpadding="5" cellspacing="5" style="border: 1px none #000;background-color: #E2E2E2;" >
+                     <tr>
+                        <td> Type </td>
+                        <td> <apex:inputText value="{!caseObj.type}" disabled="true"/> <apex:inputHidden value="{!caseObj.Subject}"/>  </td>
+                        <td> &nbsp; </td>
+                        <td> &nbsp; </td>
+                    </tr> 
+                    <tr>
+                        <td> Company Name </td>
+                        <td> <apex:inputText value="{!caseObj.SuppliedCompany}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel></td>
+                        <td> Gems Invoice Number </td>
+                        <td> <apex:inputText value="{!caseObj.Gems_Invoice_Number__c}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel> </td>
+                        
+                    </tr>
+                    <tr>
+                        <td> RMA Requestor (first and last name) </td>
+                        <td> <apex:inputText value="{!caseObj.SuppliedName}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel> </td>
+                        <td> Purchase P.O #  </td>
+                        <td> <apex:inputText value="{!caseObj.PO_No__c}"/>  <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel></td>
+                    </tr> 
+                    <tr>
+                        <td> Email Address </td>
+                        <td> <apex:inputText value="{!caseObj.SuppliedEmail}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel> </td>
+                        <td> Gems Part Number </td>
+                        <td> <apex:inputText value="{!caseObj.Product_Number__c}"/>  </td>
+                    </tr> 
+                    
+                    <tr>
+                        <td> Quantity </td>
+                        <td> <apex:inputText value="{!caseObj.Quantity__c}"/> </td>
+                        <td> &nbsp; </td>
+                        <td> &nbsp; </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"> Reasons for Credit <br/>
+                            <apex:inputTextarea cols="200" rows="4" value="{!caseObj.Description}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel>
+                        </td>
+                    </tr> 
+                    <tr>
+                    <td colspan="4"> 
+                        <apex:variable var="n" value="{!1}"/>
+                        <apex:repeat value="{!atchList}" var="atch">
+                            Upload Image :&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:inputFile value="{!atch.Body}" fileName="{!atch.name}" contentType="{!atch.contentType}"></apex:inputFile>  <apex:outputPanel rendered="{!if(n==atchList.size,true,false)}"> &nbsp;&nbsp;&nbsp;&nbsp; (Attach DMR if applicable)</apex:outputPanel>
+                            <apex:variable var="n" value="{!n+1}"/>                          
+                        </apex:repeat>                                            
+                    </td>
+                    
+                </tr>    
+                </table>
+                <br/>
+                <div align="center"><apex:commandButton value="Submit Request" action="{!saveCase}" /> </div>
+                </div>
+                
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!!isSubmiting}">
+                    <div align="center" style="margin:160px 10px 0px 10px;text-align:left;font-size:190%;font-family:serif;font-weight:normal;color:#9B2A2D; width:900px;border: 2px solid #DC143C; border-radius: 25px;box-shadow: 10px 10px 5px #888888;padding:10px;">{!finalMsg}
+                    <br/>
+                    <apex:commandLink value="Back" action="{!startupAction}"/> <br/>
+                    <apex:commandLink value="Open Case Record" action="{!openCaseRecord}"/>
+                </div>
+        </apex:outputPanel>
+                </apex:form>
+                
+            
+    
+</apex:page>

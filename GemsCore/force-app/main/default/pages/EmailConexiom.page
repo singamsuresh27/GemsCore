@@ -1,0 +1,23 @@
+<apex:page standardController="Case" extensions="EmailConexiomController">
+    <apex:form enctype="multipart/form-data">
+        <apex:pageBlock mode="edit" id="block">
+                <apex:pageMessages />
+            </apex:pageBlock>
+        <apex:pageBlock title="Email Attachments">
+         <apex:dataTable value="{!attWrapList}" var="attWrap" width="30%">
+             <apex:column style="width:10%">
+                <apex:inputcheckbox value="{!attWrap.isSelected}">
+                </apex:inputcheckbox>
+             </apex:column>
+             <apex:column headerValue="Name" style="width:45%"><apex:outputLink target="_self" value="/servlet/servlet.FileDownload?file={!attWrap.Id}">{!attWrap.Name}</apex:outputLink></apex:column>
+            <apex:column headerValue="Received Date" style="width:45%">
+               {!attWrap.createdDate}
+             </apex:column>
+         </apex:dataTable>
+         <apex:pageBlockButtons >
+                <apex:commandButton value="Send Email" Action="{!sendAttachment}" rendered="{!ishide}"/>
+            </apex:pageBlockButtons>
+             
+        </apex:pageBlock> 
+    </apex:form>
+</apex:page>

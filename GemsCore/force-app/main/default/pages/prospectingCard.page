@@ -1,0 +1,149 @@
+<apex:page sidebar="false" showHeader="false" renderas="pdf" cache="true" standardController="opportunity">
+    <html>
+        <head>
+            <style type="text/css">
+                div.styled
+                {
+                    border-width:2px; 
+                    border-style:dashed dashed dashed dashed;
+                    border-color:#ff9900;
+                }
+                body
+                {
+                    font-size: 17px;
+                    font-family: verdana, Arial, Helvetica;
+                }
+                .text1
+                {
+                    font-size: 18px;
+                    font-family: verdana, Arial, Helvetica;
+                }
+                .text2
+                {
+                    font-size: 12px;
+                    font-family: verdana, Arial, Helvetica;
+                }
+                .text3
+                {
+                    font-size: 48px;
+                    font-family: verdana, Arial, Helvetica;
+                }
+                .text4
+                {
+                    font-size: 20px;
+                    font-family: verdana, Arial, Helvetica;
+                }
+                .text5
+                {
+                    font-size: 16px;
+                    font-family: verdana, Arial, Helvetica;
+                }
+                .text6
+                {
+                    font-size: 10px;
+                    font-family: verdana, Arial, Helvetica;
+                }
+                .rotate {
+                    font-size: 22px;
+                    font-family: verdana, Arial, Helvetica;
+                    -webkit-transform: rotate(90deg);
+                    -moz-transform: rotate(90deg);
+                    -o-transform: rotate(90deg);
+                    -ms-transform: rotate(90deg);
+                    transform: rotate(90deg); 
+                }
+
+                .circle{
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: #3399ff;
+                }
+
+                .activeTab {
+                    background-color: #236FBD; 
+                    color:white;   
+                    background-image:none
+                }  
+
+                .inactiveTab {
+                    background-color: lightgrey; 
+                    color:black;   
+                    background-image:none
+                }  
+
+                .standardBackground {  
+                    background-color: #0000FF;  
+                }
+            </style>
+        </head>
+        <table id="tbl0" cellSpacing="0" cellPadding="0" width="80%" align="center" border="1">
+            <tr><td>
+                <table id="tbl1" cellSpacing="0" cellPadding="0" width="100%" align="center" border="1">                   
+                    <tr><td Colspan="4">
+                        <table id="tbl11" cellSpacing="0" cellPadding="0" width="100%" align="center" border="1">
+                            <tr>
+                                <td Colspan="2" width="70%">
+                                    <table id="tbl110" cellSpacing="0" cellPadding="0" width="100%" align="center" border="1">
+                                        <tr>
+                                            <td width="25%">Opportunity#: </td>
+                                            <td width="75%"><apex:outputField value="{!Opportunity.Opportunity_Number__c}"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="25%">Account:</td>
+                                            <td width="75%"><apex:outputField value="{!Opportunity.Account.Name}"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="25%">OPP Name:</td>
+                                            <td width="75%"><apex:outputField value="{!Opportunity.Name}"/></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td Colspan="2" width="30%">
+                                    <table id="tbl111" cellSpacing="0" cellPadding="0" width="100%" align="center" border="0">
+                                        <tr><td align="Center"> <span style="font-family: Arial Unicode MS; font-size: 36pt; "><b> <apex:outputField value="{!Opportunity.Account.ShippingState}"/></b></span></td></tr>
+                                    </table>
+                                </td>
+                            </tr>                                  
+                        </table>
+                    </td></tr>                    
+                    <tr>
+                        <td width="25%">OPP Size:</td>
+                        <td width="25%"> <apex:outputField value="{!Opportunity.Amount}"/> </td>
+                        <td width="25%">Stage/Duration:</td>
+                        <td width="25%"><apex:outputText value="{!CASE(Opportunity.StageName,  "S1 Qualified","S1","S2 Needs Identified & Accepted","S2","S3 Value/Solution Presented & Accepted","S3","S4 Specific Price/Budget Confirmed","S4","S5 Order Placement","S5","S0")}" />  
+                          /&nbsp;<apex:outputField value="{!Opportunity.Current_Stage_Duration__c}"/> </td>
+                    </tr>  
+                    <tr>
+                        <td width="25%">Currently Spec’d: </td>
+                        <td width="25%"><apex:outputField value=" {!Opportunity.Competitorid__r.Name}"/></td>
+                        <td width="25%">Create Date:</td>
+                        <td width="25%"><apex:outputField value="{!Opportunity.CreatedDate}"/></td>
+                    </tr>
+                    <tr>
+                        <td width="25%">City: </td>
+                        <td width="25%"> <apex:outputField value="{!Opportunity.Account.ShippingCity}"/> </td>
+                        <td width="25%">Close Date:</td>
+                        <td width="25%"><apex:outputField value="{!Opportunity.CloseDate}"/></td>
+                    </tr>
+                    
+                    <tr>
+                        <td width="25%">Owner: </td>
+                        <td width="25%"> <apex:outputField value="{!Opportunity.Owner.FirstName}"/>&nbsp;<apex:outputField value="{!Opportunity.Owner.LastName}"/></td>
+                        <td width="25%">Last Modified Date:</td>
+                        <td width="25%"><apex:outputField value="{!Opportunity.LastModifiedDate}"/></td>
+                    </tr>                    
+                    
+                    <tr><td Colspan="4">Stage Info:</td></tr>                    
+                    <tr>
+                        <td colspan="4" style="height: 50px;">
+                            <table style="height: 100px;">
+                                <tr><td></td></tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td></tr>
+        </table>
+    </html>
+</apex:page>

@@ -1,0 +1,80 @@
+<template>
+    <lightning-quick-action-panel header="Create Lead from Case">
+        <template if:true={isLoading}>
+            <div class="spinner-overlay">
+                <lightning-spinner alternative-text="Creating Lead... Please wait" size="large"></lightning-spinner>
+                <div class="slds-text-align_center slds-text-heading_small slds-m-top_medium">
+                    Creating Lead... Please wait
+                </div>
+            </div>
+        </template>
+
+        
+        <lightning-input
+            name="name"
+            label="Contact Name"
+            value={name}
+            onchange={handleInputChange} 
+            required>
+        </lightning-input>
+
+      <!--  <lightning-input
+            name="email"
+            label="Email"
+            value={email}
+            onchange={handleInputChange}>
+        </lightning-input> -->
+
+       <!-- <lightning-input
+            name="company"
+            label="Company"
+            value={company}
+            onchange={handleInputChange}>
+        </lightning-input>
+
+        <lightning-combobox
+            name="status"
+            label="Lead Status"
+            value={status}
+            options={statusOptions}
+            onchange={handleInputChange}>
+        </lightning-combobox>
+
+        <lightning-combobox
+    name="leadSource"
+    label="Lead Source"
+    value={leadSource}
+    options={leadSourceOptions}
+    onchange={handleInputChange}
+></lightning-combobox> -->
+
+        <lightning-combobox
+            name="businessRegion"
+            label="Business Region"
+            value={businessRegion}
+            options={businessRegionOptions}
+            onchange={handleInputChange}>
+        </lightning-combobox>
+
+        <lightning-input
+            name="businessUnit"
+            label="Business Unit"
+            value={businessUnit}
+            onchange={handleInputChange}>
+        </lightning-input>
+
+        <lightning-combobox
+    name="country"
+    label="Country"
+    value={country}
+    options={countryOptions}
+    onchange={handleInputChange}
+    required>
+</lightning-combobox>
+
+        <div slot="footer" class="slds-align_absolute-center">
+            <lightning-button variant="neutral" label="Cancel" onclick={handleCancel}></lightning-button>
+            <lightning-button variant="brand" label="Save" onclick={handleCreateLead} disabled={isLoading}></lightning-button>
+        </div>
+    </lightning-quick-action-panel>
+</template>

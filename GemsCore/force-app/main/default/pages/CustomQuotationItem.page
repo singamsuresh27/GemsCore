@@ -1,0 +1,32 @@
+<apex:page standardController="Quotation_Setra__c" extensions="CustomQuotationItemController">
+    
+        <apex:form >
+            <apex:pageBlock mode="edit" id="block">
+		 		<apex:pageMessages />
+            </apex:pageBlock>
+    <apex:pageBlock id="view">
+        <apex:pageBlockSection >            
+            <apex:outputField value="{!Quotation_Setra__c.Name}"/><br/>        
+          	<apex:inputField value="{!quoteItem.Product__c}">
+              <apex:actionSupport action="{!queryUnitPrice}" event="onchange" status="status"/>
+            </apex:inputField>
+            <apex:inputField value="{!quoteItem.Discount__c}"/>            
+            <apex:outputField value="{!productItem.productCode}"/>            
+            <apex:inputField value="{!quoteItem.LeadTime__c}"/>
+            <apex:inputField value="{!quoteItem.CurrencyIsoCode}"/>
+		  	<apex:outputField value="{!quoteItem.List_Price__c}"/>            
+            <apex:outputField value="{!productItem.productCode}" label="JDE Part Number"/>
+            <apex:inputField value="{!quoteItem.SalesPrice__c}"/> 
+            <apex:inputField value="{!quoteItem.Quantity__c}" />
+            <apex:inputField value="{!quoteItem.CustomerPartNumber__c}" rendered="{!businessUnitGemsEU}"/> 
+            <apex:inputField value="{!quoteItem.Surcharge__c}" rendered="{!businessUnitGemsEU}"/>
+            
+        </apex:pageBlockSection>      
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" Action="{!Save}"/>
+                <apex:commandButton value="Cancel" Action="{!Cancel}"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>        
+            </apex:form>
+    
+</apex:page>

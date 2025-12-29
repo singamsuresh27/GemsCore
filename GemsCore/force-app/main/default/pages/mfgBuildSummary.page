@@ -1,0 +1,204 @@
+<apex:page sidebar="false" renderas="pdf" showHeader="false" standardStylesheets="false"  standardController="CBO__c" Extensions="MfgBuildSummary">
+<html>
+<head>
+<style>
+body
+{
+font-size: 12px;
+font-family: verdana, Arial, Helvetica;
+margin: 0px;
+border: 0px;
+background-color: #ffffff;
+cursor: default;
+}
+.text1
+{
+	font-size: 11px;
+	font-family: verdana, Arial, Helvetica;
+}
+.text2
+{
+	font-size: 11px;
+	font-family: verdana, Arial, Helvetica;
+	font-weight:bold;
+}
+.text3
+{
+	font-size: 32px;
+	font-family: verdana, Arial, Helvetica;
+	color:#4679BD;
+	font-weight:bold;
+	text-align:center;
+}
+.text4
+{
+	font-size: 20px;
+	font-family: verdana, Arial, Helvetica;
+}
+.text5
+{
+	font-size: 16px;
+	font-family: verdana, Arial, Helvetica;
+}
+</style>
+</head>
+ <apex:form >
+	<table id="tbl0" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">
+		<tr>
+			<td>
+				<table id="tbl1" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">
+					<tr class="text2"><td align="center" Colspan="2">Mfg. Build Summary</td></tr>
+					<tr>
+						<td class="text2" Colspan="2" align="center">
+					 		<apex:outputText value="Date: {0,date,MM'/'dd'/'yyyy}" ><apex:param value="{!NOW()}" /></apex:outputText>					
+						</td>
+					</tr>
+					<tr align="center">
+						<td Colspan="2"><font class="text2">CBO Number: </font>  <apex:outputField value="{!CBO__c.Name }"/></td>
+					</tr>
+					<tr><td height="12" Colspan="2"></td></tr>
+					<tr>
+						<td><font class="text2">Account: </font> <apex:outputField value="{!CBO__c.Opportunityid__r.Account.Name }"/></td>
+						<td><font class="text2">Opportunity: </font> <apex:outputField value="{!CBO__c.OPP_Name__c }"/></td>
+					</tr>
+					<tr>
+						<td><font class="text2">Agency Approvals/Compliance: </font> <apex:outputField value="{!CBO__c.Agency_Approvals__c}"/></td>	
+						<td><font class="text2">Product Type/Product: </font> <apex:outputField value="{!CBO__c.Productid__r.Name}"/></td>
+					</tr>															
+					<apex:outputpanel id="pre" rendered="{!(CBO__c.RecordType.Name =='Pressure')}"> 
+					<tr>							
+						<td><font class="text2">Pressure Type: </font> <apex:outputField value="{!CBO__c.Pressure_Type__c}"/></td>						 						
+						<td><font class="text2">Pressure Range: </font> <apex:outputField value="{!CBO__c.Pressure_Range__c}"/></td>						
+					</tr>
+					<tr>
+						<td><font class="text2">Electrical/Signal Output: </font> <apex:outputField value="{!CBO__c.Electrical_Signal_Output__c}"/></td>
+						<td><font class="text2">Pressure Port/Fitting: </font> <apex:outputField value="{!CBO__c.Pressure_Port_Fitting__c}"/></td>															
+					</tr>
+					<tr>
+						<td><font class="text2">Electrical Termination: </font> <apex:outputField value="{!CBO__c.Electrical_Termination__c}"/></td>
+						<td><font class="text2">Excitation/Suppply Voltage: </font> <apex:outputField value="{!CBO__c.Excitation_Supply_Voltage__c}"/></td>															
+					</tr>
+					<tr>
+						<td colspan="2" class="text2">Other Required Options:</td>															
+					</tr>
+					<tr>
+						<td colspan="2" height="30" valign="top"><apex:outputField value="{!CBO__c.Other_Required__c}"/></td>															
+					</tr>
+
+					</apex:outputpanel>	
+					<apex:outputpanel id="cur" rendered="{!(CBO__c.RecordType.Name =='Current')}"> 
+					<tr>							
+						<td><font class="text2">Swithc Set Point: </font> <apex:outputField value="{!CBO__c.Pressure_Type__c}"/></td>						 						
+						<td><font class="text2">Amperage Range: </font> <apex:outputField value="{!CBO__c.Pressure_Range__c}"/></td>						
+					</tr>	
+					<tr>
+						<td><font class="text2">Electrical/Signal Output: </font> <apex:outputField value="{!CBO__c.Electrical_Signal_Output__c}"/></td>
+						<td><font class="text2">Relay: </font> <apex:outputField value="{!CBO__c.Relay__c}"/></td>															
+					</tr>
+					<tr>
+						<td><font class="text2">Electrical Termination: </font> <apex:outputField value="{!CBO__c.Electrical_Termination__c}"/></td>
+						<td><font class="text2">Excitation/Suppply Voltage: </font> <apex:outputField value="{!CBO__c.Excitation_Supply_Voltage__c}"/></td>															
+					</tr>
+					<tr>
+						<td><font class="text2">Split or Solid Core: </font> <apex:outputField value="{!CBO__c.Split_or_Solid_Core__c}"/></td>
+						<td></td>															
+					</tr>				
+					</apex:outputpanel>	
+					<apex:outputpanel id="dj" rendered="{!(CBO__c.RecordType.Name =='Dolan Jenner')}"> 
+					<tr>							
+						<td><font class="text2">Sheathing Material: </font> <apex:outputField value="{!CBO__c.Sheathing_Material__c}"/></td>						 						
+						<td><font class="text2">Fiber Type: </font> <apex:outputField value="{!CBO__c.Fiber_Type__c}"/></td>						
+					</tr>	
+					<tr>
+						<td><font class="text2"># of Branches: </font> <apex:outputField value="{!CBO__c.Branches__c}"/></td>
+						<td><font class="text2">Temperature Range: </font> <apex:outputField value="{!CBO__c.Temperature_Range__c}"/></td>															
+					</tr>
+					<tr>
+						<td><font class="text2">End Tip Configuration: </font> <apex:outputField value="{!CBO__c.End_Tip_Configuration__c}"/></td>
+						<td><font class="text2">Mechanical Lengths: </font> <apex:outputField value="{!CBO__c.Mechanical_Lengths__c}"/></td>															
+					</tr>				
+					</apex:outputpanel>	
+					<apex:outputpanel id="hu" rendered="{!(CBO__c.RecordType.Name =='Humidity')}"> 
+					<tr>							
+						<td><font class="text2">Temperature Output: </font> <apex:outputField value="{!CBO__c.Temperature_Output__c}"/></td>						 						
+						<td><font class="text2">Product Enclosure: </font> <apex:outputField value="{!CBO__c.Product_Enclosure__c}"/></td>						
+					</tr>	
+					<tr>
+						<td><font class="text2">Electrical/Signal Output: </font> <apex:outputField value="{!CBO__c.Electrical_Signal_Output__c}"/></td>
+						<td><font class="text2">Temperature Range: </font> <apex:outputField value="{!CBO__c.Temperature_Range__c}"/></td>															
+					</tr>
+					<tr>
+						<td><font class="text2">Electrical Termination: </font> <apex:outputField value="{!CBO__c.Electrical_Termination__c}"/></td>
+						<td><font class="text2">Excitation/Suppply Voltage: </font> <apex:outputField value="{!CBO__c.Excitation_Supply_Voltage__c}"/></td>															
+					</tr>				
+					</apex:outputpanel>	
+					<tr>
+						<td><font class="text2">Accuracy: </font> <apex:outputField value="{!CBO__c.Accuracy__c}"/></td>
+						<td><font class="text2">CBO Owner: </font> <apex:outputField value="{!CBO__c.Owner.FirstName}"/> <apex:outputField value="{!CBO__c.Owner.LastName}"/></td>															
+					</tr>																			
+					<tr>
+						<td><font class="text2">Proposed Part #: </font> </td>
+						<td><font class="text2">New Part # </font> </td>															
+					</tr>
+					
+					<tr>
+						<td colspan="2" class="text2">Technical and Feasibility Issues:</td>															
+					</tr>
+					<tr>
+						<td colspan="2" Height="30" valign="top"><apex:outputField value="{!CBO__c.Technical_Feasibility_Issues__c}"/></td>															
+					</tr>										
+					<tr>
+						<td colspan="2" class="text2">Process Change Notes – Mfg Eng:</td>															
+					</tr>
+					<tr>
+						<td colspan="2" Height="30" valign="top"><apex:outputField value="{!CBO__c.Design_Notes_ME__c}"/></td>															
+					</tr>
+										
+					<tr>
+						<td colspan="2" class="text2">Design Change Notes - Design Eng:</td>															
+					</tr>
+					<tr>
+						<td colspan="2" Height="30" valign="top"><apex:outputField value="{!CBO__c.Design_Notes_DE__c}"/></td>															
+					</tr>
+					<tr class="text2">
+						<td Colspan="2">Start With BOM: <u><apex:outputField value="{!CBO__c.Referred_Part__c}"/></u></td>															
+					</tr>
+					<tr>
+						<td colspan="2">						
+							<apex:dataTable value="{!cbo}" var="c" id="cboTable" width="100%" title="BOM change" align="left">
+								<apex:facet name="header">BOM change details:</apex:facet>
+								<apex:column width="100%">
+									<apex:dataTable value="{!c.BOM_Changes__r}" var="b" id="bomTable" width="100%" rowClasses="text1, text2" align="Center" >
+										<apex:column headerValue="Action" width="20%" rowspan="1">
+											<apex:outputText value="{!b.Action__c}" title="Action" />	
+										</apex:column>
+										<apex:column headerValue="Part" width="20%" rowspan="1">
+											<apex:outputText value="{!b.Name}"/>	
+										</apex:column>
+										<apex:column headerValue="Quantity" width="20%" rowspan="1">
+											<apex:outputText value="{!b.Quantity__c}"/>	
+										</apex:column>
+										<apex:column headerValue="Description" width="20%" rowspan="1">
+											<apex:outputText value="{!b.Description__c}"/>	
+										</apex:column>	
+										<apex:column headerValue="Notes" width="20%" rowspan="1">
+											<apex:facet name="header">Notes</apex:facet>											
+											<apex:outputText value="{!b.Notes__c}"/>	
+										</apex:column>																																							
+									</apex:dataTable>	
+								</apex:column>							
+							</apex:dataTable>																					
+						</td>
+					</tr>					
+					<tr>
+						<td colspan="2">
+							
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	</apex:form>  
+</html>
+</apex:page>

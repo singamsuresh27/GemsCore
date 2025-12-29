@@ -1,0 +1,120 @@
+<apex:page standardController="Account" extensions="SetraHubSpotPreviewController" renderAs="pdf">
+    
+        <apex:form >
+    <apex:pageBlock id="view">
+        <table style="width:100%">
+            <tbody>
+                <tr><td colspan="2"><apex:image style="z-index:2" height="50" width="100" url="{!$Resource.SetraLogo}" styleClass="imageStyle"/><br/>
+         </td></tr>
+                <tr><td colspan="2"></td></tr>
+                <tr><td colspan="2" class="headText">
+                    <p style="font-size:24px;font-weight:bold;">New Customer Set Up Form</p><br/></td></tr>
+                <tr>
+                    <td colspan="2" style="font-size:18px;font-weight:bold;">
+                        Section 1: General Information<br/><br/>
+                    </td>
+                </tr>
+                <tr><td colspan="2">Company Name : {!Account.Name}</td></tr>
+                <tr><td colspan="2">URL for Website : <u>{!Account.Website}</u><br/><br/></td></tr>
+                <tr>
+                    <td colspan="2" style="font-size:14px;font-weight:bold;">
+                        <u> Primary Contact Person Information</u><br/>
+                    </td>
+                </tr>
+                <tr><td >First Name : {!primaryContact.FirstName}</td><td>Last Name : {!primaryContact.LastName}</td></tr>
+                <tr><td colspan="2">Phone Number : {!primaryContact.Phone}</td></tr>
+                <tr><td colspan="2">Email : {!primaryContact.Email}<br/><br/></td></tr>
+                
+                <tr>
+                    <td colspan="2" style="font-size:14px;font-weight:bold;">
+                        <u>Billing Address</u><br/>
+                    </td>
+                </tr>
+                <tr><td colspan="2">Address Line 1 : {!Account.BillingStreet}</td></tr>
+                <tr><td colspan="2">City : {!Account.BillingCity}</td></tr>
+                <tr><td colspan="2">State : {!Account.BillingState}</td></tr>
+                <tr><td colspan="2">Postal Code : {!Account.BillingPostalCode}</td></tr>                
+                <tr><td colspan="2">Country : {!Account.BillingCountry}<br/><br/></td></tr>
+                
+                <tr>
+                    <td colspan="2" style="font-size:14px;font-weight:bold;">
+                        <u>Shipping Address</u><br/>
+                    </td>
+                </tr>
+                <tr><td colspan="2">Address Line1 : {!Account.ShippingStreet}</td></tr>
+                <tr><td colspan="2">City : {!Account.ShippingCity}</td></tr>
+                <tr><td colspan="2">State : {!Account.ShippingState}</td></tr>
+                <tr><td colspan="2">Postal : Code {!Account.ShippingPostalCode}</td></tr>                
+                <tr><td colspan="2">Country : {!Account.ShippingCountry}<br/><br/></td></tr>
+                <tr>
+                    <td style="font-size:14px;font-weight:bold;"><u>Finance Dept Contact Information</u></td><td style="font-size:14px;font-weight:bold;"><u>Shipping Dept Contact Information</u></td>
+                </tr>
+                <tr><td >First Name : {!financeContact.FirstName}</td><td >First Name : {!shipContact.FirstName}</td></tr>
+                <tr><td >Last Name : {!financeContact.LastName}</td><td >Last Name : {!shipContact.LastName}</td></tr>
+                <tr><td >Phone : {!financeContact.Phone}</td><td >Phone : {!shipContact.Phone}</td></tr>
+                <tr><td >Email : {!financeContact.Email}</td><td >Email : {!shipContact.Email}</td></tr>
+                <tr>
+                    <td colspan="2" style="font-size:18px;font-weight:bold;"><br/>
+                        Section 2: Business Information<br/><br/>
+                    </td>
+                </tr>
+                <tr><td colspan="2">Shipping Preference : {!Account.Shipping_Preference__c}</td></tr>
+                <tr><td colspan="2">Freight Account Number and Forwarder Details : {!Account.Freight_Account_Number_Forwarder_Detai__c}</td></tr>
+                <tr><td colspan="2">Currency : {!Account.Currency__c}</td></tr>
+                <tr><td colspan="2">Payment Terms : {!Account.Payment_Terms__c}</td></tr>
+                <tr><td colspan="2">Payment Method : {!Account.PaymentMethod__c}</td></tr>
+                <tr><td colspan="2">First Order Value (in '000 $) : {!Account.First_order_Value__c}</td></tr>
+                <tr><td colspan="2">Expected Annual Purchase from Setra (in '000 $) : {!Account.Expected_Annual_Purchase__c}</td></tr>
+                <tr><td colspan="2">Credit Card Type : {!Account.Credit_Card_Type__c}</td></tr>
+                <tr><td colspan="2">How long in operation? : {!Account.How_Long_In_Operation__c}</td></tr>
+                <tr><td colspan="2">Federal tax ID Number : {!Account.Federal_tax_ID_Number__c}</td></tr>
+                <tr><td colspan="2">DUNS Number : {!Account.D_U_N_S__c}</td></tr>
+                <tr><td colspan="2">Email for Invoice : {!Account.Email_for_Invoice__c}</td></tr>
+                <tr><td colspan="2">Company Status : {!Account.Company_Status__c}</td></tr>
+                <tr><td colspan="2">Company Registration Number : {!Account.Company_Registration_Number__c}</td></tr>
+                <tr><td colspan="2">VAT Reg No : {!Account.VAT_Reg_No__c}</td></tr>
+                <tr><td colspan="2">EORI Number : {!Account.EORI_Number__c}</td></tr>
+                <tr><td colspan="2">Delivery Priority : {!Account.Delivery_Priority__c}<br/><br/></td></tr>
+                 <tr>
+                    <td colspan="2" style="font-size:18px;font-weight:bold;">
+                        Section 3: Trade References <br/><br/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size:14px;font-weight:bold;"><u>Trade Reference -1</u></td><td style="font-size:14px;font-weight:bold;"><u>Trade Reference -2</u></td>
+                </tr>
+                <tr><td >Name : {!Account.Trade1_Name__c}</td><td >Name : {!Account.Trade2_Name__c}</td></tr>
+                <tr><td >Address : {!Account.Trade1_Address__c}</td><td >Address : {!Account.Trade2_Address__c}</td></tr>
+                <tr><td >Phone Number: {!Account.Trade1_Phone__c}</td><td >Phone Number : {!Account.Trade2_Phone__c}</td></tr>
+                <tr><td >Email: {!Account.Trade1_Email__c}</td><td >Email : {!Account.Trade2_Email__c}</td></tr>
+                   
+                <tr>
+                    <td colspan="2" style="font-size:14px;font-weight:bold;"><br/><u>Trade Reference -3</u></td>
+                </tr>
+                <tr><td >Name : {!Account.Trade3_Name__c}</td></tr>
+                <tr><td >Address : {!Account.Trade3_Address__c}</td></tr>
+                <tr><td >Phone Number: {!Account.Trade3_Phone__c}</td></tr>
+                <tr><td >Email : {!Account.Trade3_Email__c}</td></tr>
+                <tr>
+                    <td colspan="2" style="font-size:18px;font-weight:bold;"><br/>Section-4: Bank account Information<br/><br/></td>
+                </tr>
+                <tr><td >Name of the financial institution : {!Account.Name_of_the_financial_institution__c}</td></tr>
+                <tr><td >Banking Address : {!Account.Banking_Address__c}</td></tr>
+                <tr><td >Phone Number: {!Account.Bank_Account_Phone__c}</td></tr>
+                <tr><td >Checking Account Number : {!Account.Checking_Account_Number__c}</td></tr>
+                 <tr><td >Filed bankruptcy in the last 3 years? : {!Account.Filed_bankruptcy_in_the_last_3_years__c}</td></tr>
+                 <tr><td >Any litigation pending against Applicant? : {!Account.Any_litigation_pending_against_applicant__c}</td></tr>
+                <tr><td >Hubspot Document Link: <a target="_new" href="{!Account.Hubspot_Document_Link__c}"> click here </a></td></tr>
+                <tr>
+                    <td colspan="2" style="font-size:18px;font-weight:bold;"><br/>Section-5: Finance Information<br/><br/></td>
+                </tr>
+                <tr><td >Credit Request : {!Account.Credit_Request__c}</td></tr>
+                <tr><td >Credit Limit : {!Account.Credit_Limit__c}</td></tr>
+                <tr><td >Finance Terms : {!Account.Finance_Terms__c}</td></tr>
+               
+            </tbody>
+        </table>
+        </apex:pageBlock>        
+            </apex:form>
+    
+</apex:page>

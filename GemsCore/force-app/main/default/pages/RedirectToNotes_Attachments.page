@@ -1,0 +1,32 @@
+<apex:page standardController="Opportunity" extensions="NotesAttachments_Cls" action="{!RedirectToNotes}">
+<apex:form >
+	<div class="bPageTitle"><div class="ptBody secondaryPalette"><div class="content"><img src="/s.gif" alt="Opportunity" class="pageTitleIcon" title="Opportunity"><h1 class="pageType noSecondHeader">Attach File</h1><div class="blank">&nbsp;</div></div><div class="links"><a href="javascript:openPopupFocusEscapePounds(%27/help/doc/user_ed.jsp?loc=help&target=notes.htm&section=Notes_Attachments%27, %27Help%27, 700, 600, %27width=700,height=600,resizable=yes,toolbar=yes,status=no,scrollbars=yes,menubar=yes,directories=no,location=no,dependant=no%27, false, false);" title="Help for this Page (New Window)"><span class="helpLink">Help for this Page</span><img src="/s.gif" alt="Help" class="helpIcon" title="Help"></a></div></div><div class="ptBreadcrumb"></div></div>
+	<apex:pageBlock title="" mode="view">
+		<apex:pageBlockButtons >
+			<apex:commandButton action="{!AttachFile}" value="Attach File"/>
+			<apex:commandButton action="{!Cancel}" value="Cancel"/>
+		</apex:pageBlockButtons>
+			<apex:actionStatus id="Searching" startText="processing, please wait ......" startStyle="font-weight: bold;" />
+			<apex:outputPanel id="theAttach" layout="block">
+				<apex:repeat value="{!AttachmentWrapperList}" var="alist" id="theRepeat">
+					<table width="98%" border="0" align="center" style="border:0px solid black">
+						<tr>
+							<th>{!alist.Count}. Select the File</th>
+						</tr>
+						<tr>
+							<td valign="middle"><apex:inputFile style="width:100%" id="fileToUpload" value="{!alist.fileBody}" filename="{!alist.fileName}" /> </td>
+						</tr>
+						<tr>
+							<th>Enter Description<br/><small>Not more than 500 Character</small></th>
+						</tr>
+						<tr>
+							<td><apex:inputTextarea rows="2" cols="120" id="newDesc" value="{!alist.Description}"/></td>
+						</tr>
+					</table>
+					<hr/>
+				</apex:repeat>
+				<span><apex:commandButton action="{!AddOneMoreRow}"   value="Attach another file"/></span>
+			</apex:outputPanel>	
+	</apex:pageBlock>
+</apex:form>
+</apex:page>

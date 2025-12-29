@@ -1,0 +1,2 @@
+<apex:page standardController="Percall_Plan__c" extensions="PreCallPlanController"  action="{!checkingRecordTypes}" >
+</apex:page>

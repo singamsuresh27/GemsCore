@@ -1,0 +1,276 @@
+<apex:page extensions="OpportunityDetailController" standardController="Opportunity" tabStyle="Opportunity" sidebar="false" id="pg" showHeader="false" cache="false" standardStylesheets="true">
+    <div id="edit-opp-content">
+    <!-- IMPORT ALL REQUIRED CSS FILES -->
+    <link href="{!URLFOR($Resource.ctwbootstrap, 'bootstrap/css/bootstrap.css')}" rel="stylesheet" type="text/css" />    
+    <!-- IMPORTED ALL REQUIRED CSS FILES  -->
+    
+    <style>
+        .label{
+            font-weight: 700;
+        }
+        #pg:frm:pb{
+            background: white;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .inputfields{
+            display:none;
+        }
+        
+        input, textarea {
+            width: 190px;
+        }
+        .bPageBlock .requiredInput .requiredBlock{
+            height:15px;
+        }
+        
+        .datePicker select {
+            width: 80px;
+        }
+        
+        .innerTable td{
+            width:200px;
+        }
+        
+    </style>
+    <div id="edit-container" style="display:none;">
+        <apex:form id="frm">
+            <apex:sectionHeader title="Opportunity" subtitle="{!oppRecord.Name} ({!oppRecord.Opportunity_Number__c})"/>
+            <apex:pageMessages ></apex:pageMessages>
+            
+            <apex:pageBlock id="pb">
+                <table width="100%" border="1" class="list">
+                    <tr class="headerRow">
+                        <th  style="text-align:center;font-size:10pt;">Opportunity  Info</th>
+                        <th  style="text-align:center;font-size:10pt;">Peak Annual Value (within the next 3 years)</th>
+                        <th  style="text-align:center;font-size:10pt;">Project  Owners</th>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Account Name </td>
+                                    <td> <apex:outputField value="{!oppRecord.AccountId}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.AccountId}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>                            
+                        </td>
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Estimated Quantity  </td>
+                                    <td> <apex:outputField value="{!oppRecord.Estimated_Quantity__c}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.Estimated_Quantity__c}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table> 
+                        </td>
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Owner   </td>
+                                    <td> <apex:outputField value="{!oppRecord.OwnerId}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.OwnerId}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>   
+                        </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Opportunity Name </td>
+                                    <td> <apex:outputField value="{!oppRecord.Name}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.Name}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Estimated Unit Price </td>
+                                    <td> <apex:outputField value="{!oppRecord.Unit_Price__c}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.Unit_Price__c}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Project Manager </td>
+                                    <td> <apex:outputField value="{!oppRecord.Project_Manager__c}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.Project_Manager__c}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>   
+                        </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Close Date </td>
+                                    <td> <apex:outputField value="{!oppRecord.CloseDate}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.CloseDate}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Estimated Amount </td>
+                                    <td> <apex:outputField value="{!oppRecord.Estimated_Amount__c}" />
+                                        <!-- <apex:inputField value="{!oppRecord.Estimated_Amount__c}" rendered="{!isEdit}"/> --> </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Additional Project Manager </td>
+                                    <td> <apex:outputField value="{!oppRecord.Additional_Project_Manager__c}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.Additional_Project_Manager__c}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>   
+                        </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <!-- <td>Stage </td> -->
+                                    <td> Next Step </td>
+                                    <td> <!-- <apex:outputField value="{!oppRecord.StageName}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.StageName}" rendered="{!isEdit}"/> -->
+                                        <apex:outputField value="{!oppRecord.NextStep}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.NextStep}" rendered="{!isEdit}"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Opportunity Type </td>
+                                    <td> <apex:outputField value="{!oppRecord.type}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.type}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Create By/Date </td>
+                                    <td> <apex:outputField value="{!oppRecord.CreatedById}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.CreatedById}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>   
+                        </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <!-- <td>Reason </td> -->
+                                    <td> Next Step Due Date </td>
+                                    <td> <!-- <apex:outputField value="{!oppRecord.Reason__c}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.Reason__c}" rendered="{!isEdit}"/> -->
+                                        <apex:outputField value="{!oppRecord.Next_Step_Due_date__c}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.Next_Step_Due_date__c}" rendered="{!isEdit}"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Is New Customer  </td>
+                                    <td> <apex:outputField value="{!oppRecord.Is_New_Customer__c}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.Is_New_Customer__c}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="dataCell">
+                            <table width="100%" class="innerTable ">
+                                <tr>
+                                    <td>Last Update By/Date </td>
+                                    <td> <apex:outputField value="{!oppRecord.LastModifiedById}" rendered="{!!isEdit}"/>
+                                        <apex:inputField value="{!oppRecord.LastModifiedById}" rendered="{!isEdit}"/> </td>
+                                </tr>
+                            </table>   
+                        </td>
+                    </tr>
+                   
+                </table>
+                
+                
+                <apex:pageBlockButtons location="bottom">
+                    <apex:commandButton value="Cancel" styleClass="btn-bs" rendered="{!isEdit}" action="{!cancelSave}" oncomplete="aftercancel();"/>
+                    <apex:commandButton value="Edit" action="{!toggleEdit}" rendered="{!!isEdit}" styleClass="btn-bs btn-bs-primary edit-btn"/>
+                    <apex:commandButton value="Save" action="{!saveOpportunity}" rendered="{!isEdit}"  styleClass="btn-bs btn-bs-primary edit-btn"/>
+                </apex:pageBlockButtons>
+            </apex:pageBlock>
+            </apex:form>
+            <br/>
+            <apex:tabPanel switchType="client"  id="theTabPanel">
+                <apex:tab label="Contacts" name="OpportunityContactRoles" id="tabOppContactRoles">
+                   <apex:relatedList subject="{!Opportunity}" list="OpportunityContactRoles" />
+                </apex:tab>      
+                <apex:tab label="Products" name="OpportunityLineItems" id="tabOppLineItems">
+                   <apex:relatedList subject="{!Opportunity}" list="OpportunityLineItems" />
+                </apex:tab>
+                <apex:tab label="App Data" name="AppData" id="tabAppData">
+                     <apex:relatedList subject="{!Opportunity}" list="NBO_Forms__r" />
+                </apex:tab> 
+                <apex:tab label="Notes And Attachments" name="NotesAndAttachments" id="tabNotesAndAttachments">
+                     <apex:relatedList subject="{!Opportunity}" list="CombinedAttachments" />
+                </apex:tab> 
+                <apex:tab label="Competitors" name="OpportunityCompetitors" id="tabOppCompetitors">
+                     <apex:relatedList subject="{!Opportunity}" list="OpportunityCompetitors" />
+                </apex:tab> 
+                <apex:tab label="Open Activities" name="OpenActivities" id="tabOpenAct">
+                     <apex:relatedList subject="{!Opportunity}" list="OpenActivities" />
+                </apex:tab>
+                <apex:tab label="Additional Ship To" name="Additional_Ship_To__r" id="tabAddShipTo">
+                     <apex:relatedList subject="{!Opportunity}" list="Additional_Ship_To__r" />
+                </apex:tab>
+                <apex:tab label="Approval History" name="ProcessSteps" id="tabProcessSteps">
+                     <apex:relatedList subject="{!Opportunity}" list="ProcessSteps" />
+                </apex:tab>
+                <apex:tab label="Sales Deliverable" name="InlinePage" id="tabInlinePage">
+                     <iframe src="/apex/OpportunityInlineVFPage?id={!oppRecord.Id}" scrolling="false" id="iframe_id" width="100%" height="500px"/>
+                </apex:tab>
+                      
+            </apex:tabPanel>  
+    
+     
+
+        <div id="chatter-feeds" style="margin:20px">
+            <chatter:feedWithFollowers showHeader="true" entityId="{!oppRecord.Id}"/>
+        </div>    
+    </div>
+    
+    <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    
+    <script>
+        jQuery.noConflict();
+        jQuery(document).ready(function(){
+           jQuery("#pg\\:frm\\:pb").css("background", "white").css("border-top", "1px solid #eaeaea");
+            jQuery("label").css("font-weight", "700");
+            jQuery(".btn-bs").removeClass("btn").css("margin", "5px 5px").css("float", "right");
+            
+            jQuery("#edit-container").show();
+            
+            //$( "#tabs" ).tabs();
+        });  
+        
+        
+        function aftercancel(){
+            var oppId = '{!oppRecord.Id}';
+            var murl = window.location.protocol + "//" + window.location.host + "/" + "apex/opportunitydetail?id="+oppId;
+            var win = window.open(murl,"_self");
+            win.focus();
+        }  
+    </script>
+    
+    </div>
+</apex:page>

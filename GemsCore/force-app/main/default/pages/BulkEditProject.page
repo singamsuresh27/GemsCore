@@ -1,0 +1,61 @@
+<apex:page standardController="Opportunity" recordSetVar="opportunities"
+tabStyle="Opportunity"
+sidebar="false">
+<apex:form >
+<apex:pageBlock >
+<apex:pageMessages />
+<apex:pageBlock >
+<apex:panelGrid columns="2">
+<apex:outputLabel value="View:"/>
+<apex:selectList value="{!filterId}" size="1">
+<apex:actionSupport event="onchange" rerender="opp_table"/>
+<apex:selectOptions value="{!listviewoptions}"/>
+</apex:selectList>
+</apex:panelGrid>
+</apex:pageBlock>
+<apex:pageBlock >
+<apex:pageBlockButtons >
+<apex:commandButton value="Save" action="{!save}"/>
+</apex:pageBlockButtons>
+<apex:pageBlockTable value="{!opportunities}" var="opp" id="opp_table">
+
+<apex:column value="{!opp.name}"/>
+
+
+<apex:column headerValue="Stage">
+<apex:inputField value="{!opp.stageName}"/>
+</apex:column>
+
+<apex:column headerValue="Business Unit">
+<apex:inputField value="{!opp.Business_Unit__c}"/>
+</apex:column>
+
+<apex:column headerValue="Close Date">
+<apex:inputField value="{!opp.closeDate}"/>
+</apex:column>
+
+<apex:column headerValue="Type">
+<apex:inputField value="{!opp.Type}"/>
+</apex:column>
+
+<apex:column headerValue="Quantity">
+<apex:inputField value="{!opp.TotalOpportunityQuantity}"/>
+</apex:column>
+
+<apex:column headerValue="Unit Price">
+<apex:inputField value="{!opp.Unit_Price__c}"/>
+</apex:column>
+
+<apex:column headerValue="Project Manager">
+<apex:inputField value="{!opp.Project_Manager__c}"/>
+</apex:column>
+
+<apex:column headerValue="Product Model">
+<apex:inputField value="{!opp.Product_Model__c}"/>
+</apex:column>
+
+</apex:pageBlockTable>
+</apex:pageBlock>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

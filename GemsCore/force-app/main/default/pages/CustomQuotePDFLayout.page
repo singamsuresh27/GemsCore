@@ -1,0 +1,163 @@
+<apex:page standardController="Quotation_Setra__c" extensions="CustomQuotePDFLayoutController" renderAs="pdf" showHeader="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+     <html>
+    <head>
+    <style>
+    #tableItem td, #table1 td{
+        border: 1px solid black;
+        }
+        table {
+        width:100%;
+        font-size:12px;
+        border-collapse: collapse;
+        }
+        
+       #tableItem td{
+        padding-left:2px;
+        }
+    </style>
+        </head>
+    <body>
+        <apex:pageblock id="ContactList">
+            <table>
+                <tbody>
+                    <tr><td>
+                    <apex:image url="{!$Resource.GemsSetraLogo}" width="108" height="38"/>
+                        </td>
+                        <td align="center">1 Cowles Road, Plainville, CT 06062 <br/> Toll Free: 855-877-9666 * Tel: 860-747-3000 <br/><a href="www.gemssensors.com">www.gemssensors.com</a></td>
+                        <td align="right">159 Swanson Road, Boxborough, MA 01719 <br/> Toll Free: 800-257-3872 * Tel: 978-263-1400 <br/><a href="www.setra.com">www.setra.com</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    </tr>
+                    <!--<tr><td colspan="8"><div style="float:left">
+                    <apex:image url="{!$Resource.GemsSetraLogo}" width="108" height="38"/>
+                    </div>
+                    <div style="font-size:12px;padding-top:20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 Cowles Road, Palinville, CT 06062 * Toll Free: 855-877-9666 * Tel: 860-747-3000 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="www.setra.com">www.setra.com</a></div>
+                    <div style="font-size:12px;padding-top:20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;159 Swanson Road, Boxborough, MA 01719 * Toll Free: 800-257-3872 * Tel: 978-263-1400 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="www.setra.com">www.setra.com</a></div>
+                    </td></tr>-->
+                </tbody>
+            </table>
+            <br/>
+            <table id="table1">
+                <tbody>
+                    <tr><td style="width:20%">Quotation Number </td><td style="width:40%">{!Quotation_Setra__c.QuoteNumber__c}</td><td style="width:20%">Created Date </td><td style="width:20%"><apex:outputText value="{0,date, MM'/'dd'/'yyyy}">
+                    <apex:param value="{!TODAY()}" /> 
+                    </apex:outputText></td></tr>
+                </tbody>
+            </table>
+            <br/>
+            <table id="table1">
+                <tbody>
+                <tr>
+                    <td style="width:60%">
+                        <div style="float:left;width:34%">
+                            To :<br/>
+                            Company Name :<br/>
+                            Address :<br/>
+                        </div>
+                        <div>
+                            {!Quotation_Setra__c.Contact__r.Name}<br/>
+                            {!Quotation_Setra__c.Account__r.Name} <br/>
+                            <span>
+                            <span style="display:{!IF(Quotation_Setra__c.Account__r.BillingStreet != null, 'inline-block','none')};">
+                                {!Quotation_Setra__c.Account__r.BillingStreet},
+                            </span>
+                            <span style="display:{!IF(Quotation_Setra__c.Account__r.BillingCity != null, 'inline-block','none')}">
+                                {!Quotation_Setra__c.Account__r.BillingCity},
+                            </span>
+                            <span style="display:{!IF(Quotation_Setra__c.Account__r.BillingState != null, 'inline-block','none')}">
+                                {!Quotation_Setra__c.Account__r.BillingState},
+                            </span>
+                            <span style="display:{!IF(Quotation_Setra__c.Account__r.BillingPostalCode != null, 'inline-block','none')}">
+                                {!Quotation_Setra__c.Account__r.BillingPostalCode},
+                            </span>
+                            {!Quotation_Setra__c.Account__r.BillingCountry} <br/> 
+                            </span>
+                        </div>
+                        
+                    </td>  
+                    <td style="width:40%">
+                        <div style="float:left;width:40%">
+                            Prepared By:<br/>
+                            Phone:<br/>
+                            Email:<br/>
+                        </div>
+                        <div>
+                            {!Quotation_Setra__c.Owner.Name}<br/>
+                            {!Quotation_Setra__c.Owner.Phone}<br/>
+                            {!Quotation_Setra__c.Owner.Email}<br/>
+                            
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table><br/>
+            <table id="table1">
+                <tbody>
+                    <tr>
+                    <td >Dear {!Quotation_Setra__c.Contact__r.FirstName},<br/>
+                    Thank you for the opportunity to provide a quotation for Setra products.  We are pleased to offer the following:<br/>        
+                    </td>
+                    </tr>
+                </tbody>                
+            </table>
+                <table id="tableItem" cellspacing="0" cellpadding="0">
+                    <tbody>
+                    <tr style="font-weight:bold"><td>Line #</td><td>Part Number# </td><td>Product Description </td><td>Lead Time</td><td>Unit Price</td><td>Quantity</td><td>Total</td></tr>
+                           
+                    <apex:repeat value="{!quoteLineItems}" var="lineitemObj" rendered="{!NOT(ISNULL(quoteLineItems))}">
+                        <tr><td>{!lineitemObj.Name} </td>
+                            <td>{!lineitemObj.JDE_Part_Number__c}</td>
+                            <td>{!lineitemObj.Product_Description__c}</td>
+                            <td>{!lineitemObj.LeadTime__c}</td>
+                            <td>$<apex:outputText value="{0,number,###,###,##0.00}"><apex:param value="{!lineitemObj.List_Price_Unit__c}"/></apex:outputText></td>
+                         <!--   <td>
+                            <div style="display:{!IF(lineitemObj.Surcharge__c != null, 'block','none')}">
+                                ${!lineitemObj.Surcharge__c} 
+                               
+                            </div>
+                            </td> -->
+                            <td>{!lineitemObj.Quantity__c}</td>
+                            <td>$<apex:outputText value="{0,number,###,###,##0.00}"><apex:param value="{!lineitemObj.NetPrice__c}"/></apex:outputText></td>
+   
+                        </tr>
+                    </apex:repeat>
+                    <tr><td colspan="6" style="text-align:right">Grand Total&nbsp;</td><td>$<apex:outputText value="{0,number,###,###,##0.00}"><apex:param value="{!Quotation_Setra__c.GrandTotal__c}"/></apex:outputText></td></tr>
+                    <tr><td colspan="7"> &nbsp;</td></tr>               
+                    <tr><td colspan="7">
+                        <br/> 
+                       <b><span style="color:green">Setra is now looking to offer services like training, setup guidance, and more. Let us know your top service requirements</span> <a href="https://hubs.ly/Q02vzFQW0">here.</a> <br/><br/>
+                        <span style="color:green">Interested in additional warranty coverage? Please fill out this <a href="https://hubs.ly/Q02vqJ3x0">form</a> to let us know. </span></b><br/><br/>
+                         <b><u>Additional Notes:</u></b><br/>
+                         1. Quote is valid for 30 days.<br/>
+                         2. If paying by credit card an additional 3.5% fee will be applied to your invoice.<br/>
+                         3. Lead times are subject to change and may be based on the quantity requested.<br/>
+                         4. For fast processing please email purchase orders to <a href="mailto:orders@setra.com">orders@setra.com</a> with the quote and bill to #'s from above.<br/>
+                         5. The grand total does not include shipping and handling charges.<br/><br/>
+                        
+                        Driven by your needs, we're looking to update our offering to include services like training, setup guidance, and more. Let us know your top service requirements : <a href='https://hubs.ly/Q02vzFQW0'>here</a>. <br/>
+                        Interested in additional warranty coverage? Please fill out this form to let us know: <a href='https://hubs.ly/Q02vqJ3x0'>here</a>. <br/><br/>
+                        
+                        This quote and all purchases made pursuant to it or referencing the products or services identified are subject solely to Setra's Terms &amp; Conditions as they may be updated from time to time and are available here: <a href='https://www.setra.com/terms-and-conditions'>https://www.setra.com/terms-and-conditions</a>. <br/>
+                            
+                        <p id="surchargeTag" style="display:{!IF(showContent != null, 'block','none')}">                    
+                            The purchase order should include separate line/lines showing the surcharge for all the part number/part numbers being ordered. The invoice from Setra will have separate line/lines showing the surcharge for all the part number/part numbers being shipped.
+                        </p>
+                        <p>    
+                        Due to the currently uncertain and stressed situation along the global supply chains, this quotation is conditional. All given prices, lead times and dates are non-binding estimates. 
+                        The indicated prices and lead time are conditioned upon the necessary components and/or raw materials being readily available in the needed quantity at the prices our product price calculation was based upon.
+                        In the case of further increased prices or change in availability before the receipt/acceptance/planned ship date of your order, prices and/or dates given in this quotation may need to be adjusted and, absent such adjustment, we reserve the right to reject or cancel all or part of your order at any time.<br/><br/>
+                        
+                            
+                       
+                        To help you avoid being the victim of fraud, if you receive notification that our banking details have changed, it is your obligation to confirm that such change is legitimate <u>prior to making any payment to a new account</u> by contacting us at <a href="mailto:orders@setra.com">orders@setra.com</a> <br/><br/>
+                                 
+                        Thanks again for your interest in Setra.  Please let us know if you have any questions or if we can be of further assistance.<br/><br/>
+                       
+                        </p>
+                        <br/>
+                   </td></tr>
+                
+                </tbody>
+            </table>
+         </apex:pageblock>
+         </body>
+   </html>     
+</apex:page>

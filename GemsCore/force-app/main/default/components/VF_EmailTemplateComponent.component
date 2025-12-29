@@ -1,0 +1,22 @@
+<apex:component controller="VfEmailTemplateController" access="global">
+    <apex:attribute name="opId" assignTo="{!oppId}" type="String" description="Contains opportunity id" />
+    
+    <font face='verdana' size='2'><b>Estimated amount: </b><apex:outputField value="{!opp.Estimated_Amount__c}"/> </font><br/>
+    <font face='verdana' size='2'><b>Close date: </b>{!dueDate} </font><br/>
+    <font face='verdana' size='2'><b>Project manager: </b>&nbsp;&nbsp; {!opp.Project_Manager__r.FirstName}&nbsp;{!opp.Project_Manager__r.LastName}</font> <br/><br/>
+    
+    <apex:repeat value="{!opp.TaskComments__r}" var="tsk">
+        <apex:outputPanel >
+            <font face='verdana' size='2' color='#0066FF'><b><apex:outputField value="{!tsk.Subject__c}"/>:</b></font><br/>
+            <apex:outputField value="{!tsk.Body__c}"/>
+        </apex:outputPanel>
+    </apex:repeat>
+    <br/>
+    
+    <apex:outputPanel rendered="{!IF(opp.Commercial_Triggers__c != null,true,false)}">
+        <font face='verdana' size='2' color='#0066FF'><b>Commercial Trigger:</b></font><br/>
+        <apex:outputField value="{!opp.Commercial_Triggers__c}"/>
+    </apex:outputPanel>
+    
+    
+</apex:component>

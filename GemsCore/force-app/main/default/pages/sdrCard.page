@@ -1,0 +1,149 @@
+<apex:page sidebar="false" showHeader="false" contentType="application/msword" cache="true" standardController="NBO_Forms__c">
+<html>
+<head>
+<style type="text/css">
+div.styled
+{
+border-width:2px; 
+border-style:dashed dashed dashed dashed;
+border-color:#ff9900;
+}
+body
+{
+font-size: 17px;
+font-family: verdana, Arial, Helvetica;
+}
+.text1
+{
+font-size: 10px;
+font-family: verdana, Arial, Helvetica;
+}
+.text2
+{
+font-size: 12px;
+font-family: verdana, Arial, Helvetica;
+}
+.text3
+{
+font-size: 14px;
+font-family: verdana, Arial, Helvetica;
+}
+.text4
+{
+font-size: 16px;
+font-family: verdana, Arial, Helvetica;
+}
+.text5
+{
+font-size: 18px;
+font-family: verdana, Arial, Helvetica;
+}
+.text6
+{
+font-size: 20px;
+font-family: verdana, Arial, Helvetica;
+}
+.text7
+{
+font-size: 17px;
+font-family: verdana, Arial, Helvetica;
+}
+.text8
+{
+font-size: 26px;
+font-family: verdana, Arial, Helvetica;
+}
+.rotate {
+font-size: 22px;
+font-family: verdana, Arial, Helvetica;
+-webkit-transform: rotate(90deg);
+-moz-transform: rotate(90deg);
+-o-transform: rotate(90deg);
+-ms-transform: rotate(90deg);
+transform: rotate(90deg); 
+}
+
+.circle{
+width: 10px;
+height: 10px;
+border-radius: 50%;
+background: #3399ff;
+}
+
+.activeTab {
+background-color: #236FBD; 
+color:white;   
+background-image:none
+}  
+
+.inactiveTab {
+background-color: lightgrey; 
+color:black;   
+background-image:none
+}  
+
+.standardBackground {  
+background-color: #0000FF;  
+}
+</style>
+</head>
+
+
+<table id="tbl0" cellSpacing="1" cellPadding="2" width="70%" align="center" border="0">
+        <tr><td height="150"> </td></tr>        
+        <tr><td>  
+            <div class="styled">
+                <table id="tbl1" cellSpacing="0" cellPadding="0" width="80%" align="center" border="0">
+                <tr><td height="10"> </td></tr>    
+        <tr><td>               
+                <table id="tbl2" cellSpacing="0" cellPadding="0" width="60%" align="center" border="1">                   
+                    <tr>
+                        <td colspan="2" class="text4"><b>Customer</b></td> 
+                        <td colspan="2" class="text7"><b><apex:outputField value="{!NBO_Forms__c.Opportunity__r.Account.Name }"/></b></td>  
+                    </tr> 
+                    <tr height="50">
+                        <td class="text3">NBO#</td><td class="text3">REV</td>
+                        <td class="text3"><apex:outputField value="{!NBO_Forms__c.NBO_Number_Formula__c}"/></td>    
+                        <td class="text3" align="Center"><apex:outputField value="{!NBO_Forms__c.Revision_Number__c}"/></td>
+                    </tr>
+                    <tr height="50">
+                        <td colspan="2" class="text4"><b>Product Family</b></td>
+                        <td colspan="2" class="text7" align="Center"><b><apex:outputField value="{!NBO_Forms__c.Opportunity__r.Product_Model__r.Product_Type__r.Name}"/></b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text4">Sales Order:</td>
+                        <td colspan="2" class="text4"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text4">Part Number:</td>
+                        <td colspan="2" class="text4"></td>
+                    </tr>
+                    <tr>
+                        <td class="text4">EAU</td>
+                        <td class="text4">Value</td>
+                        <td class="text4" align="Center"><apex:outputField value="{!NBO_Forms__c.Estimated_Quantity__c}"/></td>
+                        <td class="text6" align="Center"><b><apex:outputField value="{!NBO_Forms__c.Estimated_Amount__c}"/></b></td>
+                    </tr>                    
+                    <tr>
+                        <td height="10" colspan="2" class="text4">Start/Customer Due Date:</td>
+                        <td class="text4" align="Center"><apex:outputField value="{!NBO_Forms__c.Date_Assigned_To_PE__c}"/></td>
+                        <td class="text4" align="Center"><apex:outputField value="{!NBO_Forms__c.NBO_Due_Date__c}"/></td>
+                    </tr>
+                    <tr height="50">
+                        <td class="text4"><b>Sales/Eng.</b></td>
+                        <td class="text4"><b>Score</b></td>
+                        <td class="text4"><apex:outputField value="{!NBO_Forms__c.Project_Manager__c}"/> / <apex:outputField value="{!NBO_Forms__c.Project_Engineer__r.FirstName}"/> <apex:outputField value="{!NBO_Forms__c.Project_Engineer__r.LastName}"/></td>
+                        <td class="text8" align="Center"><b><apex:outputField value="{!NBO_Forms__c.AF_Score__c}"/></b></td>
+                    </tr>
+                </table>
+
+                </td></tr>
+                 <tr><td height="20"> </td></tr>
+                </table> 
+                <tr><td height="20"> </td></tr>                                       
+            </div> 
+        </td></tr>        
+    </table> 
+
+    </html>
+</apex:page>

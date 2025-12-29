@@ -1,0 +1,20 @@
+<apex:page standardController="Case" extensions="CaseReturnLabelController" renderAs="pdf">
+    <apex:form >  
+    	<apex:pageblock id="ContactList">
+        	<b>From:</b><br/>
+            {!CaseObj.Account.Name}<br/>
+            {!CaseObj.Account.ShippingStreet},{!CaseObj.Account.ShippingCity}<br/>
+            {!CaseObj.Account.ShippingState},{!CaseObj.Account.ShippingCountry} {!CaseObj.Account.ShippingPostalCode}<br/><br/>
+            
+            <b>To:</b><br/>
+            Gems Sensors and Controls<br/>
+            ATTN: Returns Dept <br/>
+            1 Cowles Rd <br/>
+            Plainville,CT 06062<br/><br/>
+            
+            <b>Gems Part# : </b>{!CaseObj.Product_Number__c}<br/>
+            <b>Qty : </b>{!CaseObj.Quantity__c} <br/><br/>
+            <b>RMA Number: </b>{!CaseObj.CaseNumber} <br/><br/>
+    	</apex:pageblock>
+    </apex:form>
+</apex:page>

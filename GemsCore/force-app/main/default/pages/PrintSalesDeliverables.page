@@ -1,0 +1,156 @@
+<apex:page controller="ViewAllTaskController" sidebar="false"  showHeader="false" tabStyle="Task"> 
+<html>
+    <head>
+    <style type="text/css">
+    div.styled
+    {
+        border-width:2px; 
+        border-style:dashed dashed dashed dashed;
+        border-color:#ff9900;
+    }
+    .text1
+    {
+        font-size: 10px;
+        font-family: verdana, Arial, Helvetica;
+    }
+    .text2
+    {
+        font-size: 12px;
+        font-family: verdana, Arial, Helvetica;
+    }
+    .text3
+    {
+        font-size: 14px;
+        font-family: verdana, Arial, Helvetica;
+    }
+    .text4
+    {
+        font-size: 16px;
+        font-family: verdana, Arial, Helvetica;
+    }
+    .whiteText
+    {
+        font-size: 16px;
+        font-family: verdana, Arial, Helvetica;
+        color: #ffffff;
+    }
+    .tbl {
+     border: 3px solid black;
+     border-collapse: collapse;
+     }
+}
+    </style>
+    </head>
+    
+    <table id="tbl0" align = "Center" cellSpacing="0" cellPadding="0" width="95%"  border="0">
+        <tr><td>&nbsp;</td></tr>
+        <tr><td>&nbsp;</td></tr>
+        <tr><td>&nbsp;</td></tr>
+        <tr>
+            <td>
+                <table id="tbl11"  cellPadding="10" width="100%"  cellspacing="0" class="tbl">
+                <tr><td> 
+                <table  id="tbl1" cellSpacing="0" cellPadding="2" width="100%"  border="1">
+                    <tr bgcolor="#08088A"><td colspan="3" class="whiteText" align="center"><b>Sales Deliverables - Qualified Lead To S2 Opps</b></td></tr>
+                    <tr bgcolor="#E6E6E6"><td colspan="3" class="text4" align="center"><b>Key Elements</b></td></tr>
+                    <tr class="text2">
+                        <td class="text3"><b>Owner:</b> {!oppOwner}</td>
+                        <td class="text3"><b>PAV:</b> {!EstimatedAmount}</td>
+                        <td class="text3"><b>Market:</b> {!opMarket}</td>                                                                       
+                    </tr>
+                    <tr>
+                        <td class="text3"><b>Opportunity:</b> {!opportunityName}</td>
+                        <td class="text3"><b>Target Price:</b> {!opUnitPrice}</td>
+                        <td class="text3"><b>Close Date:</b> {!closDate}</td>                                               
+                    </tr>
+                    <tr>
+                        <td class="text3"><b>Project Manager:</b> {!projManager}</td>
+                        <td class="text3"><b>Product Category:</b> {!opProductModel}</td>
+                        <td class="text3"><b>Opportunity Type:</b> {!opType}</td>                                                 
+                    </tr>
+                     <tr>
+                        <td class="text3"><b>Opportunity#:</b> {!oppNumber}</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>                  
+                    <tr bgcolor="#E6E6E6"><td colspan="3" class="text4" align="center"><b>Qualified Lead Commercial Triggers</b></td></tr>
+                    <tr><td bgcolor="#CEECF5" class="text2" colspan="3"><apex:outputText escape="false" value="{!opComTrigger}" /> </td></tr>
+                    <tr bgcolor="#E6E6E6"><td colspan="3" class="text4" align="center"><b>Qualified Lead Budget Availability</b></td></tr>
+                    <tr>
+                        <td class="text3" colspan="3"> <apex:outputText value="Yes"></apex:outputText></td>                        
+                    </tr>
+                    <tr bgcolor="#E6E6E6"><td colspan="3" class="text4" align="center"><b>Qualified Lead Decision Maker</b></td></tr>
+                    <tr>
+                        <td class="text3" colspan="3"><b>Decision Makers:</b> {!opKeyDecMaker}</td>
+                    </tr>
+                    <tr bgcolor="#E6E6E6"><td colspan="3" class="text4" align="center"><b>Qualified Lead Project Timeline</b></td></tr>
+                    <tr>
+                        <td class="text3"><b>Project Start Date:</b> {!opProjStartDate}</td>
+                        <td class="text3"><b>Proto Type Need by:</b> {!opProtoDate}</td>
+                        <td class="text3"><b>Product Launch:</b> {!opLaunchDate}</td>
+                    </tr>
+                    <tr>
+                        <td class="text3"><b>Pre-production Launch:</b> {!opProjStartDate}</td>
+                        <td colspan="2">&nbsp;</td>
+                    </tr>               
+                </table>
+                </td></tr></table>
+                <table id="tbl2" cellSpacing="0" cellPadding="0" width="100%"  border="0">
+                    <tr>
+                        <td>
+                            <table id="tbl2" cellSpacing="0" cellPadding="10" width="100%"  class="tbl"> 
+                            <apex:repeat value="{!modelList}" var="m">
+                                
+                                <tr class="tbl"><td>
+                                    <table id="tbl3" cellSpacing="0" cellPadding="0" width="100%"  border="0">                          
+                                    <tr class="whiteText" bgcolor = "#08088A">
+                                        <td align = "left" width="200"><b>
+                                            <apex:outputText styleClass="whiteText" rendered="{!IF(m.taskObj.Opportunity_Stage__c == 'Stage 1 - Qualified',true,false)}" value="S1" >
+                                            </apex:outputText>
+                                            <apex:outputText styleClass="whiteText" rendered="{!IF(m.taskObj.Opportunity_Stage__c == 'Stage 2 - Needs Identified & Accepted',true,false)}" value="S2" >
+                                            </apex:outputText>
+                                            <apex:outputText styleClass="whiteText" rendered="{!IF(m.taskObj.Opportunity_Stage__c == 'Stage 3 - Solution Presented & Accepted',true,false)}" value="S3" >
+                                            </apex:outputText>
+                                            <apex:outputText styleClass="whiteText" rendered="{!IF(m.taskObj.Opportunity_Stage__c == 'Stage 4 - Specific Price / Budget',true,false)}" value="S4" >
+                                            </apex:outputText>
+                                            <apex:outputText styleClass="whiteText" rendered="{!IF(m.taskObj.Opportunity_Stage__c == 'Stage 5 - Order Placement',true,false)}" value="S5" >
+                                            </apex:outputText></b>
+                                        </td>
+                                        <td align = "left" width="500">
+                                            <apex:image url="{!URLFOR($Resource.circle,'circle/green.png')}" width="12" height="12" rendered="{!IF(m.taskObj.Status_Color__c == 'green',true,false)}" title="Completed"/>
+                                            <apex:image url="{!URLFOR($Resource.circle,'circle/yellow.png')}" width="12" height="12" rendered="{!IF(m.taskObj.Status_Color__c == 'yellow',true,false)}" title="Due in a week"/>
+                                            <apex:image url="{!URLFOR($Resource.circle,'circle/red.png')}" width="12" height="12" rendered="{!IF(m.taskObj.Status_Color__c == 'red',true,false)}" title="Overdue"/>
+                                            <apex:image url="{!URLFOR($Resource.circle,'circle/gray.png')}" width="12" height="12" rendered="{!IF(m.taskObj.Status_Color__c == 'gray',true,false)}" title="Inactive"/>
+                                            <apex:image url="{!URLFOR($Resource.circle,'circle/blue.png')}" width="12" height="12" rendered="{!IF(m.taskObj.Status_Color__c == 'blue',true,false)}" title="Open"/>                          
+                                            <b><apex:outputText styleClass="whiteText" value="{!m.taskObj.Subject}"></apex:outputText> </b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text2" colspan="2"><apex:outputField value="{!m.taskCommentObj.Body__c}"/></td>                      
+                                    </tr>
+                                    </table>
+                                    
+                                    <table id="tbl4" cellSpacing="0" cellPadding="0" width="100%"  border="0">
+                                        <tr class="text4"><td colspan="2"><br/><b><u>Attachments:</u></b></td></tr>
+                                        <tr>
+                                            <td align = "left" width="200" class="text2"><b>Title</b></td>
+                                            <td align = "left" width="500" class="text2"><b>Desc.</b></td>                           
+                                        </tr>
+                                        <apex:repeat value="{!m.taskObj.Attachments}" var="tat">
+                                        <tr class="dataRow">                               
+                                            <td align = "left" width="200" class="text2"> {!tat.Name} </td>
+                                            <td align = "left" width="500" class="text2"> {!tat.Description} </td>
+                                        </tr>                        
+                                        </apex:repeat>
+                                    </table>                                    
+                               </td></tr>                                       
+                            </apex:repeat>                              
+                            </table>
+                        </td>
+                    </tr>
+                </table>               
+            </td>
+        </tr>
+    </table>
+</html>
+</apex:page>

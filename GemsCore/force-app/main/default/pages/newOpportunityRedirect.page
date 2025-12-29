@@ -1,0 +1,9 @@
+<apex:page standardController="Opportunity">
+    <apex:form >
+        <div style="margin-top:80px;">
+            <apex:outputPanel style="font-size:15pt;color:red;font-family:Arial;padding-left:150px;"> 
+                <apex:outputLabel value="You do not have permission to Create Opportunity. Please create a Lead and convert it to Opportunity."></apex:outputLabel> 
+            </apex:outputPanel>
+        </div>
+    </apex:form>
+</apex:page>

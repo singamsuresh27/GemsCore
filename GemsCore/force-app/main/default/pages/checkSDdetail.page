@@ -1,0 +1,2 @@
+<apex:page standardController="Task" extensions="EditTaskInlineController" action="{!redirectToDetail}">
+</apex:page>

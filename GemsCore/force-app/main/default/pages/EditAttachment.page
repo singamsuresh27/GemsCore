@@ -1,0 +1,36 @@
+<apex:page controller="EditTaskInlineController">
+    <apex:form >
+        <apex:pageBlock rendered="{!showAttDetail}">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Edit Attachment" action="{!detailAttachment}"/>
+                <apex:commandButton value="Close Window" onclick="closeWindow(); return false;"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2">
+                <apex:outputField value="{!attach.Description}"/>
+                <apex:outputField value="{!attach.name}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock rendered="{!!showAttDetail}">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Update Attachment" action="{!editAttachment}"/>
+                <apex:commandButton value="Close Window" onclick="closeWindow(); return false;"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2">
+                <apex:inputField label="Description" value="{!attach.Description}"/>
+                <apex:inputFile value="{!attach.body}" filename="{!attach.name}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <script>
+        function closeWindow() {
+              var winMain=window.opener;
+              if (null==winMain)
+              {
+                 winMain=window.parent.opener;
+              }
+              winMain.parentRefresh();
+              window.close();
+        }
+    </script>
+</apex:page>

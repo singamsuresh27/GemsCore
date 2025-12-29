@@ -1,0 +1,10 @@
+<apex:page standardController="Task" extensions="EditTaskInlineController" action="{!methodToDeleteTask}">
+    <apex:form >
+        <div style="margin-top:80px;">
+            <apex:outputPanel rendered="{!isSD}" style="font-size:15pt;color:red;font-family:Arial;padding-left:150px;"> 
+                <apex:outputLabel value="You do not have permission to delete Sales Deliverables"></apex:outputLabel> &nbsp;&nbsp;
+                <apex:commandLink value="Back" action="{!goBack}"/>
+            </apex:outputPanel>
+        </div>
+    </apex:form>
+</apex:page>

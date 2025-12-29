@@ -1,0 +1,35 @@
+<apex:component controller="VF_Distributor_EmailTemplate" access="global"> 
+ <apex:attribute name="CurrentLead" description="Get all its Notesand Attachments"  type="String"  assignto="{!leadId}" required="true" access="global"/> 
+Dear {!Account}, <br/>
+  
+Please follow up with the following lead<br/>
+     <b>Company:</b>  {!Company}<br/>
+	 <b>Name:</b>  {!Name}<br/>
+	 <b>Title:</b>  {!Title}<br/>
+	 <b>Email:</b>  {!Email}<br/>
+	 <b>Website:</b>  {!Website}<br/>
+	 <b>Address:</b>  {!Address}<br/>
+	 <b>Phone:</b>  {!Phone}<br/>
+	 <b>Fax:</b>  {!Fax}<br/>
+	 <b>Mobile Phone:</b>  {!MobilePhone}<br/>
+	 <b>Lead Topic:</b>  {!Lead_Topic}<br/>
+	 <b>Application Detail:</b>  {!Application_Detail}<br/>
+	 <b>LeadSource:</b>  {!LeadSource}<br/>
+	 <b>Category Sources:</b>  {!Category_Sources}<br/>
+	 <b>Product Of Interest:</b>  {!Product_Of_Interest}<br/>
+	 <b>Market:</b>  {!Market}<br/>
+	 <b>Customer Type:</b>  {!Customer_Type}<br/><br/><br/>
+     <table><tr><td><b>Notes:</b></td></tr> </table>
+             
+            <apex:repeat value="{!NotesAttachmnt}" var="NA">
+            <table>                  
+                         
+                        <tr><td><b>Title:</b>{!NA.Title}<br/></td></tr> 
+                        <tr><td><b>Body:</b>{!NA.Body}<br/></td></tr>
+                         
+                   
+            </table>
+            
+      </apex:repeat>
+      
+</apex:component>

@@ -1,0 +1,62 @@
+<apex:page standardController="Case" extensions="ShowCaseDetailsController" tabStyle="Case_Detail__c" action="{!populateTemplate}">
+<apex:sectionHeader title="Case Detail" subtitle="Sending Email"/>
+    <apex:form >
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:outputPanel rendered="{!isCaseManager}">
+        <table width="100%" cellspacing="5" cellpadding="5" class="list">
+            <tr class="headerRow">
+                <td class="headerRow"> Ship To </td>
+                <td class="dataRow"> <apex:outputField value="{!caseObj.AccountId}"/></td>
+                <!-- <td class="headerRow"> Part Number </td>
+                <td class="dataRow"> <apex:outputField value="{!caseObj.Product_Number__c}"/> </td> -->
+            </tr>
+            <tr>
+                <td>
+                	<apex:outputLabel styleClass="labelText">To</apex:outputLabel>
+                </td>
+                <td>
+                    <apex:outputLabel id="idRecipient" value="{!emailMsg.ToAddress}"/> 
+                </td>
+            </tr>
+            <tr>
+                <td>Another Email Addresses </td>
+                <td><apex:inputTextarea value="{!emailIds}" cols="100" rows="2"/></td>
+            </tr>
+            <tr>
+                <td>
+             		<apex:outputLabel styleClass="labelText">Body:</apex:outputLabel>
+                </td>
+                <td>
+                    <apex:inputTextarea richText="true" id="idBody" styleClass="extraDeepTextArea" value="{!emailMsg.TextBody}"/>
+            	</td>
+            </tr>
+            </table>
+        <br/><br/>
+        <apex:pageBlock >
+            <apex:pageBlockButtons rendered="{!if(modelList.size > 0, true, false)}">
+                    <apex:commandButton value="Approval Email" action="{!approvalMail}"/>
+                <apex:commandButton value="Decline Email" action="{!declineMail}" rendered="false"/>
+                <apex:commandButton value="Cancel" action="{!cancelAction}"/>
+            </apex:pageBlockButtons>
+            <apex:outputPanel rendered="{!if(modelList.size > 0, true, false)}">
+            
+            <apex:pageBlockTable value="{!modelList}" var="md">
+                <apex:column >
+                    <apex:inputCheckbox value="{!md.flg}"/>
+                </apex:column>
+                <apex:column value="{!md.caseDetailObj.name}"/>
+                <apex:column value="{!md.caseDetailObj.Gems_Part_Number__c}"/>
+                <apex:column value="{!md.caseDetailObj.Line_Number__c}"/>
+                <apex:column value="{!md.caseDetailObj.Quantity__c}"/>
+                <apex:column value="{!md.caseDetailObj.Amount__c}"/>
+                <apex:column value="{!md.caseDetailObj.Date_Shipped__c}"/>
+            </apex:pageBlockTable>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!if(modelList.size <= 0 ,true, false)}">
+                <apex:outputLabel style="text-align:center;color:red;font-size:180%;font-weight:700;" value="There is No Records for sending email...."/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <apex:commandLink value="Go Back" action="{!cancelAction}"/>
+            </apex:outputPanel>
+        </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

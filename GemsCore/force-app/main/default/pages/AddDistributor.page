@@ -1,0 +1,97 @@
+<apex:page standardStylesheets="true" controller="AddDistributor_Cls" tabStyle="Account">    
+<apex:includeScript value="{!$Resource.jquery_distributor}" />   
+    <script>
+    //document.getElementById("j_id0:j_id2:pBlockId:j_id8:j_id9:reasonId").value;
+    //document.getElementById("j_id0:j_id2:pBlockId:j_id8:otherReasonId").value;
+            
+        var $j = jQuery.noConflict();
+        function validate(){
+            var reason = $j('select[id$=reasonId]').val();
+            var otherReason = $j('input[id$=otherReasonId]').val();
+            if(reason == '' || reason == null){
+                alert('Please Select Reason Field!')
+                $j('select[id$=reasonId]').focus();
+                return false;
+            }
+            if(reason == 'Other' && (otherReason == null || otherReason=='')){
+                alert('Please Enter Other Reason Field!');
+                $j('input[id$=otherReasonId]').focus();
+                return false;
+            }
+            return true;
+        }       
+    </script>
+    <apex:form >
+    <apex:sectionHeader title="Select Account to send" />
+    <apex:pageBlock rendered="{!AlreadyMailSent}">
+            <p><center><b>&nbsp;Mail already sent to Distributor</b><br/><br/><br/>
+                <apex:commandButton action="{!Back}" value="Back" id="idBack"/>
+                </center>
+            </p>
+    </apex:pageBlock>
+    <apex:pageBlock id="pBlockId" rendered="{!!AlreadyMailSent}">
+             <apex:pageBlockButtons >
+                    <apex:commandButton action="{!Back}" value="Cancel" id="idCancel"/>
+            </apex:pageBlockButtons> 
+             <apex:pageBlockSection title="Lead Detail" columns="3">
+                <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="Reason" />
+                    <apex:outputPanel styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                        <apex:selectList id="reasonId" value="{!objLead.Reason__c}" size="1">
+                            <apex:selectoptions value="{!ReasonList}"/>
+                        </apex:selectList>
+                    </apex:outputPanel>
+                    <!-- <apex:inputField value="{!objLead.Reason__c}" required="true" /> -->
+                </apex:pageBlocksectionItem>
+                <apex:inputField value="{!objLead.Other_Reason__c}" id="otherReasonId"/> 
+                <apex:inputField required="true" value="{!objLead.Date_Sent_to_Distributor__c}" style="white-space: nowrap;"/>      
+            </apex:pageBlockSection>
+            
+                <div class="pbSubheader first tertiaryPalette">
+                    <h3>Distributor Account</h3>
+                </div>
+                <table class="list" border="0" cellspacing="0" cellpadding="5">
+                    <thead>
+                        <tr class="headerRow">
+                            <th scope="col">&nbsp;</th>
+                            <th scope="col">Company Name</th>
+                            <th scope="col">Distributors Type</th>
+                            <th scope="col">Sent This Year</th>
+                            <th scope="col">Total Sent</th>
+                            <th scope="col">Ship to Account Number</th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col">Shipping Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!objAccountRangeList}" var="act" id="theRepeat">  
+                        <tr> 
+                            <td>
+                                <apex:commandLink action="{!UpdateLead}" value="Send" id="theCommandLink" style="text-decoration: none;white-space: nowrap;" onclick="javascript : return validate();" styleClass="btn">
+                                    <apex:param name="ActId" value="{!act.AccountRange.Id}"/>
+                                </apex:commandLink>
+                            </td>
+                            <td>
+                                <apex:outputText value="{!act.AccountRange.Name}"/>
+                            </td>
+                            <td>
+                                <apex:outputText value="{!act.AccountRange.Distributors_Type__c}"/>
+                            </td>
+                            <td><apex:outputField value="{!act.AccountRange.Total_Lead_Sent_This_Year__c}"/></td>
+                            <td><apex:outputField value="{!act.AccountRange.Total_Number_of_Lead_Sent__c}"/></td>
+                            <td><apex:outputField value="{!act.AccountRange.AccountNumber}"/></td>
+                            <td><apex:outputField value="{!act.AccountRange.Email_Address__c}"/></td> 
+                            <td>
+                                <apex:outputField value="{!act.AccountRange.ShippingStreet}"/> ,
+                                <apex:outputField value="{!act.AccountRange.ShippingCity}"/> ,
+                                <apex:outputText value="{!act.AccountRange.ShippingState} - {!act.AccountRange.ShippingPostalCode}"/> ,
+                                <apex:outputField value="{!act.AccountRange.ShippingCountry}"/>
+                            </td>
+                        </tr>
+                        </apex:repeat> 
+                    </tbody>
+                </table>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

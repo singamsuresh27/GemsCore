@@ -1,0 +1,101 @@
+<apex:component controller="lineItemController" access="global">
+  <apex:attribute type="string" assignTo="{!caseDetailId}" name="RMA" description="RMA number for generate barcode"/>
+
+<html>
+<head>
+<style>
+body
+{
+font-size: 12px;
+font-family: verdana, Arial, Helvetica;
+}
+ .text
+{
+font-size: 12px;
+font-family: verdana, Arial, Helvetica;
+}
+.text1
+{
+font-size: 10px;
+font-family: verdana, Arial, Helvetica;
+}
+.text2
+{
+font-size: 8px;
+font-family: verdana, Arial, Helvetica;
+}
+</style>
+</head>
+    <Table id="tbl0" class="text1" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+        <tr>
+            <td>
+            <Table id="tbl1" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">
+                <tr><td align="Center"><apex:image value="https://c.na61.content.force.com/servlet/servlet.ImageServer?id=01532000001lYUk&oid=00D60000000IUyW&lastMod=1613570397000"></apex:image></td></tr>
+                <tr><td>                
+                    <Table id="tbl2" cellSpacing="1" cellPadding="2" width="80%" align="center" border="0">
+                        <tr>
+                            <td class="text1"><b>RA #:</b> <apex:outputField value="{!LineItem.Name}"/></td>
+                            <td class="text1"><b>Evaluation Start Date:</b> <apex:outputField value="{!LineItem.Date_Evaluation_Started__c}"/></td>
+                            <td class="text1"><b>Original PO/SO#:</b> <apex:outputField value="{!LineItem.Order_Shipment__r.PONumber__c}"/></td>
+                        </tr>
+                         <tr>
+                            <td class="text1"><b>Customer:</b> <apex:outputField value="{!LineItem.Case__r.Account.Name}"/></td>
+                            <td class="text1"><b>Contact:</b> <apex:outputField value="{!LineItem.Case__r.Contact.FirstName}"/> <apex:outputField value="{!LineItem.Case__r.Contact.LastName}"/></td>
+                            <td class="text1"><b>Customer Ref #:</b> <apex:outputField value="{!LineItem.Case__r.Customer_Internal_Case_RA_No__c}"/></td>
+                        </tr>
+                    </Table>
+                    <Table id="tbl3" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr>
+                            <td   colspan="5"><b><u>Product Information:</u></b></td>
+                        </tr>
+                         <tr>
+                            <td><b>Qty</b></td>
+                            <td><b>Gems P/N</b></td>
+                            <td><b>Date Code/Serial number</b></td>
+                            <td><b>Customer Part#</b></td>
+                            <td><b>Model/Extended Description</b></td>
+                        </tr>
+                         <tr>
+                            <td><apex:outputField value="{!LineItem.Quantity__c}"/></td>
+                            <td><apex:outputField value="{!LineItem.Order_Shipment__r.Productid__r.ProductCode}"/></td>
+                            <td><apex:outputField value="{!LineItem.Date_Code_Serial_No__c}"/></td>
+                            <td><apex:outputField value="{!LineItem.Case__r.Customer_Part_Number__c}"/></td>
+                            <td><apex:outputField value="{!LineItem.Order_Shipment__r.Productid__r.Description}"/></td>
+                        </tr>
+                    </Table>
+                    <Table id="tbl4" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr><td><b><u>Customer Complaint:</u></b></td></tr>
+                        <tr><td><apex:outputField value="{!LineItem.Case__r.Description}"/></td></tr>
+                    </Table>
+                    <Table id="tbl5" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr><td><b><u>Evaluation:</u></b></td></tr>
+                        <tr><td><apex:outputField value="{!LineItem.Receivers_Comment__c}"/></td></tr>
+                        <tr><td><apex:outputField value="{!LineItem.Warranty_Type__c}"/></td></tr>
+                    </Table>
+                    <Table id="tbl6" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr><td><b><u>Recommendation:</u></b></td></tr>
+                        <tr><td><apex:outputField value="{!LineItem.Recommendations__c}"/></td></tr>
+                    </Table>
+                    <Table id="tbl8" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr>
+                            <td><b>Evaluate By:</b> Bill Klepacki</td>
+                            <td><b>Completion Date:</b> <apex:outputField value="{!LineItem.Date_Evaluation_Completed__c}"/></td>
+                        </tr>                        
+                    </Table>                    
+                    <Table id="tbl9" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">
+                        <tr height="20"><td></td></tr>
+                        <tr align="center">
+                            <td>QPF-7.5.1.1  Rev. B 12/1/2014</td>
+                        </tr>
+                        <tr align="center">
+                            <td>Approved By: Pete Madden</td>
+                        </tr>
+                    </Table>                                       
+                </td></tr>
+            </Table>    
+            </td>
+        </tr>
+     </Table>    
+</html>
+  
+</apex:component>

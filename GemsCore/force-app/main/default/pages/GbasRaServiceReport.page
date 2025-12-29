@@ -1,0 +1,111 @@
+<apex:page sidebar="false" renderas="pdf" showHeader="false" standardController="Case_Detail__c">
+
+<html>
+<head>
+<style>
+body
+{
+font-size: 8px;
+font-family: verdana, Arial, Helvetica;
+}
+ .text
+{
+font-size: 8px;
+font-family: verdana, Arial, Helvetica;
+}
+.text1
+{
+font-size: 6px;
+font-family: verdana, Arial, Helvetica;
+}
+.text2
+{
+font-size: 4px;
+font-family: verdana, Arial, Helvetica;
+}
+.text3
+{
+font-size: 12px;
+font-family: verdana, Arial, Helvetica;
+}
+</style>
+</head>
+    <Table id="tbl0" class="text1" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+        <tr>
+            <td>
+            <Table id="tbl1" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">
+                <tr><td align="Center"><apex:image url="https://c.na26.content.force.com/servlet/servlet.FileDownload?file=01532000001V6CK"></apex:image></td></tr>
+                <TR><TD class="text3" align="Center"><b>Instrument Service Report</b></TD></TR>
+                <tr><td>                
+                    <Table id="tbl2" cellSpacing="1" cellPadding="2" width="80%" align="center" border="0">
+                        <tr>
+                            <td class="text1"><b><u>RA #:</u></b>&nbsp; <apex:outputField value="{!Case_Detail__c.Name}"/></td>
+                            <td class="text1"><b><u>Evaluation Start Date:</u></b>&nbsp; <apex:outputField value="{!Case_Detail__c.Date_Evaluation_Started__c}"/></td>
+                            <td class="text1"><b><u>Original PO/SO#:</u></b>&nbsp; <apex:outputField value="{!Case_Detail__c.Order_Shipment__r.PONumber__c}"/></td>
+                        </tr>
+                         <tr>
+                            <td class="text1"><b><u>Customer:</u></b>&nbsp; <apex:outputField value="{!Case_Detail__c.Case__r.Account.Name}"/></td>
+                            <td class="text1"><b><u>Contact:</u></b>&nbsp; <apex:outputField value="{!Case_Detail__c.Case__r.Contact.FirstName}"/> <apex:outputField value="{!Case_Detail__c.Case__r.Contact.LastName}"/></td>
+                            <td class="text1"><b><u>Customer Ref #:</u></b>&nbsp; <apex:outputField value="{!Case_Detail__c.Case__r.Customer_Internal_Case_RA_No__c}"/></td>
+                        </tr>
+                    </Table>
+                    <Table id="tbl3" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr>
+                            <td   colspan="5"><b><u>Product Information:</u></b></td>
+                        </tr>
+                         <tr>
+                            <td><b>Qty</b></td>
+                            <td><b>Gems P/N</b></td>
+                            <td><b>Date Code/Serial number</b></td>
+                            <td><b>Customer Part#</b></td>
+                            <td><b>Model/Extended Description</b></td>
+                        </tr>
+                         <tr>
+                            <td><apex:outputField value="{!Case_Detail__c.Quantity__c}"/></td>
+                            <td><apex:outputField value="{!Case_Detail__c.Order_Shipment__r.Productid__r.ProductCode}"/></td>
+                            <td><apex:outputField value="{!Case_Detail__c.Date_Code_Serial_No__c}"/></td>
+                            <td><apex:outputField value="{!Case_Detail__c.Case__r.Customer_Part_Number__c}"/></td>
+                            <td><apex:outputField value="{!Case_Detail__c.Order_Shipment__r.Productid__r.Description}"/></td>
+                        </tr>
+                    </Table>
+                    <Table id="tbl4" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr><td><b><u>Customer's Fault Symptom/Description:</u></b></td></tr>
+                        <tr><td><apex:outputField value="{!Case_Detail__c.Case__r.Description}"/></td></tr>
+                    </Table>
+                    <Table id="tbl5" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr><td><b><u>Investigation Analysis:</u></b></td></tr>
+                        <tr><td><apex:outputField value="{!Case_Detail__c.Receivers_Comment__c}"/></td></tr>
+                        <tr><td><apex:outputField value="{!Case_Detail__c.Warranty_Type__c}"/></td></tr>
+                    </Table>
+                    <Table id="tbl6" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr><td><b><u>Recommendation:</u></b></td></tr>
+                        <tr><td><apex:outputField value="{!Case_Detail__c.Recommendations__c}"/></td></tr>
+                    </Table>
+                    <Table id="tbl8" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr>
+                            <td><b>Evaluate By:</b> E. Brockhouse</td>
+                            <td><b>Completion Date:</b> <apex:outputField value="{!Case_Detail__c.Date_Evaluation_Completed__c}"/></td>
+                        </tr>
+                        <tr>
+                            <td><b>Approved By:</b> {!$User.FirstName}  {!$User.LastName}</td>
+                            <td><b>Date:</b><apex:outputText value="{0,date,MMMM dd, yyyy}">
+                                                <apex:param value="{!TODAY()}" />
+                                           </apex:outputText></td>
+                        </tr>
+                    </Table>                    
+                    <Table id="tbl9" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">
+                        <tr height="20"><td></td></tr>
+                        <tr align="center">
+                            <td>If no response is received within 30 days to this report,  Gems Sensors and Controls reserved the right to scrap the units within 30 days as per our terms and conditions.</td>
+                        </tr>
+                        <tr align="center">
+                            <td></td>
+                        </tr>
+                    </Table>                                       
+                </td></tr>
+            </Table>    
+            </td>
+        </tr>
+     </Table>    
+</html>
+</apex:page>

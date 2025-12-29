@@ -1,0 +1,547 @@
+<apex:page standardController="Case" extensions="SearchController" sidebar="false"  tabStyle="case" id="pg">
+    <apex:sectionHeader title="Case" subtitle="{!title}"/>
+
+    <apex:includeScript value="{!URLFOR($Resource.JDialog,'JDialog/js/jquery-1.9.1.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.JDialog,'JDialog/js/jquery-ui-1.10.3.custom.js')}"/>
+    
+    <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/css/sunny/jquery-ui-1.10.3.custom.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/css/sunny/jquery-ui-1.10.3.custom.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/development-bundle/themes/sunny/jquery.ui.all.css')}"/>
+    <style>
+        div#cke_1_contents{
+            height: 70px !important;
+        }
+    </style>
+    <apex:outputPanel id="jsonpanel">
+        <script>
+             var jsonData = '{!JSENCODE(contactJson)}';
+             var jstr= '';
+             if(jsonData != ''){
+                 jstr = JSON.parse(jsonData);
+             }else{
+                 jstr = '';
+             }
+             function showjsonstr(){
+            
+                var htmlstr = '<select id="selcon" size="1" onchange="jselContactId();">';
+                htmlstr += '<option value="n">--Select Contact--</option>';
+                if('{!selcontact}' == 'new'){
+                    htmlstr += '<option value="new" selected="true">--Create New Contact--</option>';
+                }else{
+                    htmlstr += '<option value="new">--Create New Contact--</option>';
+                } 
+                for(var i=0; i<jstr.length; i++){
+                    var str = jstr[i].FirstName + ' ' + jstr[i].LastName + ' | ' + jstr[i].Phone + ' | ' + jstr[i].Email;
+                    //alert('=====> {!selcontact} ');  
+                    if(jstr[i].Id == '{!selcontact}'){
+                        htmlstr += '<option value="' + jstr[i].Id + '" selected="true">' + str + '</option>';
+                    }else{
+                        htmlstr += '<option value="' + jstr[i].Id + '">' + str + '</option>';    
+                    }
+                }
+                htmlstr +='</select>';
+                console.log(htmlstr);
+                //alert(htmlstr);
+                document.getElementById('divJ').innerHTML = htmlstr;
+        }   
+        </script>
+    </apex:outputPanel>
+     <script>
+         $(function(){
+           var dlg = $( "#divBox" ).dialog({
+               autoOpen:false,
+               width:700,
+               title:'Decline RA Request',
+               height:300
+           });
+           var dlgRA = $( "#divRABox" ).dialog({
+               autoOpen:false,
+               width:900,
+               title:'Case Detail Records',
+               height:500
+           });
+           dlg.parent().appendTo("#pg\\:frm");
+           dlgRA.parent().appendTo("#pg\\:frm");
+           //showjsonstr();
+        });
+        function jselContactId(){
+            var obj = document.getElementById('selcon');
+            var sv = obj.options[obj.selectedIndex].value;
+            //alert(sv);
+            for(var i=0; i<obj.options.length; i++){
+                if(obj.options[i].value == sv){
+                    obj.options[i].selected = true;
+                    break;
+                }    
+            }
+            actSetConId(sv);
+        }
+        
+        function openBox(st){
+             $( "#divBox" ).dialog(st);
+        }
+        function openRABox(st){
+            $( "#divRABox" ).dialog(st);
+        }
+        function openAndCloseModel(st){
+            $("#AttachmentDiv").dialog(st);
+        }
+    </script>
+    <div style="position: relative;">
+        <apex:form id="frm">
+            <!--<apex:actionFunction name="actCaseDetailList" action="{!caseDetailsObject}" oncomplete="openRABox('open');" rerender="pbRA" >  
+                <apex:param name="p1" assignTo="{!selRecord}" value=""/>
+            </apex:actionFunction>
+            <apex:actionFunction name="actFetchContact" action="{!fetchContact}"/>
+            <apex:actionFunction name="actSetConId" action="{!setSelContactVar}" reRender="jsonpanel,conPan" oncomplete="showjsonstr();">
+                <apex:param name="p1" assignTo="{!selcontact}" value=""/>
+            </apex:actionFunction>
+            <apex:actionFunction name="actAllContact" action="{!allContacts}" rerender="conPan" oncomplete="showjsonstr();"/>-->
+            <apex:actionFunction name="cancelForm" status="pageStatus" action="{!cancelAction}"/>
+            <apex:actionFunction name="actsettingPaperCreditFlag" action="{!settingPaperCreditFlag}"/>
+            
+                <apex:outputPanel id="PanMsg">
+                    <apex:pageMessages ></apex:pageMessages>
+                </apex:outputPanel>
+                <apex:outputpanel >
+                    <apex:actionstatus id="pageStatus">
+                        <apex:facet name="start">
+                            <div class="waitingSearchDiv" id="el_loading" style="position: fixed;background-color: #16325c;height: 100%;opacity:0.65;width:100%;"> 
+                                <div class="waitingHolder" style="top: 40%;">
+                                    <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." /><br/>
+                                    <span class="waitingDescription" style="color:white;">Please Wait...</span>
+                                </div>
+                            </div>
+                        </apex:facet>
+                    </apex:actionstatus>
+                </apex:outputpanel>
+                <apex:outputPanel rendered="{!isCaseManager}">
+                    <apex:pageBlock >
+                        <table width="100%" cellspacing="10" cellpadding="5" class="list">
+                            <tr class="headerRow">
+                                <td class="headerRow" width="400"> Type : </td>
+                                <td class="dataRow"> <apex:outputField value="{!tObj.type}" rendered="{!!isCaseIdNull}"/> <apex:selectList value="{!tObj.type}" size="1" rendered="{!isCaseIdNull}" onchange="actsettingPaperCreditFlag();return false;"> <apex:selectOptions value="{!lstCaseType}"></apex:selectOptions></apex:selectList>  </td>
+                            </tr>
+                            
+                            <tr class="headerRow">
+                                <td class="headerRow" width="400"> Ship To : </td>
+                                <td class="dataRow"> 
+                                    <apex:actionRegion >
+                                        <apex:inputField value="{!tObj.AccountId}"> 
+                                            <apex:actionSupport action="{!allContacts}" event="onchange" rerender="conPan"/> 
+                                        </apex:inputField>
+                                    </apex:actionRegion>
+                                <apex:commandButton value="Search" action="{!searchOrderWithAccountId}"/> </td>
+                            </tr>
+                            <tr class="headerRow">
+                                <td class="headerRow"> Customer PO : </td>
+                                <td class="headerRow"> <apex:inputText value="{!tObj.PO_No__c}" /> 
+                                <apex:commandButton value="Search" action="{!searchOrder}"/> </td>
+                            </tr>
+                            <tr class="headerRow">
+                                <td class="headerRow"> Gems Sales Order No : </td>
+                                <td class="headerRow"> <apex:inputText value="{!tObj.Gems_SO_Number__c}"/> 
+                                <apex:commandButton value="Search" action="{!searchOrderWithSalesOrder}"/> </td>
+                            </tr>
+                            <tr class="headerRow">
+                                <td class="headerRow"> Gems Invoice No : </td>
+                                <td class="headerRow">  <apex:inputText value="{!tObj.Gems_Invoice_Number__c}" /> 
+                                <apex:commandButton value="Search" action="{!searchOrderWithInvoice}"/> </td>
+                            </tr>
+                            <!-- <tr class="headerRow">
+                                <td class="headerRow"> Customer Part No : </td>
+                                <td class="headerRow"> <apex:inputText value="{!tObj.Customer_Part_Number__c }" /> 
+                                <apex:commandButton value="Search" /> </td>
+                            </tr> -->
+                            <tr class="headerRow">
+                                <td class="headerRow"> Gems Part No (You must select date range) : </td>
+                                <td class="headerRow"> <apex:inputField value="{!tObj.Productid__c}"/> <!-- <apex:inputText value="{!tObj.Product_Number__c}"/>  -->
+                                <apex:commandButton value="Search" action="{!searchOrderWithPartNumber}"/> </td>
+                            </tr>
+                            <tr class="headerRow">
+                                <td class="headerRow"> Ship From : </td>
+                                <td class="headerRow"> <apex:inputField value="{!tempObj.OrderDate__c}"/> 
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ship To : &nbsp;&nbsp;<apex:inputField value="{!tempObj.CancelationDate__c}"/> 
+                                <apex:commandButton value="Search" action="{!searchOrderByDate}" rerender="PanMsg" rendered="false"/></td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <apex:outputPanel id="conPan">
+                            <apex:outputPanel rendered="{!!isCaseIdNull}">
+                                <table width="100%" border="0"  cellspacing="5" cellpadding="5" class="list">
+                                    <tr class="headerRow">
+                                        <td class="headerRow"> Contact </td>
+                                        <td class="headerRow">
+                                            <apex:actionRegion >
+                                                <apex:selectList value="{!selContact}" size="1">
+                                                    <apex:actionSupport action="{!fetchContact}" event="onchange" reRender="conPan" status="pageStatus"/>
+                                                    <apex:selectOptions value="{!lstContact}"></apex:selectOptions>
+                                                </apex:selectList>
+                                            </apex:actionRegion>
+                                            <!--<div id="divJ">
+                                            </div>-->
+                                        </td>
+                                        <td> </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="headerRow">
+                                        <td class="headerRow"> Last Name </td>
+                                        <td class="headerRow"> <apex:inputText value="{!con.lastname}" /> </td>
+                                        <td class="headerRow"> First Name </td>
+                                        <td class="headerRow"> <apex:inputText value="{!con.firstname}" /> </td>
+                                    </tr>
+                                    <tr class="headerRow">
+                                        <td class="headerRow"> Phone </td>
+                                        <td class="headerRow"> <apex:inputText value="{!con.phone}"/> </td>
+                                        <td class="headerRow"> Email Address </td>
+                                        <td class="headerRow"> <apex:inputText value="{!con.email}" size="40"/> </td>
+                                    </tr>
+                                    <tr class="headerRow">
+                                        <td class="headerRow"> Fax </td>
+                                        <td class="headerRow"> <apex:inputText value="{!con.fax}"/> </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="headerRow">
+                                        <td class="headerRow"> Job Title </td>
+                                        <td class="headerRow"> <apex:inputText value="{!con.title}"/> </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                                <br/>
+                                <apex:outputPanel rendered="{!isPaperCredit}">
+                                    <table width="100%" border="0"  cellspacing="5" cellpadding="5" class="list">
+                                         <tr class="headerRow">
+                                            <td colspan="1" class="headerRow">Quantity : &nbsp;&nbsp;&nbsp;&nbsp; <apex:outputField value="{!tObj.Quantity__c}"/></td>
+                                         </tr>
+                                     </table>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!!isPaperCredit}">
+                                    <table width="100%" border="0"  cellspacing="5" cellpadding="5" class="list">
+                                         <tr class="headerRow">
+                                            <td class="headerRow" width="160">Quantity</td>
+                                            <td class="headerRow" width="160"> <apex:outputField value="{!tObj.Quantity__c}"/></td>
+                                            <td class="headerRow" width="160"> Customer part number: </td>
+                                            <td class="headerRow" width="160"> <apex:outputField value="{!tObj.Customer_Part_Number__c}"/></td>
+                                            <td class="headerRow" width="160"> Warranty Disposition: </td>
+                                            <td class="headerRow" width="160"> <apex:outputField value="{!tObj.Warranty_Disposition__c}"/></td>
+                                            <td cclass="headerRow" width="160"> Return Carrier:</td>
+                                            <td cclass="headerRow" width="160"> <apex:outputField value="{!tObj.Shipping_Carrier_Name__c}"/></td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                            <td class="headerRow" width="160"> Product Number (Gems): </td>
+                                            <td class="headerRow" width="160"> <apex:outputField value="{!tObj.Product_Number__c}"/></td>
+                                            <td class="headerRow" width="160"> Item Return P.O: </td>
+                                            <td class="headerRow" width="160"> <apex:outputField value="{!tObj.Item_Return_PO__c}"/></td>
+                                            <td class="headerRow" width="160"> Max Repair Cost: </td>
+                                            <td cclass="headerRow" width="160"> <apex:outputField value="{!tObj.Max_Repair_Cost__c}"/></td>
+                                            <td class="headerRow" width="160"> Return Carrier Account: </td>
+                                            <td class="headerRow" width="160"> <apex:outputField value="{!tObj.Carrier_Account__c}"/></td>
+                                        </tr>                                        
+                                        <tr class="headerRow">
+                                            <td class="headerRow" width="160"> Customer reference: </td>
+                                            <td class="headerRow" width="160"> <apex:outputField value="{!tObj.Customer_Internal_Case_RA_No__c}"/></td>
+                                            <td class="headerRow" width="160"> Return Material Need By Date: </td>
+                                            <td class="headerRow" width="160"> <apex:outputField value="{!tObj.Return_Material_Need_By__c}"/></td>
+                                            <td class="headerRow" width="160"> Non Warranty Disposition: </td>
+                                            <td cclass="headerRow" width="160"> <apex:outputField value="{!tObj.Non_Warranty_Disposition__c}"/></td>
+                                            <td class="headerRow" width="160">  </td>
+                                            <td class="headerRow" width="160"> </td>
+                                        </tr>
+                                        
+                                        
+                                    </table>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                            <br/> 
+                            <apex:outputPanel rendered="{!isCaseIdNull}">
+                                <apex:outputPanel rendered="{!isPaperCredit}">
+                                    <table width="100%" border="0"  cellspacing="5" cellpadding="5" class="list">
+                                        <tr class="headerRow">
+                                            <td class="headerRow"> Contact </td>
+                                            <td class="headerRow">
+                                                <apex:actionRegion >
+                                                    <apex:selectList value="{!selContact}" size="1">
+                                                        <apex:actionSupport action="{!fetchContact}" event="onchange" reRender="conPan"  status="pageStatus"/>
+                                                        <apex:selectOptions value="{!lstContact}"></apex:selectOptions>
+                                                    </apex:selectList>
+                                                </apex:actionRegion>
+                                                <!--<div id="divJ">
+                                                </div>-->
+                                            </td>
+                                            <td> </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                            <td class="headerRow"> Last Name </td>
+                                            <td class="headerRow"> <apex:inputText value="{!con.lastname}" /> </td>
+                                            <td class="headerRow"> First Name </td>
+                                            <td class="headerRow"> <apex:inputText value="{!con.firstname}" /> </td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                            <td class="headerRow"> Phone </td>
+                                            <td class="headerRow"> <apex:inputText value="{!con.phone}"/> </td>
+                                            <td class="headerRow"> Email Address </td>
+                                            <td class="headerRow"> <apex:inputText value="{!con.email}" size="40"/> </td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                            <td class="headerRow"> Fax </td>
+                                            <td class="headerRow"> <apex:inputText value="{!con.fax}"/> </td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                        <td class="headerRow"> Job Title </td>
+                                        <td class="headerRow"> <apex:inputText value="{!con.title}"/> </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    </table>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!!isPaperCredit}">
+                                    <table width="100%" border="0"  cellspacing="5" cellpadding="5" class="list">
+                                        <tr class="headerRow">
+                                            <td class="headerRow" width="160"> Contact </td>
+                                            <td class="headerRow">
+                                                <apex:actionRegion >
+                                                    <apex:selectList value="{!selContact}" size="1">
+                                                        <apex:actionSupport action="{!fetchContact}" event="onchange" reRender="conPan"  status="pageStatus"/>
+                                                        <apex:selectOptions value="{!lstContact}"></apex:selectOptions>
+                                                    </apex:selectList>
+                                                </apex:actionRegion>
+                                                <!--<div id="divJ">
+                                                </div>-->
+                                            </td>
+                                            <td class="headerRow" width="160"> Warranty Disposition: </td>
+                                            <td class="headerRow" width="160"> <apex:inputField value="{!tObj.Warranty_Disposition__c}"/></td>
+                                            <td class="headerRow" width="160"> Max Repair Cost: </td>
+                                            <td class="headerRow" width="160"> <apex:inputField value="{!tObj.Max_Repair_Cost__c}"/></td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                            <td class="headerRow" width="160"> First Name </td>
+                                            <td class="headerRow" width="160"> <apex:inputText value="{!con.firstname}" /> </td>
+                                            <td class="headerRow" width="160"> Non Warranty Disposition: </td>
+                                            <td class="headerRow" width="160"> <apex:inputField value="{!tObj.Non_Warranty_Disposition__c}"/></td>
+                                            <td class="headerRow" width="160"> Return Material Need By Date: </td>
+                                            <td class="headerRow" width="160"> <apex:inputField value="{!tObj.Return_Material_Need_By__c}"/></td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                            <td class="headerRow" width="160"> Last Name </td>
+                                            <td class="headerRow" width="160"> <apex:inputText value="{!con.lastname}" /> </td>
+                                            <td class="headerRow" width="160"> Repair / Return PO#</td>
+                                            <td class="headerRow" width="160"> <apex:inputField value="{!tObj.Item_Return_PO__c}"/></td>
+                                            <td class="headerRow" width="160"> Customer Internal Case/RA:</td>
+                                            <td class="headerRow" width="160"> <apex:inputField value="{!tObj.Customer_Internal_Case_RA_No__c}"/></td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                            <td class="headerRow" width="160"> Email Address </td>
+                                            <td class="headerRow" width="160"> <apex:inputText value="{!con.email}" size="20"/> </td>
+                                            <td class="headerRow" width="160"> Return Carrier:</td>
+                                            <td class="headerRow" width="160"> <apex:inputField value="{!tObj.Shipping_Carrier_Name__c}"/></td>
+                                            <td class="headerRow" width="160"> Customer Part Number: </td>
+                                            <td class="headerRow" width="160"> <apex:inputField value="{!tObj.Customer_Part_Number__c}"/></td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                            <td class="headerRow" width="160"> Phone </td>
+                                            <td class="headerRow" width="160"> <apex:inputText value="{!con.phone}"/> </td>
+                                            <td class="headerRow" width="160"> Return Carrier Account: </td>
+                                            <td class="headerRow" width="160"> <apex:inputField value="{!tObj.Carrier_Account__c}"/></td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                            <td class="headerRow"> Fax </td>
+                                            <td class="headerRow"> <apex:inputText value="{!con.fax}"/> </td>
+                                        </tr>
+                                        <tr class="headerRow">
+                                        <td class="headerRow"> Job Title </td>
+                                        <td class="headerRow"> <apex:inputText value="{!con.title}"/> </td>
+                                    </tr>
+                                    </table>
+                                </apex:outputPanel>    
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:pageBlock>
+                    <br/>
+                    
+                    <apex:pageBlock id="pb">
+                        <apex:outputPanel rendered="{!if(modelList.size !=0 ,true, false)}">
+                            <table width="100%" class="list">
+                                <apex:variable value="{!1}" var="ct"/>
+                                <apex:repeat value="{!mapPagingRecordkyes}" var="ls">
+                                    <apex:outputPanel rendered="{!!isPaperCredit}">
+                                        <tr class="headerRow">
+                                            <td  colspan="3"> Customer Name : &nbsp;&nbsp;&nbsp;&nbsp; <apex:outputField value="{!mapCompany[ls].AccountId__c}"/>  </td>
+                                            <td colspan="3">Customer Return requirements : </td>
+                                            <td colspan="13"><apex:inputTextarea rows="2" cols="150" value="{!mapCompany[ls].AccountId__r.Return_requirements__c}"/></td>
+                                        </tr>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!isPaperCredit}">
+                                        <tr class="headerRow">
+                                            <td colspan="20"> Customer Name : &nbsp;&nbsp;&nbsp;&nbsp; <apex:outputField value="{!mapCompany[ls].AccountId__c}"/>  </td>
+                                        </tr>
+                                    </apex:outputPanel>
+                                    <tr class="headerRow">
+                                         <th class="headerRow">&nbsp;</th> 
+                                         <!-- <th class="headerRow">Company Name</th>  -->
+                                         <th class="headerRow">Business Unit </th> 
+                                         <th class="headerRow">Order Type </th> 
+                                         <th class="headerRow">Order Number </th> 
+                                         <th class="headerRow">Invoice Number </th> 
+                                         <th class="headerRow">Line Number </th> 
+                                         <th class="headerRow">Cust PO </th> 
+                                         <th class="headerRow">GEMS PN</th> 
+                                         <th class="headerRow">Quantity Shipped </th> 
+                                         <apex:outputPanel rendered="{!!isPaperCredit}"> <th class="headerRow">Quantity Returned </th> </apex:outputPanel>
+                                         <th class="headerRow">Unit Price </th> 
+                                         <th class="headerRow">Credit Per Unit</th> 
+                                         <th class="headerRow">Quantity </th> 
+                                         <apex:outputPanel rendered="{!!isPaperCredit}"> <th class="headerRow"> Media </th> </apex:outputPanel>
+                                         <apex:outputPanel rendered="{!!isPaperCredit}"><th class="headerRow">Customers Eval Expectation</th></apex:outputPanel>
+                                         <apex:outputPanel rendered="{!!isPaperCredit}"><th class="headerRow">Gems to provide</th></apex:outputPanel>
+                                         <apex:outputPanel rendered="{!isPaperCredit}"> <th class="headerRow">Credit Type </th> </apex:outputPanel>
+                                         <apex:outputPanel rendered="{!isPaperCredit}"> <th class="headerRow">Functional Area  </th> </apex:outputPanel>
+                                         <apex:outputPanel rendered="{!isPaperCredit}"> <th class="headerRow">Reason Code  </th> </apex:outputPanel>
+                                         <apex:outputPanel rendered="true"> <th class="headerRow"> Credit Status  </th> </apex:outputPanel>
+                                         
+                                         <th class="headerRow">Ship Date  </th>  
+                                         <th class="headerRow">Upload Image</th>
+                                    </tr>
+                                    
+                                    <apex:repeat value="{!tempModelList1[ls]}" var="mps">                             
+                                        <tr class="dataRow rarowsclass" >
+                                            <td class="dataRow"><apex:inputCheckbox value="{!mps.flg}"/></td> 
+                                            <!-- <td class="dataRow"><apex:outputField value="{!mps.orderObj.CompanyName__c}"/></td> -->
+                                            <td class="dataRow"><apex:outputText value="GEMS_NA (00015)" rendered="{!if(mps.orderObj.BUID__c == '00015',true,false)}"/><apex:outputText value="GEMS_EU (00018)" rendered="{!if(mps.orderObj.BUID__c == '00018',true,false)}"/></td>
+                                            <td class="dataRow"><apex:outputField value="{!mps.orderObj.OrderType__c}"/></td> 
+                                            <td class="dataRow"><apex:outputField value="{!mps.orderObj.OrderNumber__c}"/> </td>  
+                                            <td class="dataRow"><apex:outputField value="{!mps.orderObj.InvoiceNumber__c}"/></td>  
+                                            <td class="dataRow"><apex:outputField value="{!mps.orderObj.Line__c}"/></td>  
+                                            <td class="dataRow"><apex:outputField value="{!mps.orderObj.PONumber__c}"/></td>  
+                                            <td class="dataRow"><apex:outputField value="{!mps.orderObj.Productid__c}"/></td>   
+                                            <td class="dataRow"><apex:outputField value="{!mps.orderObj.QuantityShipped__c}"/></td>  
+                                            <apex:outputPanel rendered="{!!isPaperCredit}"> <td class="dataRow"><apex:outputField value="{!mps.orderObj.Quantity_Returned__c}" /></td> </apex:outputPanel>
+                                            <td class="dataRow"><apex:outputField value="{!mps.orderObj.UnitPrice__c}"/> </td>
+                                            <td class="dataRow"><apex:inputText value="{!mps.creditlimit}" size="4"/></td>  
+                                            <td class="dataRow"><apex:inputText value="{!mps.qtyRet}" size="3"/></td>
+                                            <apex:outputPanel rendered="{!!isPaperCredit}"> <td class="dataRow"><apex:inputText value="{!mps.media}" size="7" /></td> </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!!isPaperCredit}"> <td class="dataRow"><apex:inputField value="{!mps.tempCaseDetail.Customers_Eval_Expectation__c}"/></td></apex:outputPanel>
+                                            <apex:outputPanel rendered="{!!isPaperCredit}"> <td class="dataRow"><apex:inputField value="{!mps.tempCaseDetail.Gems_to_provide__c}"/></td></apex:outputPanel>                
+                                            <apex:outputPanel rendered="{!isPaperCredit}"> <td class="dataRow"> <apex:selectList value="{!mps.creditType}" size="1"> <apex:selectOptions value="{!creditTypeSelectList}"></apex:selectOptions></apex:selectList><!-- <apex:inputField value="{!mps.tempCaseDetailObj.Credit_Type__c}"/> --> </td> </apex:outputPanel>   
+                                            <apex:outputPanel rendered="{!isPaperCredit}"> <td class="dataRow"> <apex:inputField value="{!mps.tempCaseDetail.Primary_Reason__c}"/></td> </apex:outputPanel>  
+                                            <apex:outputPanel rendered="{!isPaperCredit}"> <td class="dataRow"> <apex:inputField value="{!mps.tempCaseDetail.Reason_Code__c}"/></td> </apex:outputPanel>  
+                                            <apex:actionRegion >
+                                                <apex:outputPanel rendered="true"> <td class="dataRow" align="center" ><span class="raclass" data-value="{!mps.RAStatus}"> {!if(mps.RAStatus == 'No', 'No', '')}
+                                                    <apex:commandLink value="{!if(mps.RAStatus == 'Yes', 'Yes', '')}" rendered="{!if(mps.RAStatus == 'Yes',true, false)}" action="{!caseDetailsObject}" oncomplete="openRABox('open');" rerender="pbRA" >
+                                                        <apex:param name="indexOfTableRow" value="{!mps.idx}" assignTo="{!selRecord}"/>
+                                                    </apex:commandLink> &nbsp; </span></td> 
+                                                </apex:outputPanel> 
+                                            </apex:actionRegion>
+                                            <td class="dataRow"><apex:outputField value="{!mps.orderObj.shipDate__c}"/></td> 
+                                            <td style="background-color:#f2f3f3;">
+                                                <apex:inputFile value="{!mps.attachment.Body}" fileName="{!mps.attachment.name}" contentType="{!mps.attachment.contentType}"></apex:inputFile>
+                                            </td>
+                                            <!-- <td class="dataRow" align="center">{!if(mps.RAStatus =='Yes',<a href="">Yes</a> , 'No')}</td> -->                           
+                                        </tr> 
+                                </apex:repeat>
+                                <apex:variable value="{!ct+1}" var="ct"/>
+                                </apex:repeat>
+                            </table>
+                            <br/>
+                            <br/>
+                            <apex:inputCheckbox value="{!isSpecialReturn}"/> &nbsp;&nbsp; Special Return Type <br/> <br/>
+                            Reason for Return <br/>
+                            <apex:inputTextarea rows="3" cols="150" value="{!tObj.Description}"/> <br/>
+                            <br/> Internal Comment <br/>
+                            <apex:inputTextarea rows="3" cols="150" value="{!internalcomment}"/>
+                            <br/><br/>
+                            
+                            <table width="100%" border="0"  cellspacing="5" cellpadding="5" class="list"> 
+                                <tr>Attachments</tr>
+                                <tr class="headerRow">
+                                    <apex:repeat value="{!atchList}" var="attachFirst">
+                                        <td class="headerRow"> 
+                                             Upload Image :&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <apex:inputFile value="{!attachFirst.Body}" fileName="{!attachFirst.name}" contentType="{!attachFirst.contentType}"></apex:inputFile> 
+                                        </td>
+                                    </apex:repeat>
+                                </tr>
+                            </table>
+                            
+                            <br/><br/><hr/>
+                            Showing Page &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {!pageNumber} of &nbsp;&nbsp;&nbsp;&nbsp; {!totalPages}  &nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandLink value="First" action="{!first}" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandLink value="Previous" action="{!previous}" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandLink value="Next" action="{!PNext}" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandLink value="Last" action="{!last}" />
+                            <br/><hr/>
+                            
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel rendered="{!if(modelList.size == 0,true , false)}">
+                            <apex:outputLabel style="text-align:center;color:red;font-size:180%;font-weight:700;" value="No Record found for this criteria......!!!!!"></apex:outputLabel>
+                        </apex:outputPanel>
+                        
+                    </apex:pageBlock>
+                    <br/>
+                    <div id="actionBtnDiv"> 
+                        <table align="center">
+                            <tr>
+                                <td><apex:commandButton value="Approve" action="{!addCaseDetail}" status="pageStatus"/></td>
+                                <td><apex:commandButton disabled="False" value="Approve and Send Email" action="{!approveAndSendEmail}" status="pageStatus" rendered="{!if(isValidUser == true && isPaperCredit == false ,true,false)}" /></td>
+
+                                <td><apex:commandButton value="Cancel" action="{!cancelAction}" status="pageStatus"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </apex:outputPanel>
+                
+                <div id="divBox" style="background-color:silver;">
+                    <apex:pageBlock >
+                        Case Comment : <br/>
+                        <apex:inputTextarea cols="100" rows="5" value="{!caseCommentBody}"/> <br/> <br/>
+                        <apex:commandButton value="Add Case Comment" action="{!addCaseComment}"/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <apex:commandButton value="Close" onclick="openBox('close');return false;"/>
+                    </apex:pageBlock>            
+                </div>
+                
+                
+                <div id="divRABox" style="background-color:silver;">
+                    <apex:pageBlock id="pbRA">
+                        <apex:pageBlockTable value="{!lstCaseDetail}" var="cd" id="pbtRA">
+                            <apex:column headerValue="Name">
+                                <a href="/{!cd.id}" target="_blank">{!cd.name}</a>
+                            </apex:column>
+                            <apex:column value="{!cd.Case__r.Type}"/>
+                            <!--<apex:column headerValue="Customer Name">
+                                <apex:outputField value="{!cd.Order_Shipment__r.Accountid__c}"/>                        
+                            </apex:column>
+                            <apex:column headerValue="Product">
+                                <apex:outputField value="{!cd.Order_Shipment__r.Productid__c}"/>                        
+                            </apex:column> --> 
+                            <apex:column value="{!cd.Quantity__c}"/>
+                            <apex:column value="{!cd.Credit_per_unit__c}"/>
+                            <apex:column headerValue="Order & Shipment">
+                                <a href="/{!cd.Order_Shipment__c}" target="_blank">{!cd.name}</a>
+                            </apex:column>
+                            <apex:column value="{!cd.Stage__c}"/>
+                            <apex:column headerValue="Create Date">
+                                <apex:outputField value="{!cd.createdDate}"/>                        
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlock>            
+                </div>
+        </apex:form>
+    </div>
+    <script>
+        
+        $(document).ready(function(){
+            $(".raclass").each(function(){
+                if($(this).attr("data-value") == "Yes"){
+                    $(this).parent().parent().css("background", "yellow");
+                }
+            });
+        });
+        
+    </script>
+     
+</apex:page>

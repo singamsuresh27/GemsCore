@@ -1,0 +1,168 @@
+<apex:page controller="ViewAllTaskController" sidebar="false" tabStyle="Task"> 
+    <script src="{!URLFOR($Resource.oppjsonmaster,'jsonmaster/jquery-1.10.1.js')}"></script>
+    <apex:sectionHeader title="Sales Deliverables" subtitle="{!oppName}"/>
+    <script>
+        window.onload = function(){
+            $('input[type=text]').blur();
+            
+          
+        };
+        function jDelAtch(atid){
+            actDelAtch(atid);
+        }
+    </script>
+    <apex:form id="frm">
+    <apex:actionFunction name="actDelAtch" action="{!settingAttachmentId}" oncomplete="actDelAtch1();" rendered="frm">
+        <apex:param id="p1" name="p1" assignTo="{!selectedAtch}" value=""/>
+    </apex:actionFunction>
+    <apex:actionFunction name="actDelAtch1" action="{!deleteAttachment}"/>
+    
+    <apex:pageBlock rendered="{!!isEditMode}">
+        <apex:pageBlockButtons >
+            <apex:commandButton value="Edit"  action="{!editTask}"/>
+        </apex:pageBlockButtons>
+    
+    <apex:outputPanel id="outPan">
+    
+    <apex:repeat value="{!modelList}" var="m">
+        <!-- <apex:pageBlock rendered="{!!isEditMode}"> -->
+            <apex:outputPanel >
+                <div style="border:2px solid ghostwhite;padding:10px;">
+                <table width="100%" class="list" cellpadding="5">
+                    <tr class="dataRow">
+                        <td width="100px" class="headerRow"> Subject Description </td>
+                        <td colspan="3" class="dataCell"> <apex:outputField value="{!m.taskObj.Subject_Description__c}"/> </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td width="100px" class="headerRow"> Subject </td>
+                        <td width="150px" class="dataCell"> <apex:outputField value="{!m.taskObj.Subject}"/> </td>
+                        <td width="150px" class="headerRow"> Assign To</td>
+                        <td width="150px" class="dataCell"> <apex:outputField value="{!m.taskObj.OwnerId}"/> </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td width="100px" class="headerRow"> Status </td>
+                        <td width="150px" class="dataCell"> 
+                            <apex:outputField value="{!m.taskObj.Status}" rendered="{!if(m.idx != editTaskIndex,true,false)}"/> 
+                            <apex:inputField value="{!m.taskObj.Status}" rendered="{!if(and(m.idx == editTaskIndex,m.taskObj.Status == 'In Progress'),true,false)}"/>
+                        </td>
+                        <td width="150px" class="headerRow"> Due Date </td>
+                        <td width="150px" class="dataCell"> 
+                            <apex:outputField value="{!m.taskObj.ActivityDate}" rendered="{!if(m.idx != editTaskIndex,true,false)}"/> 
+                            <apex:inputField value="{!m.taskObj.ActivityDate}" rendered="{!if(m.idx == editTaskIndex,true,false)}"/>
+                        </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td width="100px" class="headerRow"> Body </td>
+                        <td colspan="3" class="dataCell"> 
+                            <apex:outputField value="{!m.taskCommentObj.Body__c}" rendered="{!if(m.idx != editTaskIndex,true,false)}"/>
+                            <apex:inputTextarea value="{!m.taskCommentObj.Body__c}" rendered="{!if(m.idx == editTaskIndex,true,false)}" />
+                        </td>
+                        
+                    </tr>
+                </table>
+                
+                <br/>
+                
+                <apex:pageBlockSection title="Attachment(s)" collapsible="false" columns="1"> 
+                    <apex:outputPanel >
+                    <table width="100%" class="list">
+                        <tr class="headerRow">
+                            <td class="headerRow"> Action </td>
+                            <td class="headerRow"> View </td>
+                            <td class="headerRow"> Title </td>
+                            <td class="headerRow"> Description </td>
+                            <td class="headerRow"> Created By/Date </td>
+                            <td class="headerRow"> Modified By/Date </td>                            
+                        </tr>
+                        <apex:repeat value="{!m.taskObj.Attachments}" var="tat">
+                            <tr class="dataRow">
+                                <td class="dataCell" > <a href="/{!tat.id}/e?retURL=/apex/ViewAllTaskPage?id={!oppId}" > Edit </a>  <apex:commandLink value="Del" onclick="jDelAtch('{!tat.Id}');return false;" rendered="false"/>  </td>
+                                <td class="dataCell" > <a href="/servlet/servlet.FileDownload?file={!tat.Id}" target="_blank"> View File </a> </td>
+                                <td class="dataCell"> {!tat.Name} </td>
+                                <td class="dataCell"> {!tat.Description} </td>
+                                <td class="dataCell"> {!tat.CreatedBy.Name} &nbsp; <apex:outputField value="{!tat.CreatedDate}"/>  </td>
+                                <td class="dataCell"> {!tat.LastModifiedBy.Name} &nbsp; <apex:outputField value="{!tat.LastModifiedDate}"/></td>
+                            </tr>                        
+                        </apex:repeat>
+                    </table>
+                    
+                    </apex:outputPanel>
+                </apex:pageBlockSection>
+                </div>
+        </apex:outputPanel>
+        <br/><br/>
+    </apex:repeat>
+    </apex:outputPanel>
+    </apex:pageBlock>
+    
+    <apex:pageBlock rendered="{!isEditMode}">
+        <apex:pageBlockButtons >
+            <apex:commandButton value="Save" action="{!saveTask}" />
+            <apex:commandButton value="Cancel" action="{!cancelEdit}"/>
+        </apex:pageBlockButtons>
+    
+    <apex:outputPanel id="outPan">
+    
+    <apex:repeat value="{!modelList}" var="m">
+            <apex:outputPanel >
+                <div style="border:2px solid ghostwhite;padding:10px;">
+                <table width="100%" class="list" cellpadding="5">
+                    <tr class="dataRow">
+                        <td width="100px" class="headerRow"> Subject Description </td>
+                        <td colspan="3" class="dataCell"> <apex:outputField value="{!m.taskObj.Subject_Description__c}"/> </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td width="100px" class="headerRow"> Subject </td>
+                        <td width="150px" class="dataCell"> <apex:outputField value="{!m.taskObj.Subject}"/> </td>
+                        <td width="150px" class="headerRow"> Assign To</td>
+                        <td width="150px" class="dataCell"> <apex:inputField value="{!m.taskObj.OwnerId}"/> </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td width="100px" class="headerRow"> Status </td>
+                        <td width="150px" class="dataCell"> 
+                            <apex:outputField value="{!m.taskObj.Status}" rendered="{!if(m.taskObj.Status != 'In Progress',true,false)}" />
+                            <apex:selectList value="{!m.selStatus}" size="1" rendered="{!if(m.taskObj.Status == 'In Progress',true,false)}">
+                                <apex:selectOption itemValue="{!m.selStatus}" itemLabel="{!m.selStatus}"></apex:selectOption>
+                                <apex:selectOption itemValue="Completed" itemLabel="Completed"></apex:selectOption>
+                            </apex:selectList>
+                        </td>
+                        <td width="150px" class="headerRow"> Due Date </td>
+                        <td width="150px" class="dataCell">  
+                            <apex:inputField value="{!m.taskObj.ActivityDate}" />
+                        </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td width="100px" class="headerRow"> Body </td>
+                        <td colspan="3" class="dataCell"> 
+                            <apex:inputField value="{!m.taskCommentObj.Body__c}"  />
+                        </td>                        
+                    </tr>
+                </table>
+                
+                <br/>
+                
+                <apex:pageBlockSection title="Attachment(s)" collapsible="false" columns="1"> 
+                    <apex:outputPanel >
+                    <table width="100%" class="list">
+                        <tr class="headerRow">
+                            <td class="headerRow"> Select File </td>
+                            <td class="headerRow"> Description </td>                           
+                        </tr>
+                        <apex:repeat value="{!m.atchList}" var="atl">
+                            <tr class="dataRow">                                
+                                <td class="dataCell" > <apex:inputFile value="{!atl.body}" fileName="{!atl.Name}"/> </td> 
+                                <td class="dataCell" > <apex:inputTextarea value="{!atl.Description}" rows="2" cols="100"/> </td>
+                            </tr>                        
+                        </apex:repeat>  
+                    </table>
+                    
+                    </apex:outputPanel>
+                </apex:pageBlockSection>
+                </div>
+        </apex:outputPanel>
+        <br/><br/>
+    </apex:repeat>
+    </apex:outputPanel>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

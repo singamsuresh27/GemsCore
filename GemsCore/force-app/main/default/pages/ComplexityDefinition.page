@@ -1,0 +1,45 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false"  standardController="CBO__c">
+<html>
+    <head>
+            <style type="text/css">         
+                .text1
+                {
+                    font-size: 10px;
+                    font-family: verdana, Arial, Helvetica;
+                }
+                .text2
+                {
+                    font-size: 12px;
+                    font-family: verdana, Arial, Helvetica;
+                }
+                .text3
+                {
+                    font-size: 12px;
+                    font-family: verdana, Arial, Helvetica;
+                    color:blue;
+
+                }               
+                .text4
+                {
+                    font-size: 16px;
+                    font-family: verdana, Arial, Helvetica;
+                }                               
+            </style>
+    </head>             
+        <table>
+            <tr>
+                <td class="text3"><b><u>Complexity Definition :</u></b></td>
+            </tr>
+            <tr>    
+                <td class="text2"><b>T1:</b> Trial balloon not required, able to provide final quote to customer. Move to ECO.</td>
+            </tr>
+            <tr>                
+                <td class="text2"><b>T2:</b> Trial balloon not required, cost needs to be finalized to provide final quote, some development may be required. Provide budgetary quote to customer.</td>
+            </tr>
+            <tr>
+                <td class="text2"><b>T3:</b> Trial balloon required, need to determine if product is feasible. Create action plan and communicate to customer.</td>
+            </tr>
+        </table>
+</html>
+
+</apex:page>

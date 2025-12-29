@@ -1,0 +1,275 @@
+<apex:page sidebar="false" controller="CaseWithAttachmentController" showheader="false" title="RA Request-Web Page" id="pg">
+    <apex:includeScript value="https://code.jquery.com/jquery-latest.min.js"/>
+    
+    <script>
+       $(document).ready(function(){
+            
+            $("[name*='wstatus']").click(function(){
+                $("#pg\\:frm\\:wHidden").val($(this).attr("data-value"));
+            });
+        });
+        
+        function unchackOtherCheckbox(x,y,g,divId,z){
+            
+            if(divId == 'warrantyDiv'){
+                 $(x).prop('checked', false);
+                 $(y).prop('checked', false);
+                 $(g).prop('checked', false);
+            }else{
+                $(x).prop('checked', false);
+                $(y).prop('checked', false);
+                $(g).prop('checked', false);
+            }
+        }
+    </script>
+    <apex:form id="frm">
+        <apex:pageMessages ></apex:pageMessages>
+        <div style="background-color:white;margin:10px 20px 0px 25px; width:950px;;">
+          <apex:outputPanel rendered="{!isSubmiting}" > 
+            <div align="center" style="text-align:center;font-size:240%;font-weight:normal;color:#9B2A2D; width=700px;"> <h1> Request for Return Material Authorization </h1> </div> <br/>
+            <table id="tab1" align="center" width="950" cellpadding="3" cellspacing="3" style="padding-left:5px;border: 2px solid black;border-bottom:0px;">
+                <tr>
+                    <td width="150"> Company Name </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.SuppliedCompany}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel></td>
+                    <td width="150"> Quantity Returning </td>
+                    <td width="100"> <apex:inputText value="{!quantity}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel></td>
+                </tr>
+                <tr>
+                    <td width="150"> Address </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.Address__c}"/> </td>
+                    <td width="150"> Gems Part Number </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.Product_Number__c}"/>  <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel> </td>
+                </tr>
+                <tr>
+                    <td width="150"> City/St/Zip </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.City_St_Zip__c}"/> </td>
+                    <td width="150"> Original Purchase Order # </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.PO_No__c}"/>  <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel> </td>
+                </tr>
+                <tr>
+                    <td width="150"> Primary Contact (first and last name) </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.SuppliedName}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel> </td>
+                    <td width="150"> Media / Chemical Exposure</td>
+                    <td width="100"> <apex:inputText value="{!caseObj.Media__c}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel>  </td>
+                </tr>
+                <tr>
+                    <td width="150"> Email Address </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.SuppliedEmail}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel> </td>
+                    <td width="150"> Gems Sales Order Number </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.Gems_SO_Number__c}"/> </td>
+                </tr>
+                <tr>
+                    <td width="150"> Phone Number </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.SuppliedPhone}"/> <apex:outputLabel value="*" style="color:red;font-size:14pt;"> </apex:outputLabel></td>
+                    <td width="150"> Customer Part number </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.Customer_Part_Number__c}"/> </td>
+                </tr>
+                <tr>
+                    <td width="150"> Fax </td>
+                    <td width="100"> <!-- <apex:inputText value="{!caseObj.ContactFax}"/> --> <input type="text" /></td>
+                    <td width="150"> Customer Internal Case/RA # </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.Customer_Internal_Case_RA_No__c}"/> </td>
+                </tr>
+                <tr>
+                    <td width="150"> Gems Invoice Number </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.Gems_Invoice_Number__c}"/>  </td>
+                    <td width="150"> Date Code </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.Date_Code__c}"/> </td>
+                </tr>
+               <tr>
+                    <td width="150"></td>
+                    <td width="100"></td>
+                    <td width="150"> Serial Number </td>
+                    <td width="100"> <apex:inputText value="{!caseObj.Serial_Number__c}"/>  </td>
+                </tr>
+                <tr>
+                    <td colspan="4"> Reason for Return <apex:outputLabel value="*" style="color:red;font-size:14pt;margin-left: -4px;"> </apex:outputLabel><br/>
+                        <apex:inputTextarea cols="100" rows="4" value="{!caseObj.Description}"/> 
+                    </td>
+                </tr>
+            </table>
+            <!--<apex:outputPanel id="WStatusTab" rendered="false">
+                <table id="tab" align="center" width="1000" cellpadding="5" cellspacing="5" style="border:2px solid black;">
+                    <tr>
+                        <td colspan="{!(wStatusList.size)*2}" align="center"><apex:outputLabel style="font-weight:700;"  value="Please Check All That Apply"></apex:outputLabel></td>
+                    </tr>
+                    <tr> 
+                        <apex:repeat value="{!wStatusList}" var="ws">
+                            <td> <input type="radio" name="wstatus" data-value="{!ws}"/> </td>
+                            <td> {!ws}</td>
+                        </apex:repeat> 
+                        <apex:inputHidden id="wHidden" value="{!tempStatus}"/>                   
+                    </tr>  
+                </table>
+            </apex:outputPanel>-->
+            <div style="border: 2px solid black;border-bottom:0px;border-top:0px;height:320px;background-color:white;">
+                    <div style="padding-left:10px;padding-top:3px;"><apex:outputLabel style="font-weight:700;"  value="Requested Disposition"/> <apex:outputLabel style="color:red;font-size:14pt;margin-left: -4px;"  value="*"/></div>
+                    <div style="height:65%;">
+                        <div style="float:left;padding-right:50px;height:100%;">
+                            <div style="padding:10px;"><apex:outputLabel style="font-weight:500;"  value="If deemed Warranty"/></div>
+                            <div style="padding-left:30px;">
+                                <table style="align-content: left;" id="warrantyDiv">
+                                    <tr>
+                                        <td><apex:inputCheckbox value="{!warFirstVal}" id="firstWar" onclick="unchackOtherCheckbox('[id*=secondWar]','[id*=thirdWar]','[id*=fourthWar]','warrantyDiv','Repair and return');"/></td>
+                                        <td><apex:outputLabel value="Repair and return"/></td>
+                                    </tr>
+                                    <tr><td></td></tr>
+                                    <tr><td></td></tr>
+                                    <tr>
+                                        <td><apex:inputCheckbox value="{!warSecondVal}" id="secondWar" onclick="unchackOtherCheckbox('[id*=thirdWar]','[id*=firstWar]','[id*=fourthWar]','warrantyDiv','Issue credit/scrap');"/></td>
+                                        <td><apex:outputLabel value="Issue credit/scrap"/><apex:outputLabel value="*" style="font-size:14pt;margin-left: -4px;"> </apex:outputLabel></td>
+                                    </tr>
+                                    <tr><td></td></tr>
+                                    <tr><td></td></tr>
+                                    <tr>
+                                        <td><apex:inputCheckbox value="{!warThirdVal}" id="thirdWar" onclick="unchackOtherCheckbox('[id*=firstWar]','[id*=secondWar]','[id*=fourthWar]','warrantyDiv','Return for credit');"/></td>
+                                        <td><apex:outputLabel value="Return for credit"/><apex:outputLabel value="**" style="font-size:14pt;margin-left: -4px;"> </apex:outputLabel></td>
+                                    </tr>
+                                    <tr><td></td></tr>
+                                    <tr><td></td></tr>
+                                    <tr>
+                                        <td><apex:inputCheckbox value="{!warFourthVal}" id="fourthWar" onclick="unchackOtherCheckbox('[id*=firstWar]','[id*=secondWar]','[id*=thirdWar]','warrantyDiv','Short Shipment');"/></td>
+                                        <td><apex:outputLabel value="Short Shipment"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="padding:10px;"><apex:outputLabel style="font-weight:500;"  value="* may not be available for all items."/></div>              
+                            <div style="padding:10px;"><apex:outputLabel style="font-weight:500;"  value="** not available for all products.  Fees may apply."/></div>
+                        </div>
+                        <div style="width;50%;float:left;height:100%;">
+                            <div style="padding:10px;"><apex:outputLabel style="font-weight:500;"  value="If deemed Non-Warranty"/></div>
+                            <div style="padding-left:20px;">
+                                <table style="align-content: left;" id="nonWarrantyDiv">
+                                    <tr>
+                                        <td><apex:inputCheckbox value="{!nonWarFirstVal}"  id="firstNonWar" onclick="unchackOtherCheckbox('[id*=thirdNonWar]','[id*=secondNonWar]','nonWarrantyDiv','Scrap');"/></td>
+                                        <td><apex:outputLabel value="Scrap"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><apex:inputCheckbox value="{!nonWarSecondVal}" id="secondNonWar" onclick="unchackOtherCheckbox('[id*=thirdNonWar]','[id*=firstNonWar]','nonWarrantyDiv','Repair');"/></td>
+                                        <td><apex:outputLabel value="Repair (if possible/economically feasible)"/></td>
+                                    </tr>   
+                                    <tr>
+                                        <td></td>
+                                        <td><div style="padding-left:20px;">
+                                                <table style="align-content: left;">
+                                                    <tr>
+                                                        <td>Repair PO#</td>
+                                                        <td> <apex:inputfield value="{!caseObj.Item_Return_PO__c}"/> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Max Repair Cost</td>
+                                                        <td> <apex:inputfield value="{!caseObj.Max_Repair_Cost__c}"/> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Return Carrier</td>
+                                                        <td> <apex:inputText value="{!returnCW}"/> </td>
+                                                        <td>Account#</td>
+                                                        <td> <apex:inputText value="{!AccCW}"/> </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><apex:inputCheckbox value="{!nonWarThirdVal}" id="thirdNonWar" onclick="unchackOtherCheckbox('[id*=secondNonWar]','[id*=firstNonWar]','nonWarrantyDiv','Return as is');"/></td>
+                                        <td><apex:outputLabel value="Return (as is)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td><div style="padding-left:20px;">
+                                                <table style="align-content: left;">
+                                                    <tr>
+                                                        <td>Return Carrier</td>
+                                                        <td style="padding-left:13px;"> <apex:inputText value="{!returnNCW}"/> </td>
+                                                        <td>Account#</td>
+                                                        <td> <apex:inputText value="{!AccNCW}"/> </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding-left:10px;padding-top:5px;">
+                        <apex:outputLabel value="Customer Comments"/><br/>
+                        <apex:inputTextarea cols="100" rows="4" value="{!caseObj.Special_Instructions__c}"/>
+                    </div>
+                </div>
+                 <!-- <table border="1" align="center" width="800" cellpadding="5" cellspacing="5" style="border: 1px none #000;background-color: #E2E2E2;" >  
+                    <tr>
+                        <td>
+                            <apex:outputLabel style="font-weight:700;" value="All returns must clearly identify the Return Material Authorization number on the outside of the package. Gems will refuse any return of items that do not meet the above-mentioned requirements. Gems is not responsible for lost or damaged parcels"></apex:outputLabel>
+                        </td>
+                    </tr>
+                </table>   -->  
+            <apex:inputHidden value="{!caseObj.Type}"/>
+        </apex:outputPanel>
+        </div>
+        <apex:outputPanel rendered="{!!isSubmiting}" style="margin:160px 10px 0px 10px;width:900px;align-content:center;">
+            <div align="center" style="margin:160px 10px 0px 10px;text-align:left;font-size:190%;font-family:serif;font-weight:normal;color:#9B2A2D; width:900px;border: 2px solid #DC143C; border-radius: 25px;box-shadow: 10px 10px 5px #888888;padding:10px; align: Center"><p align="center"><u>RMA# {!caseObj.CaseNumber}</u></p><br/>{!finalMsg}
+            <br/><br/>Thank you,<br/> Gems Return Team.<br/>
+            <br/>
+            <center> <apex:commandLink value="Back" action="{!startupAction}"/> <br/>
+            <!--<apex:commandLink value="Open Case Record" action="{!openCaseRecord}"/> -->
+             </center>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!isSubmiting}" > 
+            <div style="background-color:white;margin:0px 20px 0px 25px; width:946px;height:80px;border: 2px solid black;border-top:0px;">
+                <div style="padding-left:10px;padding-bottom:10px;"><apex:outputLabel style="font-weight:700;"  value="Please attach all DMR, pictures and document to support your case:"/></div>
+                <div>
+                    <apex:variable var="n" value="{!1}"/>
+                    <apex:repeat value="{!atchList}" var="atch">
+                            <div style="float:left;padding-right:{!if(n!=3,'100px','0px')};padding-left:{!if(n==1,'10px','0px')}"> 
+                                <apex:inputFile value="{!atch.Body}" fileName="{!atch.name}" contentType="{!atch.contentType}"></apex:inputFile>  <apex:outputPanel rendered="{!if(n==atchList.size,true,false)}"></apex:outputPanel>
+                                <apex:variable var="n" value="{!n+1}"/>   
+                            </div>                       
+                    </apex:repeat>                                            
+                </div>
+            </div>
+            <br/>
+            <div style="background-color:white;margin:0px 20px 0px 25px; width:946px;height:315px;">
+                <div style="padding-top:15px;padding-left:10px;">
+                    <apex:inputCheckbox id="termAndCondition" value="{!checkTermsAndCondtion}" style="float:left;"/><span style="font-size: 16px;padding-left:5px;float:left;"><b>I accept all Service Terms below:</b></span>
+                </div> <br/>
+                <ol>
+                   <!--<li class="lineClass">Gems will be able to contact you by phone or email. You may unsubscribe from communications at any time. For more information on how to unsubscribe, our privacy practices, and how we are committed to protecting and respecting your privacy, please review our Privacy Policy <a href="https://www.gemssensors.com/customersupport/privacy" target="_blank"><b>HERE</b></a>.</li>-->
+                    <li class="lineClass">Only new and unused goods are eligible for return for credit within three (3) months from date of shipment, at GEMS’ sole discretion.  Custom configured goods are built to Purchaser’s specification and, therefore, may not be returned for credit.  Before any goods are accepted by GEMS, GEMS will inspect the goods to ensure they are new and unused and in proper working order and are acceptable for return for credit.</li> 
+                    <li class="lineClass">Any goods that are returned for Service or Calibration will need to be returned to GEMS with a fully completed Service and Calibration return form.  These are available on our website www.gemssensors.com.  By completing the Service and Calibration return form, Purchaser is accepting all terms and conditions contained in these terms.</li> 
+                    <li class="lineClass">Any goods that have been used with Hazardous Materials (any material other that inert gas) must be 100% purged with documented data and it MUST be accompanied by a MSDS sheet for that Hazardous Material.  Goods must be bagged, sealed, and tagged accordingly and the paperwork MUST be on the outside of the shipping container.</li>
+                    <li class="lineClass">GEMS will not accept delivery of any goods exposed to biological processes.</li>
+                    <li class="lineClass">GEMS will not, under any circumstances, accept goods exposed to radioactive materials or asbestos or goods used in semiconductor processing.</li> 
+                </ol>
+                <p style="font-size: 16px;text-align: left;padding-left:10px;"><strong>If goods are returned for Service and Calibration there will be an evaluation/calibration fee which will apply to all returns.</strong></p> 
+                <p style="font-size: 16px;text-align: left;padding-left:10px;"><strong>GEMS will make three (3) attempts within thirty (30) days from completion of evalation to arrange dispostion of materials (unless arranged prior to return).  After three (3) failed attempts, GEMS, at its sole and absolute discretion, reserves the right to dispose of any goods without any liability to Purchaser/customer whatsoever.</Strong></p>
+                <p style="font-size: 16px;text-align: left;padding-left:10px;"> Gems Sensors is committed to protecting and respecting your privacy, and we’ll only use your personal information to administer your account and to provide the products and services you requested from us. From time to time, we would like to contact you about our products and services, as well as other content that may be of interest to you. If you consent to us contacting you for this purpose, please tick below to say how you would like us to contact you:</p>
+                <div style="padding-left:10px;">
+                    <apex:inputCheckbox value="{!emailOptIn}"  style="float:left;"/><span style="font-size: 16px;padding-left:5px;float:left;"><b>I agree to receive emails from Gems Sensors.</b></span><br/>
+                </div> 
+                <div style="padding-top:15px;padding-left:10px;">
+                    <apex:inputCheckbox value="{!telephoneOptIn}"  style="float:left;"/><span style="font-size: 16px;padding-left:5px;float:left;"><b>I agree to be contacted by phone from Gems Sensors.</b></span><br/>
+                </div>                  
+                <p style="font-size: 16px;text-align: left;padding-left:10px;">You may unsubscribe from these communications at any time. For more information on how to unsubscribe, our privacy practices, and how we are committed to protecting and respecting your privacy.
+                 Please review our <a href="https://info.gemssensors.com/global-privacy-policy.html">Privacy Policy</a>.<br/>
+                 By clicking submit below, you consent to allow Gems Sensors to store and process the personal information submitted above to provide you the content requested.</p>
+             </div> 
+              <br/><br/><br/> 
+              <br/><br/><br/>
+              <br/><br/><br/>
+              <br/><br/><br/>
+              <br/><br/><br/>
+              <br/><br/><br/>
+             <apex:outputPanel layout="block" rendered="{!isSubmiting}" > 
+             <div style="padding-left:470px;"><apex:commandButton value="Submit Request" action="{!saveCase}"/></div><br/>
+             <div style="padding-left:470px;"><a target="_blank" href="https://www.gemssensors.com/docs/default-source/resource-files/terms-conditions/west-before-you-return-guide.pdf">Before you Return</a>        
+                 </div>
+            </apex:outputPanel><br/>
+              <div style="padding-left:410px;">Please review our Privacy Policy <a href="https://www.gemssensors.com/customersupport/privacy" target="_blank"><b>HERE</b></a></div><br/><br/>
+                   
+        </apex:outputPanel>
+            
+           
+            </apex:form>
+</apex:page>

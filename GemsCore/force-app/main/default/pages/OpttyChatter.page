@@ -1,0 +1,56 @@
+<apex:page standardController="Opportunity" extensions="OpptyChatter">
+<style>
+postText:
+{
+	font-size: 12px;
+	font-family: verdana, Arial, Helvetica;
+}
+commentText:
+{
+	font-size: 12px;
+	font-family: verdana, Arial, Helvetica;
+}
+body
+{
+	font-size: 12px;
+	font-family: verdana, Arial, Helvetica;
+}
+boldText:
+{
+	font-size: 12px;
+	font-family: verdana, Arial, Helvetica;
+	font-weight:bold;
+}
+</style>
+
+<script>
+// java script here
+</script>
+<apex:form >
+    <div class="bPageTitle"><div class="ptBody secondaryPalette"><div class="content"><img src="/s.gif" alt="Opportunity" class="pageTitleIcon" title="Opportunity"></img><h1 class="pageType noSecondHeader">View Chatter</h1><div class="blank">&nbsp;</div></div><div class="links"><a href="javascript:openPopupFocusEscapePounds(%27/help/doc/user_ed.jsp?loc=help&target=notes.htm&section=Notes_Attachments%27, %27Help%27, 700, 600, %27width=700,height=600,resizable=yes,toolbar=yes,status=no,scrollbars=yes,menubar=yes,directories=no,location=no,dependant=no%27, false, false);" title="Help for this Page (New Window)"><span class="helpLink">Help for this Page</span><img src="/s.gif" alt="Help" class="helpIcon" title="Help"></img></a></div></div><div class="ptBreadcrumb"></div></div>
+	<center>
+		<apex:commandButton action="{!back}" value="Back"/>	
+	</center>
+	<br></br>
+	<apex:pageBlock >
+
+        <!--<apex:selectList value="{!sortOptions}" multiselect="false" size="1" id="state" readonly="true">
+            <apex:selectOption itemLabel="Post Date" itemValue="Post Date"/>
+            <apex:selectOption itemLabel="Most recent" itemValue="Most recent"/>
+        </apex:selectList>-->       	
+		 <apex:repeat id="ofeed" value="{!OppFeed}" var="f">
+		 	<table>
+		 		<tr><td><b><apex:outputField label="" value="{!f.CreatedBy.FirstName}"/>&nbsp;<apex:outputField label="" value="{!f.CreatedBy.LastName}"/>&nbsp;&nbsp;&nbsp;<apex:outputField label="" value="{!f.CreatedDate}"/> </b></td></tr>
+		 		<tr><td><apex:outputField label="" value="{!f.Body}"/> </td></tr>
+		 	</table>
+			<apex:repeat id="oCom" value="{!f.FeedComments}" var="c">
+		 		<table border="0" bgcolor="LightGray">	
+		 			<tr><td>Comment By: <u><apex:outputField label="" value="{!c.CreatedBy.FirstName}"/>&nbsp;<apex:outputField label="" value="{!f.CreatedBy.LastName}"/>&nbsp;&nbsp;&nbsp;<apex:outputField label="" value="{!c.CreatedDate}"/></u> </td></tr>
+		 			<tr><td><apex:outputField label="" value="{!c.CommentBody}"/></td></tr>
+				</table>		 					
+			</apex:repeat> 
+			<hr size="4"/>     	
+		</apex:repeat>		
+	</apex:pageBlock>
+</apex:form>
+</apex:page>

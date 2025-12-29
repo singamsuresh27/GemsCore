@@ -1,0 +1,944 @@
+<apex:page controller="NewOppDragDropContoller" sidebar="false" id="pg" applyBodyTag="false" standardStylesheets="false">
+    <apex:form id="frm">
+    <head>
+        <title>Opportunity: Drag and Drop</title>
+        <!-- Bootstrap core CSS -->
+        <link href="{!URLFOR($Resource.Bootstrap,'css/bootstrap.css')}" rel="stylesheet"/>
+        <style>
+            .column{
+                width: 310px;
+                padding: 5px 0px;
+                margin: 5px 3px;
+                background: white;
+                height:auto;
+                font-family: Candara, 'Helvetica Nueve', Helvetica, sans-serif;
+                float:left;
+            }
+            
+            .column h1{
+                font-family: Candara, 'Helvetica Nueve', Helvetica, sans-serif;
+            }
+            
+            .column ul{
+                padding: 3px;
+                border-radius:5px;
+                min-height: 400px;
+                height: auto;
+                border: 2px solid ghostwhite;
+                //overflow-x: auto;
+            }
+            
+            .column ul li{
+                list-style: none;
+                border: 1px solid darkgrey;
+                padding: 5px 10px 5px 10px;
+                width: 300px;
+                margin: 2px 0px;
+                height: 90px;
+                cursor: auto;
+                font-size: 8pt;
+            }
+            
+            .column ul li:hover{
+                box-shadow: 0px 0px 10px 0px slategrey;
+                opacity: 0.9;
+            }
+            #opportunities-container{
+                width: 1500px;
+                overflow-x: auto;
+                height: 500px;
+            } 
+            
+            .glyphicon-bookmark-deepskyblue{
+                color : deepskyblue;
+            }
+            
+            .glyphicon-bookmark-deepskyblue:hover{
+                color : black;
+            }
+            
+            .glyphicon-bookmark-black{
+                color : black;
+            }
+            
+            .glyphicon-bookmark-black:hover{
+                color : deepskyblue;
+            }
+            
+            .glyphicon,.mconfig,.mnextstep,.mlastcon{
+                cursor:pointer;
+                margin-left:4px;
+                margin-right:4px;
+            }
+            
+            .taskhover{
+                cursor:pointer;
+                margin-left:1px;
+                margin-right:1px;
+            }
+                        
+            div.footordiv{
+                z-index: 1;
+                width: 100%;
+                background: #0097dc;
+                overflow: visible;
+                height: 45px;
+                -moz-box-shadow: 0 2px 2px rgba(0,0,0,0.35);
+                -webkit-box-shadow: 0 2px 2px rgba(0,0,0,0.35);
+                box-shadow: 0 2px 2px rgba(0,0,0,0.35);
+            }   
+            
+            .btn1 {
+                display: inline-block;
+                padding: 6px 12px;
+                margin-bottom: 0;
+                font-size: 14px;
+                font-weight: normal;
+                line-height: 1.428571429;
+                text-align: center;
+                white-space: nowrap;
+                vertical-align: middle;
+                cursor: pointer;
+                background-image: none;
+                border: 1px solid transparent;
+                border-radius: 4px;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                -o-user-select: none;
+                user-select: none;
+            }
+            
+            .input-control {
+                display: inline-block;
+                height: 34px;
+                padding: 6px 12px;
+                font-size: 14px;
+                margin: 10px;
+                line-height: 1.428571429;
+                color: #555;
+                vertical-align: middle;
+                background-color: #fff;
+                background-image: none;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+                box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+                -webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+                transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            }
+            
+            .show-more-option {
+                padding: 4px 5px;
+                height: 30px;
+                text-shadow: teal 2px 2px 2px;
+                font-size: 16px;
+                font-weight: 700;
+                text-align: center;
+                font-family: candara;
+                cursor: pointer;
+                display: block;
+                background: #0097dc;
+                -moz-box-shadow: 0 2px 2px rgba(0,0,0,0.35);
+                -webkit-box-shadow: 4px 6px 4px rgba(0,0,0,0.35);
+                box-shadow: 4px 6px 4px rgba(0,0,0,0.35);
+            }
+            
+            .show-more-option-img{
+                width: 11px;
+                height: 11px;
+                margin: 0 5px;
+                vertical-align: -2px;
+                background: transparent url(/img/alohaSkin/sortArrows_sprite.png) no-repeat 0 -32px;
+            }
+            
+            .closeDateInput .dateInput input{
+                width:75%
+            }
+
+            .lookup-Field .lookupInput{
+                display: flex;
+            }
+            .lookup-Field .lookupInput a{
+                width:50px;
+                border-left:none;
+            }
+            .lookup-Field .lookupInput input{
+                border-bottom-left-radius: 0;
+                border-top-left-radius: 0;
+            }
+            
+            .input-group-addon, .form-control{
+                border-radius:0px;
+            }
+
+        </style>
+        
+    </head>
+    <apex:pageMessages ></apex:pageMessages>
+    <body class="dhe-body">
+        Filter By :  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+         <apex:selectList value="{!filterId }" size="1" id="filterMenu1" >
+               <apex:selectOptions value="{!OppsExistingViews}"></apex:selectOptions>
+               <apex:actionSupport event="onchange"  action="{!showingOppMethod}"  /> 
+         </apex:selectList> 
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+          <!-- Group By :  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <apex:selectList value="{!groupbypanel}" size="1" multiselect="false" > 
+              <apex:selectOption itemValue="all" itemLabel="All Opportunities"></apex:selectOption>
+              <apex:selectOption itemValue="ow" itemLabel="Owner"></apex:selectOption>
+              <apex:selectOption itemValue="pm" itemLabel="Project Manager"></apex:selectOption>
+              <apex:actionSupport event="onchange" action="{!showingPanel}"/>
+          </apex:selectList> --> 
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          
+          
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          Sort Option : &nbsp;&nbsp;&nbsp;&nbsp;
+          <!-- <select id="selObj" onchange="selectingOption();return false;">
+              <option value="CloseDate">CloseDate</option>
+              <option value="Estimated_Amount__c" selected="true">Estimated Amount</option>
+          </select>  -->
+          <apex:selectList value="{!sortingFld}" size="1" multiselect="false" >
+              <apex:selectOption itemLabel="Close Date" itemValue="CloseDate"></apex:selectOption>
+              <apex:selectOption itemLabel="Estimated Amount" itemValue="Estimated_Amount__c"></apex:selectOption> 
+              <apex:actionSupport event="onchange" action="{!showingOppMethod}" status="ajaxStatus"/> 
+          </apex:selectList> 
+          
+          
+          <!-- <apex:actionFunction name="act1" action="{!settingAllUser}" reRender="outPan" />    -->
+          <apex:actionStatus id="ajaxStatus" startText="Loading..."  stopText=""/>
+          
+          
+          
+        
+        <apex:outputPanel id="outPan" >
+        <apex:outputPanel rendered="{!if(groupbypanel == 'all',true,false)}">
+        <div id="opportunities-container" style="display:inline-block;">
+            <br/>
+            <span style="font-size:12pt;"> Owner : All Owners</span> <br/>
+            <div id="opportunities2" style="margin-left:auto;margin-right:auto;display:inline-flex;">
+            </div>
+            
+            <br/>
+           
+            
+            <div id="drop-alert" style="font-family: candara;border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px; position: absolute; width: 350px; padding: 10px; background-color: rgb(245, 79, 114); color: white; top: 250px; left: 560px; display: none;text-align: center;">
+                GenePoint Standby&#39;s status changed to Closed Won    
+            </div>
+        </div> 
+        </apex:outputPanel>   
+        <br/>
+        <br/>
+        <apex:outputPanel rendered="{!if(groupbypanel == 'ow',true,false)}">
+        
+        <div id="oppwall" style="display:inline-block;width:1500px;overflow:auto;height:700px;">
+        </div> 
+        </apex:outputPanel>
+        <br/><br/>
+        <apex:outputPanel rendered="{!if(groupbypanel == 'pm',true,false)}">
+        
+        <div id="oppwallm" style="display:inline-block;width:1500px;overflow:auto;height:700px;">
+        </div> 
+        </apex:outputPanel>
+        
+        
+         Showing &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {!pageNum} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; page &nbsp;&nbsp; of &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{!totalpages}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Pages
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+         <apex:commandButton value="First Page" action="{!myFirst}" status="ajaxStatus"/><apex:commandButton value="Previous Page" action="{!myPrev}" status="ajaxStatus"/> <apex:commandButton value="Next Page" action="{!myNext}"  status="ajaxStatus" /><apex:commandButton value="Last Page" action="{!myLast}"  status="ajaxStatus" />
+          
+         
+        </apex:outputPanel>   
+         
+            
+        <!-- TASK EDIT SECTION --> 
+        <div  id="myModal" class="modal fade" style="width:1150px;overflow:hidden;display:none;margin-left:auto;margin-right:auto;">
+          <div class="modal-dialog" style="width:1150px;">
+            <div class="modal-content" style="width:1150px;">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Edit Opportunity</h4>
+              </div>
+              <div class="modal-body" style="max-height: 550px;overflow-y:auto;">
+                <iframe id="detailframe" frameborder="0"  scrolling="no" style="width:100%" seamless="seamless"></iframe>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    
+            
+        
+        <!-- JavaScript files -->
+        <!-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
+        
+        <script src="https://code.jquery.com/jquery-1.10.1.js"></script> 
+        <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>  -->
+        
+        <link rel="stylesheet" href="{!URLFOR($Resource.oppjsonmaster,'jsonmaster/jquery-ui.css')}"/>
+        <script src="{!URLFOR($Resource.oppjsonmaster,'jsonmaster/jquery-1.10.1.js')}"></script>  
+        <script src="{!URLFOR($Resource.oppjsonmaster,'jsonmaster/jquery-ui.js')}"></script>   
+        <script src="{!URLFOR($Resource.oppjsonmaster,'jsonmaster/json2.js')}"></script>        
+        <script src="{!URLFOR($Resource.Bootstrap,'js/modal.js')}"></script>
+          
+        <!-- Example jQuery code (JavaScript)  -->
+        <script type="text/javascript">
+        
+        var stageNameMap;
+        var containerMap;
+        var containFldVauesMap;
+        var mapKeys = new Array();
+        var stageNameByShortMap;
+        var mainContainersHeight = 0;
+        var jsonObjArray = [];
+        var sortfldname = 'Estimated_Amount__c';    //'Estimated_Amount__c';
+        var mapOppsInJs = new Object();
+        var mapOpportunityRecords = new Object();
+        var statusBorderColor = new Object();
+        
+        // Prototype to remove duplicate elements
+        Array.prototype.unique = function() {
+            var a = [];
+            var l = this.length;
+            for(var i=0; i<l; i++) {
+                for(var j=i+1; j<l; j++) {
+                    if (this[i].toLocaleString() === this[j].toLocaleString())
+                        j = ++i;
+                }
+                a.push(this[i]);
+            }
+            return a;
+        };
+          
+        
+        var lstStageIdsName = new Array();
+            $(document).ready(function(){
+            
+                // Load Container.
+                createOpportunitiesContainer();
+                
+                // Create Containers Data.
+                createDashboard();
+                
+                $( "#opportunity-closedate" ).datepicker();
+                                
+                var list1='';
+                var list2='';
+                // Example 1.3: Sortable and connectable lists with visual helper
+                /*$('#opportunities-container .sortable-list').sortable({
+                    connectWith: '#opportunities-container .sortable-list',
+                    placeholder: 'placeholder',
+                    start: function(ui, event){
+                        var id = event.item.parent().attr('id');
+                        list1 = id;
+                        
+                    },
+                    stop: function(ui, event){
+                        var id = event.item.parent().attr('id');
+                        var itemId = event.item.attr('id');
+                        
+                        list2 = id;
+                        if(list1 != list2){
+                            refreshItem(itemId, list1, list2);
+                        }
+                    }
+                });
+                
+                $('#oppwall .sortable-list').sortable({
+                    connectWith: '#oppwall .sortable-list',
+                    placeholder: 'placeholder',
+                    start: function(ui, event){
+                        var id = event.item.parent().attr('id');
+                        list1 = id;
+                        
+                    },
+                    stop: function(ui, event){
+                        var id = event.item.parent().attr('id');
+                        var itemId = event.item.attr('id');
+                        
+                        list2 = id;
+                        if(list1 != list2){
+                            refreshItem(itemId, list1, list2);
+                        }
+                    }
+                });*/
+                
+                $("#pg\\:frm\\:opportunity-stagename").attr("disabled","true");
+            });
+            
+            function refreshItem(itemId, oldStageId, newStageId){
+                var newStage = (newStageId.trim()).split('-list2').join('');
+                var oldStage = (oldStageId.trim()).split('-list2').join('');
+                var fld = '{!groupByField}';
+                var fldtype = '{!groupByFieldType}';
+                
+                var itemOldId = itemId;
+                var itemNewId = (itemId.trim()).split('-'+oldStage).join('');
+                $("."+itemId).attr("id",itemNewId+"-"+newStage);
+                $("#"+itemNewId+"-"+newStage).removeClass(itemId);
+                $("#"+itemNewId+"-"+newStage).addClass(itemNewId+"-"+newStage);
+                $("#"+itemNewId+"-"+newStage).css("border-left", "6px solid "+statusBorderColor[stageNameByShortMap[newStage]]);
+                
+                // Save new stage to opportunity Record.
+                NewOppDragDropContoller.changeOpportunityStage(itemNewId, containFldVauesMap[newStage], fld ,fldtype,function(result, event){
+                    if(event.status){
+                        $("#drop-alert").text($("#"+itemNewId+"-name").text()+" status changed to "+newStage);
+                        $("#drop-alert").slideDown(1000, 'easeOutBounce').fadeOut(2500);
+                    }else{
+                        $("#drop-alert").text("Sorry," + $("#"+itemNewId+"-name").text()+" can not move forward");
+                        $("#drop-alert").slideDown(1000, 'easeOutBounce').fadeOut(2500);    
+                    }    
+                });
+            }
+            
+            function toggleFollowingOpportunity(oppRecordId, action, oppName){
+                NewOppDragDropContoller.toggleFollowingOpportunity(oppRecordId, action, function(result, event){
+                    if(event.status){
+                        
+                        var newAction = action == 'following' ? 'unfollowing' : 'following';
+                        $("#"+oppRecordId+"-bookmark").attr("onclick","toggleFollowingOpportunity('"+oppRecordId+"','"+newAction+"','"+oppName+"');")
+                        if(action == 'following'){
+                            $("#"+oppRecordId+"-bookmark").removeClass('glyphicon-bookmark-black');
+                            $("#"+oppRecordId+"-bookmark").addClass('glyphicon-bookmark-deepskyblue');
+                            $("#"+oppRecordId+"-bookmark").attr('title', 'Stop following this opportunity to stop receiving updates in your feed.');
+                            $("#drop-alert").text('You are now '+action+' '+oppName+' opportunity record.');
+                        }
+                        else{
+                            $("#"+oppRecordId+"-bookmark").removeClass('glyphicon-bookmark-deepskyblue');
+                            $("#"+oppRecordId+"-bookmark").addClass('glyphicon-bookmark-black');
+                            $("#"+oppRecordId+"-bookmark").attr('title', 'Start Following this opportunity to receive updates in your feed.');
+                            $("#drop-alert").text('You have stopped following '+oppName+' opportunity record.');
+                        }
+                        $("#drop-alert").slideDown(1500, 'easeOutBounce').fadeOut(2500);
+                        
+                    }    
+                });
+            }
+            
+            function createOpportunitiesContainer(){
+               
+                
+                $("#opportunities2").html('');
+                
+               
+                var containerHTML2 = '';
+                var stageName = '';
+                stageNameMap = new Object();
+                containerMap = new Object();
+                containFldVauesMap = new Object();
+                
+                stageNameByShortMap = new Object();
+                <apex:repeat value="{!lstStages}" var="stage">
+                    stageName = "{!stage.Name}";
+                    stageName = (stageName.trim()).toLowerCase();
+                    stageName = ((stageName.split(' ').join('')).split('/').join('-')).split('.').join('');
+
+                    stageNameMap["{!stage.Name}"] = stageName;
+                    stageNameByShortMap[stageName] = "{!stage.Name}";
+                    statusBorderColor["{!stage.Name}"] = "{!stage.Stage_Color_Code__c}";
+                    lstStageIdsName.push(stageName+'-list');
+                </apex:repeat>
+                var curencyCode = '{!curCode}';
+                <apex:repeat value="{!lstTempContainer}" var="lstV">
+                    var stV = '{!lstV}';
+                    var stVal = ((((((stV.split(' ').join('')).split('/').join('-')).split('.').join('')).split(',').join('')).split(':').join('')).split('-').join('')).split('&').join('');
+                    containerHTML2 += '<div id="'+ stVal +'-opportunities2" class="column left">';
+                    containerHTML2 += '    <h1 style="background:none;font-size:100%;font-weight:500px;padding-left:10px;color:' + statusBorderColor[stVal] + ';">{!lstV} </h1> <br/> <span style="background:none;font-size:100%;padding-left:10px;color:DarkOrange;">Amount : '+ curencyCode + ' ' +formatNumber({!mapStageTotal[lstV]}) + '</span> <span style="background:none;font-size:100%;padding-left:10px;color:DarkOrange;float:right;">Count: '+ {!mapStageRecordCount[lstV]} + '</span>';     
+                    containerHTML2 += '    <ul id="'+ stVal +'-list2" class="sortable-list ">';
+                    containerHTML2 += '    </ul>';
+                    containerHTML2 += '</div> ';
+                    containFldVauesMap[stVal] = stV;
+                    containerMap[stVal] = stVal;
+                    mapKeys.push(stVal);
+                    
+                    
+                </apex:repeat>
+                $("#opportunities2").html(containerHTML2);
+                
+                var bigContainer = '' ; 
+                var panelIdx = '{!ownerflg}';
+                if(panelIdx == 2){
+                    <apex:repeat value="{!owList}" var="owd"> 
+                        
+                        var tmp = '<span style="font-size:12pt;"> Owner : {!owd} </span> <br/>';
+                        tmp += '<div id="opportunities2-{!owd}" style="margin-left:auto;margin-right:auto;display:inline-block;width:1800px;">';
+                        
+                        var containerHTML3 = '';
+                        var idPart = '{!owd}'.split(' ').join('');
+                        <apex:repeat value="{!lstTempContainer}" var="lstV">
+                           
+                            var stV = '{!lstV}';
+                            var rec = '{!wrraperMap[owd][lstV]}';
+                            var rcnt = rec.substring(rec.indexOf('=')+1,rec.indexOf(',')).trim();
+                            var totamt = rec.substring(rec.lastIndexOf('=')+1,rec.lastIndexOf(']')).trim() ;
+                            
+                            var stVal = ((((((stV.split(' ').join('')).split('/').join('-')).split('.').join('')).split(',').join('')).split(':').join('')).split('-').join('')).split('&').join('');
+                            containerHTML3 += '<div id="'+ stVal +'-opportunities2" class="column left">';
+                            containerHTML3 += '    <h1 style="background:none;font-size:100%;font-weight:500px;padding-left:10px;color:'+ statusBorderColor[stVal]  + '">{!lstV}</h1> <br/> <span style="background:none;font-size:100%;padding-left:10px;color:DarkOrange;">Amount : '+ totamt + '</span> <span style="background:none;font-size:100%;padding-left:10px;color:DarkOrange;float:right;">Count : '+ rcnt + '</span>';      
+                            containerHTML3 += '    <ul id="'+ stVal +'-list' + idPart + '" class="sortable-list ">';
+                            containerHTML3 += '    </ul>';
+                            containerHTML3 += '</div> ';
+                        </apex:repeat>
+                        tmp += containerHTML3;
+                        tmp +='</div> <br/><br/>';
+                        bigContainer += tmp;
+                    </apex:repeat>
+                    
+                    $("#oppwall").html(bigContainer);
+                }
+                
+                
+                if(panelIdx == 3){
+                    var bigContainerm = '' ; 
+                    <apex:repeat value="{!pmList}" var="powd"> 
+                        var idPartm = '{!powd}'.split(' ').join('');
+                        var tmpm = '<span style="font-size:12pt;"> Project Manager: {!powd} </span> <br/>';
+                        tmpm += '<div id="opportunities3-'+ idPartm +'" style="margin-left:auto;margin-right:auto;display:inline-block;width:1800px;">';
+                        
+                        var containerHTML4 = '';
+                        
+                        <apex:repeat value="{!lstTempContainer}" var="lstV">
+                           
+                            var stVm = '{!lstV}';
+                            var recm = '{!wrraperMapPM[powd][lstV]}';
+                            var rcntm = recm.substring(recm.indexOf('=')+1,recm.indexOf(',')).trim();
+                            var totamtm = recm.substring(recm.lastIndexOf('=')+1,recm.lastIndexOf(']')).trim() ;
+                            
+                            var stValm = ((((((stVm.split(' ').join('')).split('/').join('-')).split('.').join('')).split(',').join('')).split(':').join('')).split('-').join('')).split('&').join('');
+                            containerHTML4 += '<div id="'+ stValm +'-opportunities3" class="column left">';
+                            containerHTML4 += '    <h1 style="background:none;font-size:100%;font-weight:500px;padding-left:10px;color:'+ statusBorderColor[stVal]  + '">{!lstV}</h1> <br/> <span style="background:none;font-size:100%;padding-left:10px;color:DarkOrange;">Amount : '+ totamtm + '</span> <span style="background:none;font-size:100%;padding-left:10px;color:DarkOrange;float:right;">Count : '+ rcntm + '</span>';          
+                            containerHTML4 += '    <ul id="'+ stValm +'-list' + idPartm + '" class="sortable-list ">';
+                            containerHTML4 += '    </ul>';
+                            containerHTML4 += '</div> ';
+                        </apex:repeat>
+                        tmpm += containerHTML4;
+                        tmpm +='</div> <br/><br/>';
+                        bigContainerm += tmpm;
+                    </apex:repeat>
+                    $("#oppwallm").html(bigContainerm);
+                }
+                
+            }
+            
+            function editOpportunity(oppRecordId){
+                $('#edit-opportunity-model').modal();
+                var oppRecord = mapOpportunityRecords[oppRecordId];
+               
+                $("#edit-model-title").text(oppRecord.Name);
+                $("#opportunity-name").val(oppRecord.Name);
+                $("[id$='opportunity-account']").val(oppRecord.Account.Name);
+                $("[id$='opportunity-account_lkid']").val(oppRecord.AccountId);
+                $("[id*='opportunity-amount']").val('$ '+oppRecord.Amount);
+                $("[id*='opportunity-stagename']").val(oppRecord.StageName);
+                $("[id*='opportunity-type']").val(oppRecord.Type);
+                $("#opportunity-ownername").text(oppRecord.Owner.Name);
+                
+                var d = new Date(oppRecord.CloseDate);
+                $("#opportunity-closedate").val(d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear());
+                
+                if((oppRecord.LeadSource !== undefined) && !($('option[value="'+oppRecord.LeadSource+'"]', '[id*="opportunity-leadsource"]').length)){
+                    $('<option value="'+ oppRecord.LeadSource +'">'+oppRecord.LeadSource+'</option>').appendTo( $('[id*="opportunity-leadsource"]'));
+                }
+                $("[id*='opportunity-leadsource']").val(oppRecord.LeadSource);
+                $("#opportunity-save-btn").attr('onclick','saveOpportunity(\''+oppRecordId+'\')')    
+            }
+            
+            function saveOpportunity(oppRecordId){
+                $('#edit-opportunity-model').modal();
+                
+                var oppRecord = mapOpportunityRecords[oppRecordId];
+                alert(oppRecord.Name);     
+            }
+            
+            var win =''; 
+            function activeOnClickEdit(){
+                $(".mconfig").on("click", function(){
+                    var oppId = $(this).attr("Id");
+                    var murl = window.location.protocol + "//" + window.location.host + "/" + "apex/opportunitydetail?id="+oppId;
+                   
+                    if(win == ''){
+                        
+                        win = window.open(murl, '_blank');
+                        win.focus();
+                        win = '' ;
+                    }
+                    
+                    
+                    $(".modal-header .close").click(function(){
+                        //window.location.href = window.location.href;
+                    });
+                });
+                $(".glyphicon-align-justify").on("click", function(){
+                    var oppId = $(this).attr("Id");
+                    var murl = window.location.protocol + "//" + window.location.host + "/"+oppId;
+                    var mwin = window.open(murl, '_blank');
+                    mwin.focus();    
+                });
+                $(".taskhover").on("click", function(){
+                    var tskId = $(this).attr("Id");
+                    var murl = window.location.protocol + "//" + window.location.host + "/apex/EditTaskInlinePage?id="+tskId ;
+                    var mwin = window.open(murl, '_blank');
+                    mwin.focus();    
+                });
+            }
+            
+            
+            function formatNumber(number){        
+                number = number.toFixed(2) + '';
+                x = number.split('.');
+                x1 = x[0];
+                x2 = x.length > 1 ? '.' + x[1] : '';
+                var rgx = /(\d+)(\d{3})/;
+                while (rgx.test(x1)) {
+                    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+                }
+                return x1 + x2;
+            }
+            
+            function compareNumbers(a, b) {
+                return a - b;
+            }
+            
+            function compareNumbersd(a, b) {
+                return b - a;
+            }
+            
+            var date_sort_asc = function (date1, date2) {
+                 if (date1 > date2) return 1;
+                 if (date1 < date2) return -1;
+                 return 0;
+            };
+            
+            var date_sort_desc = function (date1, date2) {
+                if (date1 > date2) return -1;
+                if (date1 < date2) return 1;
+                return 0;
+            }; 
+            var dateRE = /^(\d{2})[\/\- ](\d{2})[\/\- ](\d{4})/;
+            function mdyOrdA(a, b){
+                a = a.replace(dateRE,"$3$1$2");
+                b = b.replace(dateRE,"$3$1$2");
+                if (a>b) return 1;
+                if (a <b) return -1;
+                return 0; 
+            }
+            
+            function selectingOption(){
+                
+                sortfldname = $('#selObj').find(":selected").val();
+                //sortfldname = '{!sortingFld}';
+                createOpportunitiesContainer();
+                createDashboard();
+            }
+            
+            function round(value, decimals) {
+                return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+            }
+            
+            function sortingProcess(jvstr){
+                jsonObjArray = [];
+                for(var i=0; i<jvstr.length; i++){
+                    if(jvstr[i].oppRecord[sortfldname] != undefined){
+                        if(sortfldname == 'CloseDate'){
+                            jsonObjArray.push(new Date(jvstr[i].oppRecord[sortfldname].replace(/-/g, '/')));     
+                        }else{
+                            jsonObjArray.push(Number(jvstr[i].oppRecord[sortfldname]));    
+                        }     
+                    }
+                }
+                
+                // remove duplicate elements
+                jsonObjArray=jsonObjArray.unique();
+                
+                if(sortfldname == 'CloseDate'){
+                    jsonObjArray.sort(date_sort_asc);
+                }else{
+                    jsonObjArray.sort(compareNumbersd);
+                }
+                
+                console.log('----->  Sorted Array '  +  jsonObjArray );
+            }
+            
+        </script>
+    </body>
+    
+    <apex:outputPanel id="dashboardInitScript">
+        <script type="text/javascript">
+            function createDashboard(){
+                var actId= $('#pg\\:frm\\:filterMenu').val();
+                
+                var listItem = innerhtml = '';
+                var d;
+                
+                $.each(lstStageIdsName, function(key, value){
+                    $("#"+lstStageIdsName[key]).html('');
+                });
+                var record = new Object();
+                var jvstr = JSON.parse('{!JSENCODE(jstr)}');
+                sortfldname = '{!sortingFld}';
+                
+                console.log('----->  sortfldname   ' + sortfldname );
+                sortingProcess(jvstr);
+                var oppName = stageName = recordfollow = '';
+               
+                try{
+                    for(var arri=0; arri<jsonObjArray.length; arri++){
+                        var cnt = 0;
+                        for(var i=0; i<jvstr.length; i++){
+                            var tocheck ;
+                            var arrVal ; 
+                            if(sortfldname == 'CloseDate'){
+                                tocheck = new Date(jvstr[i].oppRecord[sortfldname].replace(/-/g, '/')).toLocaleString();     
+                                arrVal  = jsonObjArray[arri].toLocaleString();
+                            }else{
+                                tocheck = Number(jvstr[i].oppRecord[sortfldname]);
+                                arrVal = jsonObjArray[arri];   
+                            } 
+                            console.log('-----> tocheck  ' + tocheck   );
+                            console.log('-----> arrVal ' + arrVal );
+                            if(arrVal == tocheck ){
+                                cnt++;
+                                innerhtml = '';
+                                stageName = stageNameMap[jvstr[i].oppRecord.StageName];
+                                var fldname = '{!groupByField}';
+                                var fldvalue = jvstr[i].oppRecord[fldname];    //fldname;
+                                
+                                if('{!groupByFieldType}' == 'STRING' || '{!groupByFieldType}' == 'PICKLIST' ){
+                                    if(fldvalue != undefined){
+                                        fldvalue = (((((fldvalue.split(' ').join('')).split('/').join('')).split('.').join('')).split(',').join('')).split('&').join('')).split('-').join('');
+                                    }
+                                }
+                               
+                                
+                                var stname = (((((jvstr[i].oppRecord.StageName.split(' ').join('')).split('/').join('')).split('.').join('')).split(',').join('')).split('&').join('')).split('-').join('');
+                                var subsId = jvstr[i].subscriberId;
+                                var isFollow = jvstr[i].isUserFollowing;
+                                recordfollow = jvstr[i].isUserFollowing ? 'unfollowing' : 'following';
+                                var clr = '';
+                                var subCount = jvstr[i].subsCount;
+                                if(isFollow){    
+                                    clr = 'Khaki';
+                                    
+                                }else{
+                                     clr = 'ghostwhite';
+                                     
+                                }
+                                
+                                
+                                listItem = '<li class="sortable-item '+jvstr[i].oppRecord.Id+'-'+fldvalue+'" id="'+jvstr[i].oppRecord.Id+'-'+fldvalue +'" style="background:'+ clr +';">';
+                                
+                                oppName = jvstr[i].oppRecord.Name;
+                                if(oppName.length > 10)                        
+                                    oppName = oppName.substring(0, 10)+'...'; 
+                                d = new Date(jvstr[i].oppRecord.CloseDate.replace(/-/g, '/'));
+                                
+                                var projManager = '', projFullName = '', addProjManager = '';
+                                if(jvstr[i].oppRecord.Project_Manager__r  != undefined){
+                                    projManager = jvstr[i].oppRecord.Project_Manager__r.LastName;
+                                    projFullName = jvstr[i].oppRecord.Project_Manager__r.Name;
+                                }
+                                
+                                                         
+                                
+                                
+                                listItem +='<table width="100%" >';
+    
+                                //code for close date flag
+                                var flgcolor ;
+                                var dt = new Date();
+                                if(d < dt){
+                                    flgcolor = 'red';
+                                }else{
+                                    flgcolor = 'green';
+                                }
+                                
+                                //Code for NextStageDate and NextStage Flag
+                                var nextStageDate, nextStageFlgColor; 
+                                if(jvstr[i].oppRecord.NextStageDate__c != undefined){
+                                    var nsd = new Date(jvstr[i].oppRecord.NextStageDate__c.replace(/-/g, '/'));    //jvstr[i].oppRecord.Tasks.records[0].ActivityDate );
+                                    nextStageDate = (nsd.getMonth()+1)+'/'+nsd.getDate()+'/'+nsd.getFullYear();    
+                                }else{
+                                    nextStageDate = '';     
+                                }
+                                
+                                if(jvstr[i].oppRecord.Next_Step_Due_date__c != undefined){
+                                    var nsd = new Date(jvstr[i].oppRecord.Next_Step_Due_date__c.replace(/-/g, '/'));    //jvstr[i].oppRecord.Tasks.records[0].ActivityDate );
+                                    var mdat = new Date();
+                                    nextStageFlgColor = nsd < mdat ?'red' :'green';                                
+                                }else{
+                                    nextStageFlgColor = 'red';   
+                                }
+                                 
+                                
+                                //Code for Stage Duration and Stage Gestion flag color
+                                var stageGestionColor,stageGestionDuration;
+                                stageGestionDuration = jvstr[i].oppRecord.Current_Stage_Duration__c != undefined ?jvstr[i].oppRecord.Current_Stage_Duration__c :0;
+                                
+                                if(jvstr[i].oppRecord.StageName != 'Stage 3 - Solution Presented & Accepted'){
+                                    if(jvstr[i].oppRecord.Current_Stage_Duration__c > 90){
+                                        stageGestionColor = 'yellow';
+                                    }else{
+                                        stageGestionColor = 'green';    
+                                    }    
+                                }else{
+                                    if(jvstr[i].oppRecord.Current_Stage_Duration__c > 160){
+                                        stageGestionColor = 'yellow';
+                                    }else{
+                                        stageGestionColor = 'green';    
+                                    }   
+                                }   
+                                
+                                //Code Next Contact Date 
+                                var nxtConDate = '';
+                                if(jvstr[i].lastContactDate != undefined && jvstr[i].lastContactDate != 'No Contact'){
+                                    var tnxtConDate = jvstr[i].lastContactDate; 
+                                    var dat = new Date(tnxtConDate.substring(0,tnxtConDate.indexOf('n')).replace(/-/g, '/'));   
+                                    nxtConDate = (dat.getMonth()+1)+'/'+dat.getDate()+'/'+dat.getFullYear()+'\n';
+                                    nxtConDate += tnxtConDate.substring(tnxtConDate.indexOf('n')+1,tnxtConDate.lastIndexOf('n')) + '\n';
+                                    nxtConDate += tnxtConDate.substring(tnxtConDate.lastIndexOf('n')+1);
+                                }else{
+                                    nxtConDate = 'No Contact';
+                                } 
+                                
+                                
+                                //Code for Next Step hover
+                                var nxtStepVal = jvstr[i].oppRecord.NextStep != undefined ?jvstr[i].oppRecord.NextStep : 'No Next Step';
+                                var nxtstp = jvstr[i].oppRecord.NextStep != undefined ?jvstr[i].oppRecord.NextStep :'No Next Step' ;
+                                var nxtstepduedate = jvstr[i].oppRecord.Next_Step_Due_date__c != undefined ?jvstr[i].oppRecord.Next_Step_Due_date__c :'No NextStep DueDate';
+                                var nxtStepVal1 = nxtstp +'\n'+ nxtstepduedate ;
+                                
+                                //fetching Currency ISO code
+                                var curcode = '';
+                                if(jvstr[i].oppRecord.CurrencyIsoCode != undefined){
+                                    curcode = jvstr[i].oppRecord.CurrencyIsoCode;
+                                }
+                                
+                                //Converting Currency in loggin user currency symbol
+                                var convertedAmt = 0.0;
+                                if(jvstr[i].oppRecord.Estimated_Amount__c != undefined){
+                                    convertedAmt = parseFloat(jvstr[i].oppRecord.Estimated_Amount__c) * parseFloat('{!convertRate}');    
+                                }
+                                
+                                var amtTitle = 'Estimated Amount ';    
+                                
+                                //Code for creation wall single opportunity 
+                                listItem +='<tr><td width="10" padding="5px" style="background-color:'+ flgcolor +';cursor:pointer;" title="Closed Date : '+ (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear() +'">&nbsp;</td>';
+                                listItem +='<td>    <a href="/'+ jvstr[i].oppRecord.Id +'" target="_blank""><span style="font-size: 12px;font-weight: bold;" id="'+jvstr[i].oppRecord.Id+'-name" title="'+jvstr[i].oppRecord.Name+'">'+oppName+'</span></a></td>';
+                                listItem +='<td>    <span style="float:right;font-size: 12px;" title="' + amtTitle  +'">'+ curcode + ' ' + formatNumber(jvstr[i].oppRecord.Estimated_Amount__c) +'</span></td>';
+                                listItem +='<td style="float:right;"> <img class="mconfig" title="Quick View" src="{!URLFOR($Resource.wallimgs,'wallimgs/P1.png')}" width="20" height="20" id="'+ jvstr[i].oppRecord.Id +'"/></td></tr>';
+                                
+                                listItem +='<tr><td style="background-color:' + nextStageFlgColor +';cursor:pointer;" title="Next Step : '+ nxtStepVal +'">&nbsp;</td>';
+                                listItem +='<td>    <span style="font-size: 12px;" title="' + jvstr[i].oppRecord.Owner.Name+ '">'+  jvstr[i].oppRecord.Owner.LastName+'</span></td>';
+                                listItem +='<td>    <span style="float:right;font-size: 12px;" title="Close Date">' + (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear() +'</span></td>';
+                                listItem +='<td style="float:right;"> <img class="mnextstep" src="{!URLFOR($Resource.wallimgs,'wallimgs/P2.png')}" width="20" height="20" title="' + nxtStepVal1 + '"/></td></tr>';
+                                
+                                listItem +='<tr><td style="background-color:'+ stageGestionColor + ';cursor:pointer;" title="Stage Duration : ' + stageGestionDuration  +'">&nbsp;</td>';
+                                listItem +='<td>    <span style="font-size: 12px;" title="'+ projFullName + '">'+ projManager  +'</span></td>';
+                                listItem +='<td>    <span style="float:right;font-size: 12px;" title="Next Stage Date">' + nextStageDate +'</span></td>';                                
+                                listItem +='<td style="float:right;"> <img class="mlastcon" src="{!URLFOR($Resource.wallimgs,'wallimgs/P4.png')}" width="20" height="20" title="' + nxtConDate + '"/></td></tr>';
+                                
+                                listItem +='<tr><table width="100%"    style="border-color:gray;" ><tr>';   
+                                
+                                
+                                    <apex:repeat value="{!taskStageList}" var="tstg">
+                                            listItem +='<td>';
+                                            var tskStg = '{!tstg}';
+                                            if(jvstr[i].taskCircle1 != undefined && jvstr[i].taskCircle1[tskStg] != undefined){
+                                                
+                                                for(var cd=0; cd<jvstr[i].taskCircle1[tskStg].length; cd++){
+                                                    
+                                                    
+                                                    var stgcolor ='';
+                                                    if(jvstr[i].taskCircle1[tskStg][cd].Status == 'Completed'){
+                                                        stgcolor = 'green';    
+                                                    }else if(jvstr[i].taskCircle1[tskStg][cd].Status == 'Inactive'){
+                                                        stgcolor = 'gray';
+                                                    }else if(jvstr[i].taskCircle1[tskStg][cd].Status == 'In Progress'){
+                                                        var tDate = new Date('{!todayDate}');
+                                                        var todayDate = new Date(tDate.getFullYear(),tDate.getMonth(), tDate.getDate());
+                                                        var newtskDate = new Date(jvstr[i].taskCircle1[tskStg][cd].ActivityDate);
+                                                        var tskdate = new Date(newtskDate.getFullYear(),newtskDate.getMonth(), newtskDate.getDate());
+                                                        var nextsdate = new Date('{!nextSixthDate}');
+                                                        var nextsixdate = new Date(nextsdate.getFullYear(),nextsdate.getMonth(), nextsdate.getDate());
+                                                        
+                                                        if(tskdate  < todayDate ){                                
+                                                            stgcolor = 'red';
+                                                        }else if(tskdate  >= todayDate  && tskdate  <= nextsixdate  ){
+                                                            stgcolor = 'yellow';    
+                                                        }else if(tskdate  > nextsixdate){
+                                                            stgcolor = 'blue';    
+                                                        }
+                                                          
+                                                    }
+                                                    var hoverDetail = jvstr[i].taskCircle1[tskStg][cd].Subject + '\n' + jvstr[i].taskCircle1[tskStg][cd].Owner.Name + '\n' + jvstr[i].taskCircle1[tskStg][cd].ActivityDate;
+                                                    if(stgcolor == 'green'){
+                                                        listItem +='<img src="{!URLFOR($Resource.circle,'circle/green.png')}" width="9" height="9" class="taskhover" title="'+ hoverDetail  + '" id="'+ jvstr[i].taskCircle1[tskStg][cd].Id + '"/>';    
+                                                    }else if(stgcolor == 'gray'){
+                                                        listItem +='<img src="{!URLFOR($Resource.circle,'circle/gray.png')}" width="9" height="9"  class="taskhover" title="'+ hoverDetail  + '" id="'+ jvstr[i].taskCircle1[tskStg][cd].Id + '"/>'; 
+                                                    }else if(stgcolor == 'red'){
+                                                        listItem +='<img src="{!URLFOR($Resource.circle,'circle/red.png')}" width="9" height="9" class="taskhover" title="'+ hoverDetail  + '" id="'+ jvstr[i].taskCircle1[tskStg][cd].Id + '"/>';    
+                                                    }else if(stgcolor == 'blue'){
+                                                        listItem +='<img src="{!URLFOR($Resource.circle,'circle/blue.png')}" width="9" height="9"  class="taskhover" title="'+ hoverDetail  + '" id="'+ jvstr[i].taskCircle1[tskStg][cd].Id +'"/>';    
+                                                    }else if(stgcolor == 'yellow'){
+                                                        listItem +='<img src="{!URLFOR($Resource.circle,'circle/yellow.png')}" width="9" height="9"  class="taskhover" title="'+ hoverDetail  + '" id="'+ jvstr[i].taskCircle1[tskStg][cd].Id + '"/>';  
+                                                    }
+                                                   
+                                                }
+                                                
+                                            }
+                                            listItem +='</td>';
+                                    </apex:repeat> 
+                                if(jvstr[i].taskCircle1 != undefined){
+                                    listItem += '<td width="10px" > <a href="/apex/ViewAllTaskPage?id='+ jvstr[i].oppRecord.Id +'" target="_blank"><img src="{!URLFOR($Resource.circle,'circle/all.png')}" width="9" height="9" title="View All Sales Deliverables"/> </a></td>';    
+                                } 
+                                
+                                listItem +='<td width="25px" style="float:right;"><span id="'+jvstr[i].oppRecord.Id+'-bookmark"  onclick="toggleFollowingOpportunity(\''+jvstr[i].oppRecord.Id+'\',\''+recordfollow+'\',\''+jvstr[i].oppRecord.Name+'\');"  class="glyphicon glyphicon-bookmark '+(isFollow ?'glyphicon-bookmark-deepskyblue' :'glyphicon-bookmark-black')+'" title="'+(isFollow ? 'Stop following this opportunity to stop receiving updates in your feed.' : 'Start Following this opportunity to receive updates in your feed.')+'"></span></td>';               
+                                listItem +='</tr></table></tr>';
+                                listItem +='</table>';
+                                listItem +='    </li>';
+                                
+                                var amt = containerMap[fldvalue];
+                                
+                                var usrname = (jvstr[i].oppRecord.Owner.Name).split(' ').join('');
+                                var pm = '';
+                                if(jvstr[i].oppRecord.Project_Manager__c != undefined){
+                                    pm = (jvstr[i].oppRecord.Project_Manager__r.Name).split(' ').join('');
+                                }
+                                
+                                var innerhtml2 = $("#"+amt +"-list2").html();
+                                var innerhtml3 = $("#"+amt +"-list" + usrname).html();
+                                
+                                var innerhtml4 = '' ;
+                                if(jvstr[i].oppRecord.Project_Manager__c != undefined){
+                                    innerhtml4 = $("#"+amt +"-list"+pm).html();
+                                    
+                                }
+                                
+                                
+                                $("#"+amt+"-list2").html(innerhtml2 +''+ listItem);
+                                $("#"+amt+"-list"+usrname).html(innerhtml3 +''+ listItem);
+                                if(jvstr[i].oppRecord.Project_Manager__c != undefined){
+                                    $("#"+amt+"-list"+pm).html(innerhtml4 +''+ listItem);        
+                                }
+                                
+                                
+                                mapOpportunityRecords[jvstr[i].oppRecord.Id] = record;
+    
+                                mainContainersHeight = $("#opportunities-container").height();
+                        }
+                    }
+               }
+               activeOnClickEdit(); 
+               }catch(e){
+                   console.log('-----> e   ' +  e );     
+               }
+        }
+            
+                    
+            
+        </script>
+    </apex:outputPanel>
+    
+    </apex:form>
+    
+    
+</apex:page>

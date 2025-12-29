@@ -1,0 +1,62 @@
+<apex:page standardController="Opportunity" extensions="ViewAllNotes_Attachments_Cls">
+<apex:form >
+        <div class="bPageTitle"><div class="ptBody secondaryPalette"><div class="content"><img src="/s.gif" alt="Opportunity" class="pageTitleIcon" title="Opportunity"><h1 class="pageType noSecondHeader">View all Notes &amp; Attachments</h1><div class="blank">&nbsp;</div></div><div class="links"><a href="javascript:openPopupFocusEscapePounds(%27/help/doc/user_ed.jsp?loc=help&target=notes.htm&section=Notes_Attachments%27, %27Help%27, 700, 600, %27width=700,height=600,resizable=yes,toolbar=yes,status=no,scrollbars=yes,menubar=yes,directories=no,location=no,dependant=no%27, false, false);" title="Help for this Page (New Window)"><span class="helpLink">Help for this Page</span><img src="/s.gif" alt="Help" class="helpIcon" title="Help"></a></div></div><div class="ptBreadcrumb"></div></div>
+        <center>
+            <apex:commandButton action="{!NewNote}" value="New Note"/>
+            <apex:commandButton action="{!AttachFile}" value="Attach File"/>
+            <apex:commandButton action="{!cancel}" value="Cancel"/>
+        </center>
+        <br/>
+        <!-- For After 12/27/2010 -->
+        <apex:repeat value="{!SortWrapperListAfter}" var="pw" id="theRepeat_after">
+            <apex:pageBlock title="" mode="view">
+                    <div class="pbSubsection">
+                    <table class="detailList" border="0" cellpadding="0" cellspacing="0">
+                        <tbody>
+                            <tr><td class="labelCol"><a href="{!pw.URL}">Edit</a></td></tr>
+                            <tr><td class="labelCol">Created By</td><td class="data2Col" colspan="3">{!pw.CreatedBy}</td></tr>
+                            <tr><td class="labelCol">Created On</td><td class="data2Col" colspan="3">{!pw.CreatedDate}</td></tr>
+                            <tr><td class="labelCol">Last Modified By</td><td class="data2Col" colspan="3">{!pw.LastModifiedBy}</td></tr>
+                            <tr><td class="labelCol">Last Modified On</td><td class="data2Col" colspan="3">{!pw.LastModifiedDate}</td></tr>
+                            <tr><td class="labelCol">Title</td><td class="data2Col" colspan="3">{!pw.title}</td></tr>
+                            <tr><td class="labelCol">Type</td><td class="data2Col" colspan="3">{!pw.Type1}</td></tr>
+                            <tr><td class="labelCol">Description</td><td class="data2Col" colspan="3"><apex:outputLabel value="{!pw.description}" escape="false"/></td></tr>
+                            <apex:outputpanel rendered="{!!pw.isNotes}">
+                                <tr><td class="labelCol last">&nbsp;</td><td class="data2Col last" colspan="3"><a href="https://c.na26.content.force.com/servlet/servlet.FileDownload?file={!pw.RecordId}" target="_TOP">View file</a></td></tr>
+                            </apex:outputpanel>
+                        </tbody>
+                    </table>
+                    </div>
+             </apex:pageBlock>
+             <br/>
+         </apex:repeat>
+        <!-- For Before 12/27/2010 -->
+        <apex:repeat value="{!SortWrapperListBefore}" var="pw" id="theRepeat">
+            <apex:pageBlock title="" mode="view">
+                    <div class="pbSubsection">
+                    <table class="detailList" border="0" cellpadding="0" cellspacing="0">
+                        <tbody>
+                            <tr><td class="labelCol"><a href="{!pw.URL}">Edit</a></td><td class="data2Col" colspan="3">&nbsp;</td></tr>
+                            <tr><td class="labelCol">Created By</td><td class="data2Col" colspan="3">{!pw.CreatedBy}</td></tr>
+                            <tr><td class="labelCol">Created On</td><td class="data2Col" colspan="3">{!pw.CreatedDate}</td></tr>
+                            <tr><td class="labelCol">Last Modified By</td><td class="data2Col" colspan="3">{!pw.LastModifiedBy}</td></tr>
+                            <tr><td class="labelCol">Last Modified On</td><td class="data2Col" colspan="3">{!pw.LastModifiedDate}</td></tr>
+                            <tr><td class="labelCol">Title</td><td class="data2Col" colspan="3">{!pw.title}</td></tr>
+                            <tr><td class="labelCol">Type</td><td class="data2Col" colspan="3">{!pw.Type1}</td></tr>
+                            <tr><td class="labelCol">Description</td><td class="data2Col" colspan="3"><apex:outputLabel value="{!pw.description}" escape="false"/></td></tr>
+                            <apex:outputpanel rendered="{!!pw.isNotes}">
+                                <tr><td class="labelCol last">&nbsp;</td><td class="data2Col last" colspan="3"><a href="https://c.na26.content.force.com/servlet/servlet.FileDownload?file={!pw.RecordId}" target="_TOP">View file</a></td></tr>
+                            </apex:outputpanel>
+                        </tbody>
+                    </table>
+                    </div>
+             </apex:pageBlock>
+             <br/>
+         </apex:repeat>
+        <center>
+            <apex:commandButton action="{!NewNote}" value="New Note"/>
+            <apex:commandButton action="{!AttachFile}" value="Attach File"/>
+            <apex:commandButton action="{!cancel}" value="Cancel"/>
+        </center>       
+</apex:form>
+</apex:page>

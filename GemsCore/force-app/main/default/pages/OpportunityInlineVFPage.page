@@ -1,0 +1,144 @@
+<apex:page standardController="Opportunity" extensions="OpportunityInlineController" sidebar="false" showHeader="false">
+    <style>
+        .popbox {
+            display: none;
+            position: absolute;
+            z-index: 99999;
+            width: 400px;
+            padding: 10px;
+            background: #EEEFEB;
+            color: #000000;
+            border: 1px solid #4D4F53;
+            margin: 0px;
+            -webkit-box-shadow: 0px 0px 5px 0px rgba(164, 164, 164, 1);
+            box-shadow: 0px 0px 5px 0px rgba(164, 164, 164, 1);
+        }
+        .popbox h2
+        {
+            background-color: #4D4F53;
+            color:  #E3E5DD;
+            font-size: 14px;
+            display: block;
+            width: 100%;
+            margin: -10px 0px 8px -10px;
+            padding: 5px 10px;
+        }
+        .item{
+            width:45%;
+            border:1px solid #BBBBBB;
+            float:left;
+            
+        }
+        .heading{
+            text-align:center;
+            margin:0px;
+            padding:5px 0px 5px 0px;
+            font-size:140%;
+            color:white;
+            background: #3b679e; /* Old browsers */
+            background: -moz-linear-gradient(top,  #3b679e 0%, #207cca 99%, #7db9e8 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3b679e), color-stop(99%,#207cca), color-stop(100%,#7db9e8)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #3b679e 0%,#207cca 99%,#7db9e8 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #3b679e 0%,#207cca 99%,#7db9e8 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #3b679e 0%,#207cca 99%,#7db9e8 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  #3b679e 0%,#207cca 99%,#7db9e8 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 ); /* IE6-9 */
+        }
+        .TFtable tr td{
+            border:1px solid white;
+        }
+        
+        .TFtable tr:nth-child(odd){ 
+            background-color:#cde0ff;
+        }
+        .TFtable tr:nth-child(even){
+            background-color:#E4EDFD;
+        }
+    </style>
+    <apex:form >
+        <table width="100%" cellspacing="0">
+            <tr>
+            <apex:variable var="indx" value="{!0}"/>
+            <apex:repeat value="{!stageList}" var="s"> 
+            
+                <td valign="top">
+                    <p class="heading">{!s}</p>
+                    <!-- Output panel for stages -->
+                    <apex:outputPanel rendered="{!IF(s != 'Coaching',true,false)}">
+                        <table class="TFtable" cellpadding="1" cellspacing="0" width="100%" valign="top">
+                            <apex:repeat value="{!stageTaskMap[s]}" var="t">
+                                <tr>
+                                    <td width="4%">
+                                        <apex:commandLink onclick="editTask('{!t.tsk.Id}'); return false;" style="text-decoration: none;color: inherit;">
+                                            <apex:image url="{!URLFOR($Resource.circle,'circle/green.png')}" width="12" height="12" rendered="{!IF(t.tsk.Status_Color__c == 'green',true,false)}" title="Completed"/>
+                                            <apex:image url="{!URLFOR($Resource.circle,'circle/yellow.png')}" width="12" height="12" rendered="{!IF(t.tsk.Status_Color__c == 'yellow',true,false)}" title="Due in a week"/>
+                                            <apex:image url="{!URLFOR($Resource.circle,'circle/red.png')}" width="12" height="12" rendered="{!IF(t.tsk.Status_Color__c == 'red',true,false)}" title="Overdue"/>
+                                            <apex:image url="{!URLFOR($Resource.circle,'circle/gray.png')}" width="12" height="12" rendered="{!IF(t.tsk.Status_Color__c == 'gray',true,false)}" title="Inactive"/>
+                                            <apex:image url="{!URLFOR($Resource.circle,'circle/blue.png')}" width="12" height="12" rendered="{!IF(t.tsk.Status_Color__c == 'blue',true,false)}" title="Open"/>   
+                                        </apex:commandLink>
+                                    </td>
+                                    <td width="32%">
+                                        
+                                        <p style="margin:0px">{!t.tsk.Subject}</p>        
+                                        
+                                    </td>
+                                    <td width="32%">{!t.tsk.Owner.Name}</td>
+                                    <td width="32%">{!t.dueDate}</td>
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                    </apex:outputPanel>
+                    <!-- Output panel for stages -->
+                    <apex:outputPanel rendered="{!IF(s == 'Coaching',true,false)}">
+                        <table cellpadding="1" cellspacing="0" width="100%" valign="top">
+                            <tr>
+                                <apex:repeat value="{!stageTaskMap[s]}" var="stg">
+                                    <td><apex:commandLink onclick="showCoaching(); return false;">{!stg.stage}</apex:commandLink></td>
+                                </apex:repeat>
+                            </tr>
+                        </table>
+                    </apex:outputPanel>
+                    <apex:variable var="indx" value="{!indx+1}"/>
+                </td>
+                <apex:outputPanel rendered="{!MOD(indx, 2)==0}">
+                    <tr></tr>
+                </apex:outputPanel>
+            </apex:repeat>
+        </tr>
+      </table>
+    </apex:form>
+    
+    
+    <script>
+        var newWin;
+        function editTask(taskId){
+            var url="/apex/EditTaskInlinePage?id="+taskId;
+            newWin=window.open(url, 'Popup','height=650,width=1000,left=100,top=10,resizable=yes,scrollbars=yes,toolbar=no,status=no');
+            if (window.focus){
+                newWin.focus();
+            }
+            
+        }
+        
+        function refreshParent(){
+            if (window.top != window.self){
+                var oppId = '{!Opportunity.Id}';
+                window.top.location = "/"+oppId;
+            }else{
+                window.top.location = window.top.location;
+            }
+        }
+        
+        var table = document.getElementById('tbl');   
+        var rows = table.getElementsByTagName("tr");   
+        for(i = 0; i < rows.length; i++){           
+            if(i % 2 == 0){ 
+                rows[i].className = "even"; 
+            }else{ 
+                rows[i].className = "odd"; 
+            }       
+        } 
+        
+        
+    </script>
+</apex:page>

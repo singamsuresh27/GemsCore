@@ -1,0 +1,402 @@
+<apex:page sidebar="false" renderas="pdf" showHeader="false" standardController="NBO_Forms__c" Extensions="PrintNBO">
+<html>
+<head>
+<style>
+body
+{
+font-size: 12px;
+font-family: verdana, Arial, Helvetica;
+margin: 0px;
+border: 0px;
+background-color: #ffffff;
+cursor: default;
+}
+</style>
+</head>
+<h1><u><center><b>Temperature: <apex:outputField value="{!nbo.Name }"/></b></center></U></h1>
+<Table id="tbl0" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">
+  <tr><td>
+    <Table id="tbl1" cellSpacing="1" cellPadding="2" width="90%" align="center" border="0">
+
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>
+    <tr>
+        <td colspan="4"><b><u>Account:</u></b></td>
+    </tr>
+    <tr>
+        <td width="20%">Account Name:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Account.Name }"/></td>
+        <td width="20%">Phone:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Account.Phone }"/></td>            
+    </tr>
+    <tr>
+        <td width="20%">Street:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Account.ShippingStreet }"/></td>
+        <td width="20%">City:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Account.ShippingCity }"/></td>
+    </tr>
+    <tr>
+        <td width="20%">State:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Account.ShippingState }"/></td>
+        <td width="20%">Country:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Account.ShippingCountry }"/> </td>
+    </tr>
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>
+ <!--    <tr>
+        <td colspan="4"><b><u>Project:</u></b></td>
+    </tr>
+    <tr>
+        <td width="20%">Project Name:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.name}"/></td>
+        <td width="20%">Market:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Market__c}"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Lead source:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.LeadSource }"/></td>
+        <td width="20%">Product Model:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Product_Model__c }"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Product Type: </td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Product_Model__r.Product_Type__c }"/></td>
+        <td width="20%">Quantity:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.TotalOpportunityQuantity }"/> </td>
+    </tr>
+    <tr>
+        <td width="20%">Unit Price:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Unit_Price__c }"/> </td>
+        <td width="20%">Amount:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.Amount }"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Application Detail:</td>
+        <td colspan="3"><apex:outputField value="{!nbo.Opportunity__r.Application_Detail__c }"/> </td>
+    </tr> -->
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>
+    <tr>
+        <td Colspan="4"><b><u>App Data Detail:</u></b></td>
+    </tr>
+    <tr>
+        <td width="20%">Eng. Project No: </td>
+        <td width="30%"><apex:outputField value="{!nbo.name}"/></td>
+        <td width="20%">Opportunity:</td>
+       <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.name}"/></td>        
+    </tr>
+    <tr>
+        <td width="20%">Rev Number:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Revision_Number__c }"/></td>
+        <td width="20%">PIM/Attractiveness Score:</td>
+        <td width="30%"><apex:outputField value="{!nbo.PIM_Score__c}"/>/<apex:outputField value="{!nbo.AF_Score__c}"/></td>
+    </tr> 
+    <tr>
+    	<td width="20%">Created By:</td>
+    	<td width="30%"><apex:outputField value="{!nbo.CreatedById}"/></td>
+        <td width="20%">SDR Color:</td>
+        <td width="30%"><apex:outputField value="{!nbo.SDR_Card_Color__c}"/>(<apex:outputField value="{!nbo.SDR_Color__c}"/>)</td>
+    </tr>      
+    <tr>
+        <td width="20%">Chief Engineer:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Chief_Engineer__c }"/></td>
+        <td width="20%">Project Manager:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Project_Manager__c}"/></td>        
+    </tr>
+    <tr>
+        <td width="20%">Project Engineer:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Project_Engineer__c}"/></td>
+        <td width="20%">Additional Project Manager:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Additional_Project_Manager__c}"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Last Modified By:</td>
+        <td width="30%"><apex:outputField value="{!nbo.LastModifiedById}"/></td>
+        <td width="20%">Estimated Quantity:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Opportunity__r.TotalOpportunityQuantity }"/></td>
+    </tr>          
+    <tr>
+        <td width="20%">Due Date:</td>
+        <td width="30%"><apex:outputField value="{!nbo.NBO_Due_Date__c}"/></td>
+        <td width="20%">Estimated Unit Price:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Estimated_Unit_Price__c}"/></td>          
+    </tr>
+    <tr>
+        <td width="20%">Promise Date:</td>
+        <td width="30%"><apex:outputField value="{!nbo.NBO_Promise_Date__c }"/></td>      
+        <td width="20%">Estimated Amount:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Estimated_Amount__c}"/></td>
+    </tr>    
+    <tr>
+        <td width="20%">Status:</td>
+        <td width="30%"><apex:outputField value="{!nbo.NBO_Status__c }"/></td>
+        <td width="20%"></td>
+        <td width="30%"></td>        
+    </tr>
+    <tr>
+        <td width="20%">Complete Date:</td>
+        <td width="30%"><apex:outputField value="{!nbo.NBO_Complete_Date__c }"/></td>
+        <td width="20%"></td>
+        <td width="30%"></td>
+    </tr>
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>
+    <tr>
+        <td colspan="4"><b><u>Sales To Do:</U></b></td>
+    </tr>
+    <tr>
+        <td width="20%">Feasibility Info:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Feasibility_Info__c }"/></td>
+        <td width="20%">Feasibility Due Date:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Feasibility_Due_Date__c }"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Drawing Required:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Drawing_Required__c }"/></td>
+        <td width="20%">Drawing Due Date:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Drawing_Due_Date1__c }"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Prototype:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Engineered_Prototype__c }"/></td>
+        <td width="20%">Prototype Due Date:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Prototype_Due_Date__c }"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Prototype QTY:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Engineered_Prototype_QTY__c }"/></td>
+        <td width="20%"></td>
+        <td width="30%"></td>
+    </tr>
+    <tr>
+        <td width="20%">Evaluation Test:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Evaluation_Test__c }"/></td>
+        <td width="20%">Evaluation Due date:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Evaluation_Due_date__c }"/></td>
+    </tr>  
+    <tr>
+        <td width="20%">Quotation Costs:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Quotation_Costs__c }"/></td>
+        <td width="20%">Quotation Due Date:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Quotation_Due_Date__c }"/></td>
+    </tr>
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>
+    <tr>
+        <td colspan="4"><b><u>General Application Detail:</u></b></td>
+    </tr>    
+    <tr>
+    <td width="20%" valign="top">App Details, Problem to Solve:</td>
+    <td width="30%" colspan="3"><apex:outputField value="{!nbo.Problem_to_Solve__c}"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Primary Media:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Media__c }"/></td>    
+        <td width="20%">Other Media:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Fluid__c	}"/></td>
+    </tr>  
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>
+    <tr>
+        <td colspan="4"><b><u>Specific Application Detail:</u></b></td>
+    </tr>    
+    <tr>
+        <td width="20%">Operating Pressure (Min):</td>
+        <td width="30%"><apex:outputField value="{!nbo.MIN_Pressure__c}"/></td>
+        <td width="20%">Media Temp (Min):</td>
+        <td width="30%"><apex:outputField value="{!nbo.Min_Media_Temperature__c}"/></td>       
+    </tr>        
+    <tr>
+        <td width="20%">Operating Pressure (Typical):</td>
+        <td width="30%"><apex:outputField value="{!nbo.OPR_Pressure__c}"/></td>
+        <td width="20%">Media Temp (Typical):</td>
+        <td width="30%"><apex:outputField value="{!nbo.Typical_Media_Temp__c}"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Operating Pressure (Max):</td>
+        <td width="30%"><apex:outputField value="{!nbo.Max_Pressure__c}"/></td>
+        <td width="20%">Media Temp (Max):</td>
+        <td width="30%"><apex:outputField value="{!nbo.MAX_Media_Temperature__c}"/></td>
+    </tr>   
+    <tr>	
+        <td width="20%">Tolerance/Accuracy:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Tolerance_Accuracy__c}"/></td>
+        <td width="20%">Ambient Temp (Min):</td>
+        <td width="30%"><apex:outputField value="{!nbo.Min_Ambient_Temperature__c}"/></td>
+    </tr>  
+    <tr>
+        <td width="20%">Mounting:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Mounting_R__c	}"/></td>
+        <td width="20%">Ambient Temp (Typical):</td>
+        <td width="30%"><apex:outputField value="{!nbo.Amb_Temp__c}"/></td>
+    </tr>  
+    <tr>
+        <td width="20%">Sheat Material:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Sheat_Material__c}"/></td>
+        <td width="20%">Ambient Temp (Max):</td>
+        <td width="30%"><apex:outputField value="{!nbo.Max_Ambient_Temperature__c}"/></td>
+    </tr>  
+    <tr>
+        <td width="20%">Sheath Diameter:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Sheath_Diameter__c}"/></td>
+        <td width="20%">Lead Wire Length:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Lead_Wire_Length__c}"/></td>
+    </tr>        
+    <tr>
+        <td width="20%">Sheath Length:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Sheath_Length__c}"/></td>
+        <td width="20%">Lead Wire Insulation Material:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Leadwire_Type__c}"/></td>   
+    </tr>     
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>
+    <tr>
+        <td colspan="4"><b><u>Sensor Type:</u></b></td>
+    </tr>     
+    <tr>
+        <td width="20%">Sensor Type:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Sensor_Type__c}"/></td>
+        <td width="20%"></td>
+        <td width="30%"></td>
+    </tr>       
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>
+    <tr>
+        <td colspan="4"><b><u>TSTAT:</u></b></td>
+    </tr>         
+    <tr>
+        <td width="20%">Set Point:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Set_Point__c}"/></td>
+        <td width="20%">Tstat Logic:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Tstat_Logic__c}"/></td>
+    </tr>  
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>      
+    <tr>
+        <td colspan="4"><b><u>RTD:</u></b></td>
+    </tr>    
+    <tr>
+        <td width="25%">Resistance At 0 Degree C:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Resistance_C__c}"/></td>
+        <td width="20%">Wire Configuration:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Wire_Configuration__c}"/></td>
+    </tr>    
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>      
+    <tr>
+        <td colspan="4"><b><u>Thermocouple:</u></b></td>
+    </tr>    
+    <tr>
+        <td width="20%">Sub Sensor Type:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Sub_Sensor_Type__c}"/></td>
+        <td width="20%">Junction Type:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Junction_Type__c}"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Other Thermocouple:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Other_Thermocouple__c}"/></td>
+        <td width="20%"></td>
+        <td width="30%"></td>
+    </tr>   
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>      
+    <tr>
+        <td colspan="4"><b><u>Thermistor:</u></b></td>
+    </tr> 
+    <tr>
+        <td width="20%">Resistance At 25 Degree C:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Resistance_At_25__c}"/></td>
+        <td width="20%">Other Resistance:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Other_Resistance__c}"/></td>
+    </tr>            
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>      
+    <tr>
+        <td colspan="4"><b><u>Other:</u></b></td>
+    </tr> 
+    <tr>
+        <td width="20%">Other Sensor Type:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Other_Sensor_Type__c}"/></td>
+        <td width="20%"></td>
+        <td width="30%"></td>
+    </tr>                
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr> 
+    <tr>
+    	<td colspan="4"><b><u>Miscellaneous:</u></b>
+    	</td>
+    </tr>
+    <tr>
+   		 <td width="20%">Maintenance Procedure:</td>
+    	 <td width="30%"><apex:outputField value="{!nbo.Maintenance_Procedure__c}"/></td>
+    	 <td width="20%">Specs From Competitor’s Drawing?:</td>
+    	 <td width="30%"><apex:outputField value="{!nbo.Competitor_Drawing__c}"/></td>
+    </tr>    
+    <tr>
+   		 <td width="20%">Life expectancy:</td>
+    	 <td width="30%"><apex:outputField value="{!nbo.Life_expectancy__c}"/></td>
+    	 <td width="20%">Approval:</td>
+    	 <td width="30%"><apex:outputField value="{!nbo.Approval__c}"/></td>
+    </tr>  
+    <tr>
+   		 <td width="20%">Criticality in system:</td>
+    	 <td width="30%"><apex:outputField value="{!nbo.Criticality_in_system__c}"/></td>
+    	 <td width="20%">Other Approvals:</td>
+    	 <td width="30%"><apex:outputField value="{!nbo.Other_Approvals__c}"/></td>
+    </tr>  
+    <tr>
+   		 <td width="20%">Final end-use location:</td>
+    	 <td width="30%"><apex:outputField value="{!nbo.Final_end_use_location__c}"/></td>
+    	 <td width="20%">Approvals Needed By:</td>
+    	 <td width="30%"><apex:outputField value="{!nbo.Approvals_Needed_By__c}"/></td>
+    </tr> 
+    <tr>
+    	<td width="20%" valign="top">Customer Validation/Test Plan:</td>
+    	<td width="30%" colspan="3"><apex:outputField value="{!nbo.Validation_testing_to_be_done__c}"/></td>
+    </tr>    
+    <tr>
+    	<td width="20%" valign="top">Other Notes and Details:</td>
+    	<td width="30%" colspan="3"><apex:outputField value="{!nbo.Other_Requirements__c}"/></td>
+    </tr> 
+    <tr>
+        <td colSpan="4" height="10"> </td>
+    </tr>
+    <tr>
+    	<td colspan="4" ><b><u>Competition/Incumbent Information:</u></b></td>
+    </tr>             
+    <tr>
+        <td width="20%">Brand:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Competitor__c}"/></td>
+        <td width="20%">Problems/Limitations:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Problem__c}"/></td>
+    </tr>
+    <tr>
+        <td width="20%">Model and/or PN:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Competitor_PN__c}"/></td>
+        <td width="20%">Alternate Technologies Considered:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Alternate_Technologies_Considered__c}"/></td>
+    </tr>    
+    <tr>
+        <td width="20%">Specs:</td>
+        <td width="30%"><apex:outputField value="{!nbo.Specs__c}"/></td>
+        <td width="20%"></td>
+        <td width="30%"></td>
+    </tr>
+    </Table>
+  </td></tr>
+</Table>
+</html>
+</apex:page>

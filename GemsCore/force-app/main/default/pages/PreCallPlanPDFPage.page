@@ -1,0 +1,259 @@
+<apex:page standardController="Percall_Plan__c" extensions="PreCallPlanController" standardStylesheets="false" sidebar="false" renderAs="pdf" showHeader="false">
+    <head>
+        <style>
+            @page {
+                size: A4;
+                margin: 5mm;
+                font-family: Arial Unicode MS;
+                font-size:  10px;
+            }
+            body {
+                font-family: "Arial Unicode MS";
+                font-size:  10px;
+            }
+            
+        
+        </style>
+    </head>
+    
+    <apex:form >            
+            <!-- Customer Section Start -->
+            <table class="list" border="1" width="100%" cellspacing="0" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS';font-size:14px !important" >
+                <tr>
+                    <td width="18%">Customer: </td>
+                    <td class="headerRow" width="32%" style="font-weight:bold;"><apex:outputLink value="{!acc.Name}" onclick="actOpenAccount();return false;">{!acc.Name} </apex:outputLink></td>
+                    <td width="18%">Pre-Call Plan Name: </td>
+                    <td  width="32%" style="font-weight:bold;"><apex:outputLink value="{!preCallPlan.Name}" onclick="actOpenPreCallPlan();return false;"> {!preCallPlan.Name}</apex:outputLink></td>   
+                </tr>
+                <tr class="headerRow">
+                    <td width="18%">Next Visit Date: </td>
+                    <td class="headerRow" width="32%" style="font-weight:bold;"> <apex:outputField value="{!preCallPlan.Date_of_Visit__c}" /> </td>
+                    <td width="18%">Last Visit Date: </td>
+                    <td class="headerRow" width="32%" > <apex:outputField value="{!preCallPlan.Date_of_last_visit__c}"/></td> 
+                </tr>
+                <tr class="headerRow">
+                    <td width="18%">Opportunity: </td>
+                    <td class="headerRow" width="32%" style="font-weight:bold;"><apex:outputLink onclick="actOpenOpportunity();return false;"> {!if(opp != null, opp.Name, '')}</apex:outputLink>   </td>
+                    <td width="18%">Address: </td>
+                    <td class="headerRow" width="32%" style="font-weight:bold;" >{!acc.shippingStreet}, {!acc.shippingCity},  {!acc.shippingState} </td> 
+                </tr>
+                <tr class="headerRow">
+                    <td width="18%">Meeting Address :  </td>
+                    <td class="dataCell" width="32%">                         
+                        <apex:inputField value="{!preCallPlan.Meeting_Address__c}" rendered="{!!isRecordSaved}"/> 
+                        <apex:outputField value="{!preCallPlan.Meeting_Address__c}" rendered="{!isRecordSaved}"/>
+                    </td>
+                    <td width="18%">Owner :  </td>
+                    <td class="dataCell" width="32%">                         
+                        <apex:outputField value="{!preCallPlan.account__r.ownerid}"/> 
+                    </td> 
+                </tr>
+            </table>
+        <!-- Pre-Plan Section End -->
+        
+        <apex:outputPanel rendered="{! mapSectionNames['aov'] == 'true' }" >
+            <!-- Account Overview Section Start -->
+            <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS';" class="list" >
+                <tr class="headerRow">
+                    <td class="headerRow" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Account Overview </td>
+                </tr>
+                <tr class="dataRow">
+                    <td class="dataCell" style="font-size:12px !important"> <apex:outputField value="{!acc.Description}" /></td>
+                </tr>
+            </table>    
+            <!-- Account Overview Section End -->
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{! mapSectionNames['su'] == 'true' }" >
+            <!-- Account Overview Section Start -->
+            <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS';" class="list" >
+                <tr class="headerRow">
+                    <td class="headerRow" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Situation  Update </td>
+                </tr>
+                <tr class="dataRow">
+                    <td class="dataCell" style="font-size:12px !important"> <apex:outputField value="{!preCallPlan.Situation_Update__c}" /></td>
+                </tr>
+            </table>    
+            <!-- Account Overview Section End -->
+        </apex:outputPanel>
+              
+        <!-- Funnel Section Start -->
+        <apex:outputPanel rendered="{!if(mapSectionNames['fn'] == 'true',true,false)}" >
+        <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS';" class="list" >
+            <tr class="headerRow">
+                <td colspan="{!lstOppFields.size+1}" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Funnel </td>
+            </tr>
+            <tr class="headerRow" style="font-size:14px !important">
+                <th class="dataCell">&nbsp;</th>
+                <apex:repeat value="{!lstOppFields}" var="oph">
+                    <th class="dataCell"> <b>{!oph}</b></th>
+                </apex:repeat>
+            </tr>
+            <apex:repeat value="{!oppModelList}" var="op">
+                <tr class="dataRow" style="font-size:12px !important">
+                    <td class="dataCell">
+                        <apex:image rendered="{!op.isChecked}" url="{!URLFOR($Resource.chkimg,'/chkimg/chkimg/CheckImage.png')}" width="20" height="20"/>
+                        <apex:image rendered="{!!op.isChecked}" url="{!URLFOR($Resource.chkimg,'/chkimg/chkimg/UncheckImage.png')}" width="20" height="20"/>
+                    </td>
+                    <td class="dataCell"><apex:outputField value="{!op.oppObj.Opportunity_Number__c}"/></td>
+                    <td class="dataCell"><apex:outputField value="{!op.oppObj.Name}"/></td>
+                    <td class="dataCell"><apex:outputField value="{!op.oppObj.Estimated_Amount__c}"/></td>
+                    <td class="dataCell">
+                        <apex:outputPanel layout="none" rendered="{!op.oppObj.StageName == 'Stage 1 - Qualified' }">
+                            S1
+                        </apex:outputPanel>                    
+                        <apex:outputPanel layout="none" rendered="{!op.oppObj.StageName == 'Stage 2 - Needs Identified & Accepted' }">
+                            S2
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!op.oppObj.StageName == 'Stage 3 - Solution Presented & Accepted' }">
+                            S3
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!op.oppObj.StageName == 'Stage 4 - Specific Price / Budget' }">
+                            S4
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!op.oppObj.StageName == 'Stage 5 - Order Placement' }">
+                            S5
+                        </apex:outputPanel>
+                    </td>
+                    <td class="dataCell"><apex:outputField value="{!op.oppObj.Product_Model__c}"/></td>
+                    <td class="dataCell"><apex:outputField value="{!op.oppObj.NextStep}"/></td>
+                    <td class="dataCell"><apex:outputField value="{!op.oppObj.CloseDate}"/></td>
+                </tr>
+            </apex:repeat>
+        </table>  
+        </apex:outputPanel>
+        <!-- Funnel Section End -->
+       
+        <!-- Precall Contact Section -->
+        <apex:outputPanel rendered="{!if(mapSectionNames['pc'] == 'true',true,false)}" >
+        <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS';" class="list">
+            <tr class="headerRow">
+                <td colspan="4" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Meeting Attendees </td>
+            </tr>
+            <tr class="headerRow" style="font-size:14px !important">
+                <th class="headerRow">   </th>
+                <th class="headerRow"> Name </th>   
+                <th class="headerRow"> Title </th>
+                <th class="headerRow"> Notes </th>
+            </tr>  
+            <apex:variable value="{!1}" var="rn"/>
+            <apex:repeat value="{!lstContacts}" var="con">
+                <tr class="dataRow" style="font-size:12px !important">
+                    <td class="dataCell" width="5%" align="center"> {!rn}</td>
+                    <td class="dataCell"> <apex:outputField value="{!con.Name}"/></td>
+                    <td class="dataCell"> <apex:outputField value="{!con.Title__c}"/></td>
+                    <td class="dataCell"> <apex:outputField value="{!con.Notes__c}"/></td>
+                </tr>
+                <apex:variable var="rn" value="{!rn+1}"/>
+            </apex:repeat>                   
+         </table>
+        </apex:outputPanel>
+        
+         <!-- Call Objective Agenda --> 
+         <apex:outputPanel rendered="{!if(mapSectionNames['obs'] == 'true',true,false)}" >
+         <table width="100%" border="1"  cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS';" class="list">
+            <tr class="headerRow">
+                <td> </td>
+                <td  style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Call Objectives / Agenda </td>
+                <td  style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Post-Call Comments </td>
+            </tr>
+            <apex:repeat value="{!lstObjectives}" var="obj">
+            <tr class="dataRow" style="font-size:12px !important">
+                 <td class="dataCell" width="5%" align="center"> <apex:outputField value="{!obj.Name}"/>  </td> 
+                 <td class="dataCell" width="47%"><apex:outputField value="{!obj.Objective__c}"/> </td> 
+                 <td class="dataCell"><apex:outputField value="{!obj.Post_Call_Comment__c}"/> </td> 
+            </tr>
+            </apex:repeat>
+        </table> 
+       </apex:outputPanel>
+       
+        <!-- Precall Question -->
+        <apex:outputPanel rendered="{!if(mapSectionNames['qst'] == 'true',true,false)}" >
+        <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS';" class="list">
+            
+            <tr class="headerRow" >                
+                <th class="headerRow" width="5%" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;">   </th>  
+                <th class="headerRow" width="47%" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Key Questions to Ask </th>
+                <th class="headerRow" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Post-Call Comments </th>
+            </tr>
+            <apex:repeat value="{!lstQuestions }" var="qstobj">
+                <tr class="dataRow" style="font-size:12px !important">                    
+                    <td class = "dataCell" width="5%" align="center"><apex:outputField value="{!qstobj.Name}" /> </td>
+                    <!-- <td class = "dataCell" align="center"> <apex:image url="{!URLFOR($Resource.chkimg,'/chkimg/chkimg.png')}" width="20" height="20"/>  </td>  -->
+                    <td class = "dataCell" ><apex:outputField value="{!qstobj.Question__c}" /> </td>
+                    <td class = "dataCell" > <apex:outputField value="{!qstobj.Note__c}"/> </td>
+                </tr>
+            </apex:repeat>
+        </table>    
+        </apex:outputPanel>
+        
+        <!-- Precall Objection  -->
+        <apex:outputPanel rendered="{!if(mapSectionNames['objet'] == 'true',true,false)}" >
+        <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS';" class="list">
+            <tr class="headerRow">
+                <th class="headerRow">   </th> 
+                <th class="headerRow" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Customer Objections </th>
+                <th class="headerRow" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Gems Response </th>
+            </tr>
+            <apex:repeat value="{!lstObjections}" var="objetObj">
+                <tr class="dataRow" style="font-size:12px !important">
+                    <!-- <td class ="dataCell" align="center" width="5%"> <apex:image url="{!URLFOR($Resource.chkimg,'/chkimg/chkimg.png')}" width="20" height="20"/> </td> -->
+                    <td class = "dataCell" width="5%" align="center"><apex:outputField value="{!objetObj.Name}" /> </td>
+                    <td class = "dataCell" width="47%"><apex:outputField value="{!objetObj.Objection__c}" /> </td>
+                    <td class = "dataCell"> <apex:outputField value="{!objetObj.Response__c}"/> </td>
+                </tr>
+            </apex:repeat>
+        </table>    
+        </apex:outputPanel>
+        
+        <!-- Trip Summary Section Start --> 
+        <apex:outputPanel rendered="{! mapSectionNames['tp'] == 'true' }" >
+            <table style="page-break-before: always;width:100%;margin-top:10px;font-family:'Arial Unicode MS';" class="list" border="1" cellspacing="1" cellpadding="1" align="center">
+                <tr class="headerRow">
+                    <td width="100%" style="background:#483D8B;font-size:15px;font-family: 'Arial Unicode MS';font-weight:bold;text-align:center;color:white;"> Post-Call Summary </td>
+                </tr>
+            </table>       
+            <table class="list" width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS';"> 
+                <tr class="headerRow">
+                    <td colspan="6" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Trip Summary </td>
+                </tr>
+                <tr class="headerRow" style="font-size:12px !important">
+                    <td>
+                        <apex:outputField value="{!preCallPlan.Trip_Summary__c}" />
+                    </td>
+                </tr>
+                 
+            </table>                
+          </apex:outputPanel>
+        <!-- Trip Summary Section End -- >
+        
+        
+        <!-- Task Section -->
+        <apex:outputPanel rendered="{!if(mapSectionNames['ka'] == 'true',true,false)}" >
+        <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS';" class="list">
+            <tr class="headerRow">
+                <td colspan="6" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Key Actions </td>
+            </tr>
+            <tr class="headerRow" style="font-size:14px !important">
+                <th class="headerRow">   </th>
+                <th class="headerRow"> Subject </th>
+                <th class="headerRow"> Due Date </th>
+                <th class="headerRow"> Status </th>
+                <th class="headerRow"> Assign To </th>
+            </tr>
+            <apex:variable var="tskR" value="{!1}"/>
+            <apex:repeat value="{!preCallPlan.Tasks}" var="tsk">
+                <tr class="dataRow" style="font-size:12px !important">
+                    <!-- <td class ="dataCell" width="5%" align="center"> <apex:image url="{!URLFOR($Resource.chkimg,'/chkimg/chkimg.png')}" width="20" height="20"/> </td> --> 
+                    <td class="dataCell" width="5%" align="center"> {!tskR} </td>
+                    <td class="dataCell"> <apex:outputField value="{!tsk.Subject}"/> </td>
+                    <td class="dataCell"> <apex:outputField value="{!tsk.ActivityDate}"/> </td>
+                    <td class="dataCell"> <apex:outputField value="{!tsk.Status}"/> </td>
+                    <td class="dataCell"> <apex:outputField value="{!tsk.OwnerId}"/> </td>
+                </tr>
+                <apex:variable var="tskR" value="{!tskR+1}"/>
+            </apex:repeat>
+        </table> 
+        </apex:outputPanel>    
+    </apex:form>
+</apex:page>

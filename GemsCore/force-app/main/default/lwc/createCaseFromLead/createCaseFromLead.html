@@ -1,0 +1,74 @@
+<template>
+    <lightning-quick-action-panel header="Create Case from Lead">
+        <template if:true={isLoading}>
+    <div class="spinner-overlay">
+        <lightning-spinner alternative-text="Creating Case... Please wait" size="large"></lightning-spinner>
+        <div class="slds-text-align_center slds-text-heading_small slds-m-top_medium">
+            Creating Case... Please wait
+        </div>
+    </div>
+</template>
+
+       <lightning-combobox
+            name="caseRecordType"
+            label="Case Record Type"
+            value={caseRecordType}
+            options={recordTypeOptions}
+            onchange={handleCaseRecordTypeChange}>
+        </lightning-combobox>
+
+        <lightning-input
+            name="subject"
+            label="Subject"
+            value={subject}
+            onchange={handleInputChange}>
+        </lightning-input>
+
+       <!-- <lightning-combobox
+            name="status"
+            label="Status"
+            value={status}
+            options={statusOptions}
+            onchange={handleInputChange}>
+        </lightning-combobox> dibya commented-->
+
+       <!-- <lightning-combobox
+            name="type"
+            label="Type"
+            value={type}
+            options={typeOptions}
+            onchange={handleInputChange}>
+        </lightning-combobox> dibya commented -->
+
+        <lightning-combobox
+            name="businessRegion"
+            label="Business Region"
+            value={businessRegion}
+            options={businessRegionOptions}
+            onchange={handleInputChange}>
+        </lightning-combobox>
+  
+       <!-- <lightning-combobox
+            name="origin"
+            label="Case Origin"
+            value={origin}
+            options={originOptions}
+            onchange={handleInputChange}>
+        </lightning-combobox> dibya commented -->
+
+        <lightning-combobox
+            name="priority"
+            label="Priority"
+            value={priority}
+            options={priorityOptions}
+            onchange={handleInputChange}>
+        </lightning-combobox>
+
+        <!-- Footer Buttons -->
+        <div slot="footer" class="slds-align_absolute-center">
+            <lightning-button variant="neutral" label="Cancel" onclick={handleCancel}></lightning-button>
+            <lightning-button variant="brand" label="Save" onclick={handleCreateCase} disabled={isLoading}></lightning-button>
+        
+        </div>
+    </lightning-quick-action-panel>
+</template>

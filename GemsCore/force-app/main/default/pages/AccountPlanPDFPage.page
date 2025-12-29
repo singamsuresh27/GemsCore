@@ -1,0 +1,275 @@
+<apex:page standardController="Percall_Plan__c" applyBodyTag="false" applyHtmlTag="false" showheader="false" extensions="PreCallPlanController" standardStylesheets="false"  id="pg" renderAs="pdf" >
+    <head>
+        <style>
+            
+            
+            @page {
+                size: A4;
+                margin: 10mm;
+                font-family: Arial Unicode MS;
+            }
+            body {
+                font-family: Times, "Arial Unicode MS";
+            }
+        
+        </style>
+    </head>
+        <apex:includeScript value="{!URLFOR($Resource.JDialog,'JDialog/js/jquery-1.9.1.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.JDialog,'JDialog/js/jquery-ui-1.10.3.custom.js')}"/>
+        
+        <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/css/sunny/jquery-ui-1.10.3.custom.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/css/sunny/jquery-ui-1.10.3.custom.min.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/development-bundle/themes/sunny/jquery.ui.all.css')}"/>
+    
+     
+    
+      
+    <body>
+        
+        
+        <apex:pageBlock >
+            <table  border="1" rules="groups" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:'Arial Unicode MS'" >
+                <tr >
+                    <td  colspan="4" style="background:#483D8B;font-size:30px;font-weight:bold;text-align:center;color:white;"><span style="font-family: 'Arial Unicode MS';">Account Plan </span></td>
+                </tr>
+                <tr >
+                    <td width="18%" style="font-family:'Arial Unicode MS';"> Account Plan Name </td>
+                    <td class="dataCell">  <apex:outputLink value="{!preCallPlan.Name}"   > {!preCallPlan.Name}</apex:outputLink> </td>
+                    <td class="dataCell"> GEMS Share </td>
+                    <td class="dataCell"> {!actPotModelObj.gemsShare}% </td>
+                </tr>
+                <tr class="headerRow">
+                    <td class="headerRow" width="18%"> Account Name </td>
+                    <td class="dataCell"> <apex:outputField value="{!actObj.Name}"/> </td>
+                    <td class="headerRow" width="18%"> JDE# </td>
+                    <td class="dataCell" width="18%"> <apex:outputField value="{!actObj.AccountNumber}"/> </td>
+                </tr>
+                <tr class="headerRow">
+                    <td class="headerRow"> Address </td>
+                    <td class="dataCell" colspan="3"> {!actObj.shippingStreet}, {!actObj.shippingCity},  {!actObj.shippingState}</td>
+                </tr>
+                <tr class="headerRow">
+                    <td class="headerRow" width="18%"> Account Owner</td>
+                    <td class="dataCell" > <apex:outputField value="{!actObj.OwnerId}"/> </td>
+                    <td class="headerRow" width="18%"> Key Account Specialist </td>
+                    <td class="dataCell" width="18%"> <apex:outputField value="{!actObj.Key_Account_Specialist__c}"/> </td>
+                </tr>
+                <tr class="headerRow">
+                    <td class="headerRow" width="18%"> Market </td>
+                    <td class="headerRow" colspan="3"> 
+                        <table class="list" border="1" cellspacing="1" cellpadding="1" width="100%">
+                            <tr class="headerRow">
+                                <td class="dataCell"> <apex:outputField value="{!actObj.Market__c}"/></td>
+                                <td class="headerRow"> Sub Market </td>
+                                <td class="dataCell"> <apex:outputField value="{!actObj.Sub_Market__c}"/></td>
+                                <td class="headerRow"> Classification </td>
+                                <td class="dataCell"> <apex:outputField value="{!actObj.Customer_Classification__c}"/>  </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            
+            <!-- Account Overview Section Start -->
+            <table border="1" cellspacing="1"  cellpadding="1" align="center" style="margin-top:0px;font-family:Arial Unicode MS;" class="list" >
+                <tr class="headerRow">
+                    <td class="headerRow" colspan="2" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Account Overview / Company Bio </td>
+                </tr>
+                <tr class="dataRow">
+                    <td class="dataCell" colspan="2">  <apex:outputField value="{!actObj.Description}" />   </td>
+                </tr>
+                <tr class="headerRow">
+                    <td class="headerRow" width="25%">Products Produced / Model# / Brands</td>
+                    <td class="dataCell">   <apex:outputLabel value="{!productProducedModelBrandsText}"  ></apex:outputLabel>   </td>
+                </tr>
+                <tr class="headerRow">
+                    <td class="headerRow" width="25%">Market Drivers and  Sales Outlook </td>
+                    <td class="dataCell">  <apex:outputLabel value="{!marketDriversSalesOutlookText}"  ></apex:outputLabel>   </td>
+                </tr>
+            </table>    
+            <!-- Account Overview Section End -->
+            
+            <!-- Gems Revenue Section Start -->
+            <apex:outputPanel rendered="{!if(mapSectionNames['gr'] == 'true',true,false)}" >
+            <table border="1" cellspacing="1" width="100%" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial Unicode MS;" class="list" >
+                <tr class="headerRow">
+                    <td class="headerRow" colspan="4" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Gems Revenue </td>
+                </tr>
+                <tr class="headerRow">
+                    <th class="headerRow"> {!currentYear} Forecast </th>
+                    <th class="headerRow"> Target YTD </th>
+                    <th class="headerRow"> YTD </th>
+                    <th class="headerRow"> Gap </th>
+                </tr>
+                <tr class="dataRow">
+                    <td class="dataCell" title="{!curCode} {!AIMObj.CurrentYearForecastTT}"> {!curCode} {!AIMObj.CurrentYearForecast}</td>
+                    <td class="dataCell" title="{!curCode} {!AIMObj.TargetYTDTT}"> {!curCode} {!AIMObj.TargetYTD} </td>
+                    <td class="dataCell" title="{!curCode} {!AIMObj.YTDSaleTT}"> {!curCode} {!AIMObj.YTDSale } </td>
+                    <td class="dataCell" title="{!curCode} {!AIMObj.GapTT }"> {!curCode} {!AIMObj.Gap } </td>      
+                </tr>
+            </table>
+            </apex:outputPanel>
+             <!-- Gems Revenue Section End -->
+             
+             <!-- Quality & Delivery Section Start -->
+             <apex:outputPanel rendered="{!if(mapSectionNames['qd'] == 'true',true,false)}" >
+            <table border="1" cellspacing="1"  cellpadding="1" align="center" style="margin-top:0px;font-family:Arial Unicode MS;" class="list" >
+                <tr class="headerRow">
+                    <td class="headerRow" colspan="7" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Quality and Delivery </td>
+                </tr>
+                <tr class="headerRow">
+                    <th class="headerRow" width="25%"> Has Supplier Scorecard </th>
+                    <th class="headerRow"> OTD Goal </th>
+                    <th class="headerRow"> PPM Goal </th>
+                </tr>
+                <tr class="dataRow">
+                    <td class="dataCell"> <apex:outputField value="{!preCallPlan.Has_Supplier_Scorecard__c}"  /> </td>
+                    <td class="dataCell"> <apex:outputField value="{!actObj.OTD_Goal__c}"  /> </td>
+                    <td class="dataCell"> <apex:outputField value="{!actObj.PPM_Goal__c}"  /> </td>
+                </tr>
+            </table>
+            </apex:outputPanel>
+             <!-- Quality & Delivery Section End -->
+             
+             <!-- Account Potential Section Start -->
+             <apex:outputPanel rendered="{!if(mapSectionNames['ap'] == 'true',true,false)}" >
+            <table border="1" cellspacing="1" width="100%" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial Unicode MS;" class="list" >
+                <tr class="headerRow">
+                    <td class="headerRow" colspan="5" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Account Potential  </td>
+                </tr>
+                <tr class="headerRow">
+                    <th class="headerRow"> Product Family </th>
+                    <th class="headerRow"> Account Potential </th>
+                    <th class="headerRow"> Gems Rev </th>
+                    <th class="headerRow"> Gems Share </th>
+                    <th class="headerRow"> Comments </th>
+                </tr>
+                <apex:repeat value="{!lstactPotentialModel}" var="actPotM"> 
+                    <tr class="dataRow">
+                        <td class="dataCell"> {!actPotM.ProductFamily} </td>
+                        <td class="dataCell"> {!curCode} {!actPotM.strtotalRevnue} </td>
+                        <td class="dataCell"> {!curCode} {!actPotM.strgemsRev} </td>
+                        <td class="dataCell"> {!actPotM.gemsShare}% </td>
+                        <td class="dataCell"> {!actPotM.Comments}</td>
+                    </tr>
+                </apex:repeat>
+                <tr> 
+                    <td colspan="5">&nbsp;</td>
+                </tr>
+                <tr class="headerRow">
+                    <th class="headerRow"> Machine Name </th>
+                    <th class="headerRow"> Account Potential </th>
+                    <th class="headerRow"> Gems Rev </th>
+                    <th class="headerRow"> Gems Share </th>
+                    <th class="headerRow"> Comments </th>
+                </tr>
+                <apex:repeat value="{!lstactPotentialModelMachineName}" var="actPotMM"> 
+                    <tr class="dataRow">
+                        <td class="dataCell"> {!actPotMM.MachineName} </td>
+                        <td class="dataCell"> {!curCode} {!actPotMM.strtotalRevnue} </td>
+                        <td class="dataCell"> {!curCode} {!actPotMM.strgemsRev} </td>
+                        <td class="dataCell"> {!actPotMM.gemsShare}% </td>
+                        <td class="dataCell"> {!actPotMM.Comments}</td>
+                    </tr>
+                </apex:repeat>
+            </table>
+            </apex:outputPanel>
+            <!-- Account Potential Section End -->
+            
+             <!-- Funnel Section Start -->
+             <apex:outputPanel rendered="{!if(mapSectionNames['fn'] == 'true',true,false)}" >
+            <table  border="1" cellspacing="1"  width="100%" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial Unicode MS;" class="list">
+                <tr class="headerRow">
+                    <td colspan="{!lstOppFields.size}" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Funnel </td>
+                </tr>
+                <tr class="headerRow">
+                    <apex:repeat value="{!lstOppFields}" var="oph">
+                        <th class="headerRow"> {!oph}</th>
+                    </apex:repeat>
+                </tr>
+                <apex:repeat value="{!lstOppFunnel}" var="op">
+                    <tr class="dataRow">
+                        <td class="dataCell"><apex:outputField value="{!op.oppObj.Opportunity_Number__c}"/></td>
+                        <td class="dataCell"><apex:outputField value="{!op.oppObj.Name}"/></td>
+                        <td class="dataCell" title="{!curCode} {!op.EstimatedAmountTT}"> {!curCode} {!op.EstimatedAmount} </td>
+                        <td class="dataCell"><apex:outputField value="{!op.oppObj.StageName}"/></td>
+                        <td class="dataCell"><apex:outputField value="{!op.oppObj.Product_Model__c}"/></td>
+                        <td class="dataCell"><apex:outputField value="{!op.oppObj.NextStep}"/></td>
+                        <td class="dataCell"><apex:outputField value="{!op.oppObj.CloseDate}"/></td>
+                    </tr>
+                </apex:repeat>
+            </table>  
+            </apex:outputPanel> 
+            <!-- Funnel Section End -->
+            
+            <!-- Gems Current Strategy & Goals Section Start -->
+            <apex:outputPanel rendered="{!if(mapSectionNames['cs'] == 'true',true,false)}" >
+            <table  border="1" cellspacing="1" width="100%" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial Unicode MS;" class="list">
+                <tr class="headerRow">
+                    <td colspan="4" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Gems Current Strategy and Goals </td>
+                </tr>
+                <tr class="headerRow">
+                    <th class="headerRow"> &nbsp; </th>
+                    <th class="headerRow"> 1st Goal </th>
+                    <th class="headerRow"> 2nd Goal </th>
+                    <th class="headerRow"> 3rd Goal </th>
+                </tr>
+                <tr class="dataRow">
+                    <td class="headerRow" width="20%"> Revenue Goals </td>
+                    <td class="dataCell" >  <apex:outputField value="{!preCallPlan.Revenue_Goal_1__c}" /></td>
+                    <td class="dataCell" >  <apex:outputField value="{!preCallPlan.Revenue_Goal_2__c}" /> </td>
+                    <td class="dataCell" >  <apex:outputField value="{!preCallPlan.Revenue_Goal_3__c}" /> </td>
+                </tr>
+                <tr class="dataRow">
+                    <td class="headerRow" width="20%"> Product Goals </td>
+                    <td class="dataCell">  <apex:outputField value="{!preCallPlan.Product_Goal_1__c}"/></td>
+                    <td class="dataCell">  <apex:outputField value="{!preCallPlan.Product_Goal_2__c}"/> </td>
+                    <td class="dataCell">  <apex:outputField value="{!preCallPlan.Product_Goal_3__c}"/> </td>
+                </tr>
+            </table>
+            </apex:outputPanel>
+            <!-- Gems Current Strategy & Goals Section End -->
+            
+            <!-- Risks Section Start -->
+            <apex:outputPanel rendered="{!if(mapSectionNames['rs'] == 'true',true,false)}">
+            <table border="1" cellspacing="1"  width="100%" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial Unicode MS;" class="list" >
+                <tr class="headerRow">
+                    <td class="headerRow"  style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Risks/Opportunity </td>
+                </tr>
+                <tr class="dataRow">
+                    <td class="dataCell" > {!risksText} <!-- <apex:outputField value="{!preCallPlan.Risks__c}" />  --> </td>
+                </tr>  
+            </table>  
+            </apex:outputPanel>
+            <!-- Risks Section End -->
+            </apex:pageBlock>
+                     
+            
+            <!-- Other Key Section (Task) Section Start -->
+            <apex:outputPanel rendered="{!if(mapSectionNames['ka'] == 'true',true,false)}" >
+            <table width="100%" border="1" cellspacing="1"  cellpadding="1" align="center" style="margin-top:0px;font-family:Arial Unicode MS;" class="list">
+                <tr class="headerRow">
+                    <td class="headerRow" colspan="5" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Key Actions </td>
+                </tr>
+                <tr class="headerRow">
+                    <th class="headerRow"> &nbsp; </th>
+                    <th class="headerRow"> Subject </th>
+                    <th class="headerRow"> Due Date </th>
+                    <th class="headerRow"> Status </th>
+                    <th class="headerRow"> Assign To </th>
+                </tr>
+                <apex:variable var="tskR" value="{!1}"/>
+                <apex:repeat value="{!preCallPlan.Tasks}" var="tsk">
+                    <tr class="dataRow">
+                        <td class="dataCell" width="5%" align="center"> {!tskR} <!-- <apex:outputField value="{!obj.Name}"/> --> </td>
+                        <td class="dataCell"> <apex:outputField value="{!tsk.Subject}"/></td>
+                        <td class="dataCell"> <apex:outputField value="{!tsk.ActivityDate}"/></td>
+                        <td class="dataCell"> <apex:outputField value="{!tsk.Status}"/></td>
+                        <td class="dataCell"> <apex:outputField value="{!tsk.OwnerId}"/></td>
+                    </tr>
+                    <apex:variable var="tskR" value="{!tskR+1}"/>
+                </apex:repeat>
+            </table>
+            </apex:outputPanel>
+    </body>
+</apex:page>

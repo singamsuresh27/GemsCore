@@ -1,0 +1,3 @@
+<apex:page sidebar="false" showHeader="false" standardController="NBO_Forms__c" Extensions="PrintNBO" action="{!RedirecttoNBOPage}">
+	
+</apex:page>

@@ -1,0 +1,249 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" renderas="pdf" standardController="CBO__c">
+	<html>
+		<head>
+			<style type="text/css">			
+				.text1
+				{
+					font-size: 10px;
+					font-family: verdana, Arial, Helvetica;
+				}
+				.text2
+				{
+					font-size: 12px;
+					font-family: verdana, Arial, Helvetica;
+				}
+				.text3
+				{
+					font-size: 14px;
+					font-family: verdana, Arial, Helvetica;
+				}				
+				.text4
+				{
+					font-size: 16px;
+					font-family: verdana, Arial, Helvetica;
+				}								
+			</style>
+			
+		</head> 
+		<h1><center><b><u>Financial Summary</u></b></center></h1>
+		<h1><center><b><u><apex:outputField value="{!CBO__c.Name }"/> ( <apex:outputField value="{!CBO__c.RecordType.Name }"/> )</u></b></center></h1>
+		<Table id="tbl0" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">
+		<tr><TD>
+		<Table id="tbl1" cellSpacing="1" cellPadding="2" width="90%" align="center" border="1">
+		<tr><TD>
+		<Table id="tbl10" cellSpacing="1" cellPadding="2" width="90%" align="center" border="0">
+			<tr>
+				<td Colspan="2">Account: <apex:outputField value="{!CBO__c.Opportunityid__r.Account.Name }" /></td>
+			    <td Colspan="2">Opportunity: <apex:outputField value="{!CBO__c.Opportunityid__r.Name }" /> (<apex:outputField value="{!CBO__c.Opportunityid__r.Opportunity_Number__c }" />)</td>
+  			</tr>
+  			<tr>
+  				<td Colspan="1">Product Cost Summary:</td>
+  				<td Colspan="3">Cost Based On Part#: <apex:outputField value="{!CBO__c.Referred_Part__c}" /></td>
+  			</tr>
+   			<tr>
+  				<td></td>
+  				<td><b>Year 1</b></td>
+  				<td><b>Year 2</b></td>
+  				<td><b>Year 3</b></td>
+  			</tr>
+   			<tr>
+  				<td class="text2">Unit Volume:</td>
+  				<td class="text1"><apex:outputField value="{!CBO__c.UV1__c }"/></td>
+  				<td class="text1"><apex:outputField value="{!CBO__c.UV2__c }"/></td>
+  				<td class="text1"><apex:outputField value="{!CBO__c.UV3__c }"/></td>
+  			</tr>
+   			<tr>
+  				<td>Target Price:</td>
+  				<td><apex:outputField value="{!CBO__c.TP1__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.TP2__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.TP3__c}" /></td>
+  			</tr> 
+  			<tr>
+  				<td>Starting BOM Cost (Material)</td>
+  				<td><apex:outputField value="{!CBO__c.BOMC1__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.BOMC2__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.BOMC3__c}" /></td>
+  			</tr>
+   			<tr>
+  				<td>Starting BOM Cost (Labor)</td>
+  				<td><apex:outputField value="{!CBO__c.BOLC1__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.BOLC2__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.BOLC3__c}" /></td>
+  			</tr>
+  			<tr>
+  				<td>Added/Subtracted Material Cost</td>
+  				<td><apex:outputField value="{!CBO__c.MC1__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.MC2__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.MC2__c}" /></td>
+  			</tr>
+   			<tr>
+  				<td>Additional Minutes Per Assembly</td>
+  				<td Colspan="3"><apex:outputField value="{!CBO__c.AM__c}" /></td>
+  			</tr>
+  			<tr>
+  				<td>Added/Subtracted Labor</td>
+  				<td Colspan="3"><apex:outputField value="{!CBO__c.ASL__c}" /></td>
+  			</tr>
+  			<tr>
+  				<td>Total OH</td>
+  				<td><apex:outputField value="{!CBO__c.OH1__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.OH2__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.OH3__c}" /></td>
+  			</tr>
+  			<tr>
+  				<td>Total Standard Cost</td>
+  				<td><apex:outputField value="{!CBO__c.TC1__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.TC2__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.TC3__c}" /></td>
+  			</tr>
+  			</Table>
+  			</TD></tr></Table>
+  			
+  			<Table id="tbl2" cellSpacing="1" cellPadding="2" width="90%" align="center" border="1">
+  			<tr><TD>
+  			<Table id="tbl20" cellSpacing="1" cellPadding="2" width="90%" align="center" border="0">
+  			<tr>
+  				<td Colspan="4">Project Cost Estimates:</td>
+  			</tr>
+  			<tr>
+  				<td>Capital</td>
+  				<td><apex:outputField value="{!CBO__c.Capital__c}" /></td>
+  				<td>Tooling</td>
+  				<td><apex:outputField value="{!CBO__c.TC__c}" /></td>
+  			</tr>
+  			<tr>
+  				<td>Development Material</td>
+  				<td><apex:outputField value="{!CBO__c.Development_Material__c}" /></td>
+  				<td>Regulatory Fees</td>
+  				<td><apex:outputField value="{!CBO__c.RF__c}" /></td>
+  			</tr>
+  			 <tr>
+  				<td>Travel</td>
+  				<td><apex:outputField value="{!CBO__c.Travel__c}" /></td>
+  				<td></td>
+  				<td></td>
+  			</tr>
+  		</Table> 
+  		</TD></tr></Table>
+  		
+  			<Table id="tbl3" cellSpacing="1" cellPadding="2" width="90%" align="center" border="1">
+  			<tr><TD>
+  			<Table id="tbl30" cellSpacing="1" cellPadding="2" width="90%" align="center" border="0">
+  			<tr>
+  				<td Colspan="4">Resources/Hours:</td>
+  			</tr>
+  			<tr>
+  				<td></td>
+  				<td>Man Hours</td>
+  				<td>Total NRE </td>
+  			</tr>
+  			<tr>
+  				<td>Design Engineering</td>
+  				<td><apex:outputField value="{!CBO__c.DE__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.NREDE__c}" /></td>
+  			</tr>
+  			<tr>
+  				<td>Manufacturing Engineer</td>
+  				<td><apex:outputField value="{!CBO__c.ME__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.NREME__c}" /></td>
+  			</tr>
+  			 <tr>
+  				<td>Materials/Sourcing</td>
+  				<td><apex:outputField value="{!CBO__c.MS__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.NREMS__c}" /></td>
+  			</tr>
+  			 <tr>
+  				<td>Marketing</td>
+  				<td><apex:outputField value="{!CBO__c.MK__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.NREM__c}" /></td>
+  			</tr>
+  		</Table> 
+  		</TD></tr></Table>
+ 
+		<Table id="tbl4" cellSpacing="1" cellPadding="2" width="90%" align="center" border="1">
+		<tr><TD>
+		<Table id="tbl40" cellSpacing="1" cellPadding="2" width="90%" align="center" border="0">
+  			<tr>
+  				<td Colspan="4">Financial Summary and Project Attractiveness:</td>
+  			</tr>
+   			<tr>
+  				<td></td>
+  				<td><b>Year 1</b></td>
+  				<td><b>Year 2</b></td>
+  				<td><b>Year 3</b></td>
+  			</tr>
+   			<tr>
+  				<td class="text2">Revenue:</td>
+  				<td class="text1"><apex:outputField value="{!CBO__c.R1__c }"/></td>
+  				<td class="text1"><apex:outputField value="{!CBO__c.R2__c }"/></td>
+  				<td class="text1"><apex:outputField value="{!CBO__c.R3__c }"/></td>
+  			</tr>
+   			<tr>
+  				<td>Total Project Cost:</td>
+  				<td Colspan="3"><apex:outputField value="{!CBO__c.TPC__c}" /></td>
+  			</tr> 
+  			<tr>
+  				<td>Gross Margin</td>
+  				<td><apex:outputField value="{!CBO__c.GM1__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.GM2__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.GM3__c}" /></td>
+  			</tr>
+   			<tr>
+  				<td>Gross Margin (%)</td>
+  				<td><apex:outputField value="{!CBO__c.GMP1__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.GMP2__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.GMP3__c}" /></td>
+  			</tr>
+  			<tr>
+  				<td>NPV @ 12%</td>
+  				<td><apex:outputField value="{!CBO__c.NPV__c}" /></td>
+  				<td>Payback In Years</td>
+  				<td Colspan="3"></td>
+  			</tr>
+   			<tr>
+  				<td>ROI:</td>
+  				<td><apex:outputField value="{!CBO__c.ROI1__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.ROI2__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.ROI3__c}" /></td>
+  			</tr>
+  			<tr>
+  				<td>Revenue/Hour</td>
+  				<td><apex:outputField value="{!CBO__c.RPH1__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.RPH2__c}" /></td>
+  				<td><apex:outputField value="{!CBO__c.RPH3__c}" /></td>
+  			</tr>
+  			</Table>
+  			</TD></tr></Table> 
+
+  			<Table id="tbl5" cellSpacing="1" cellPadding="2" width="90%" align="center" border="1">
+  			<tr><TD>
+  			<Table id="tbl50" cellSpacing="1" cellPadding="2" width="90%" align="center" border="0">
+  			<tr>
+  				<td Colspan="4">Finance Inputs:</td>
+  			</tr>
+  			<tr>
+  				<td>Overhead Rate</td>
+  				<td><apex:outputField value="{!CBO__c.OHR__c}" /></td>
+  				<td>Labor Rate/Minute</td>
+  				<td><apex:outputField value="{!CBO__c.LR__c}" /></td>
+  			</tr>
+  			<tr>
+  				<td>Design Engineering RPH</td>
+  				<td><apex:outputField value="{!CBO__c.DER__c}" /></td>
+  				<td>Manufacturing Engineering RPH</td>
+  				<td><apex:outputField value="{!CBO__c.MER__c}" /></td>
+  			</tr>
+  			<tr>
+  				<td>Materials and Sourcing RPH</td>
+  				<td><apex:outputField value="{!CBO__c.MSR__c}" /></td>
+  				<td>Marketing RPH</td>
+  				<td><apex:outputField value="{!CBO__c.MR__c}" /></td>
+  			</tr>  			
+  		</Table> 
+  		</TD></tr></Table>
+  		  		
+  		 
+  		</TD></tr></Table>			
+	</html>
+
+</apex:page>

@@ -1,0 +1,138 @@
+<apex:page controller="SalesDeliverableHomePageController">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/JavaScript" />
+    <script src="{!URLFOR($Resource.sorter,'sorter/jsorter.js')}" type="text/JavaScript" />
+    <style>
+        .TFtable tr td th{
+            border:1px solid white;
+        }
+        .TFtable th{
+            cursor:pointer;
+            text-align:center;
+            color:white;
+            background: #3b679e; /* Old browsers */
+            background: -moz-linear-gradient(top,  #3b679e 0%, #207cca 99%, #7db9e8 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3b679e), color-stop(99%,#207cca), color-stop(100%,#7db9e8)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #3b679e 0%,#207cca 99%,#7db9e8 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #3b679e 0%,#207cca 99%,#7db9e8 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #3b679e 0%,#207cca 99%,#7db9e8 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  #3b679e 0%,#207cca 99%,#7db9e8 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 ); /* IE6-9 */
+        }
+        .TFtable td{
+            background-color:#cde0ff;
+        }
+    </style>
+    <!-- For Before 12/27/2010 -->
+    <apex:form id="frm">
+        <apex:actionFunction name="filterRecords" action="{!filterRecords}" reRender="frm"/>
+        <apex:actionFunction name="sortByColumns" action="{!sortByColumns}" reRender="frm" status="status">
+            <apex:param name="arg1" assignTo="{!selectedColumn}" value=""/>
+        </apex:actionFunction>
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td width="40%"><h1 style="font-size:140%;">My Sales Plan Deliverables:</h1></td>
+                
+                 <td width="20%" style="text-align:right">Task Type:
+                    <apex:selectList value="{!selectedRT}" size="1" onchange="filterRecords();" rendered="{!IF(taskRecordTypeList.size > 0 ,true,false)}">
+                        <apex:selectOptions value="{!taskRecordTypeList}"></apex:selectOptions>
+                    </apex:selectList>
+                </td>               
+                
+                <td width="20%" style="text-align:right">
+                    <apex:selectList value="{!selectedUser}" size="1" onchange="filterRecords();" rendered="{!IF(userList.size > 0 ,true,false)}">
+                        <apex:selectOptions value="{!userList}"></apex:selectOptions>
+                    </apex:selectList>
+                </td>
+                <td width="20%" style="text-align:right">
+                    <apex:selectList value="{!selectedCriteria}" onchange="filterRecords();" size="1">
+                        <apex:selectOptions value="{!criteriaList}"></apex:selectOptions>
+                    </apex:selectList>
+                </td>            
+            </tr>
+        </table>
+        <br/>
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:actionStatus startText="Loading......." startStyle="color:red;" id="status"></apex:actionStatus>
+        <apex:outputPanel rendered="{!IF(tskList.size > 0 , true, false)}">
+            <table id="pgTable" class="TFtable" width="100%">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th><apex:commandLink style="text-decoration: none;color:white;" onclick="sortCol('RecordType.Name'); return false;">Task Type</apex:commandLink></th>
+                    <th><apex:commandLink style="text-decoration: none;color:white;" onclick="sortCol('Subject'); return false;">Subject</apex:commandLink></th> 
+                    <th><apex:commandLink style="text-decoration: none;color:white;" onclick="sortCol('What.Name'); return false;">Related To</apex:commandLink></th>
+                    <th><apex:commandLink style="text-decoration: none;color:white;" onclick="sortCol('Opportunity_Stage__c'); return false;">Stage</apex:commandLink></th>                   
+                    <th><apex:commandLink style="text-decoration: none;color:white;" onclick="sortCol('ActivityDate'); return false;">Due Date</apex:commandLink></th>
+                    <th><apex:commandLink style="text-decoration: none;color:white;" onclick="sortCol('Owner.Name'); return false;">Assignee</apex:commandLink></th>
+                </tr>
+                </thead>
+                <tbody>
+                <apex:repeat value="{!tskList}" var="tsk">
+                    <tr>
+                        <td>
+                            <a href="/{!tsk.id}" target="_blank">
+                                <apex:image url="{!URLFOR($Resource.circle,'circle/green.png')}" width="12" height="12" rendered="{!IF(tsk.Status_Color__c == 'green',true,false)}" title="Completed"/>
+                                <apex:image url="{!URLFOR($Resource.circle,'circle/yellow.png')}" width="12" height="12" rendered="{!IF(tsk.Status_Color__c == 'yellow',true,false)}" title="Due in a week"/>
+                                <apex:image url="{!URLFOR($Resource.circle,'circle/red.png')}" width="12" height="12" rendered="{!IF(tsk.Status_Color__c == 'red',true,false)}" title="Overdue"/>
+                                <apex:image url="{!URLFOR($Resource.circle,'circle/gray.png')}" width="12" height="12" rendered="{!IF(tsk.Status_Color__c == 'gray',true,false)}" title="Inactive"/>
+                                <apex:image url="{!URLFOR($Resource.circle,'circle/blue.png')}" width="12" height="12" rendered="{!IF(tsk.Status_Color__c == 'blue',true,false)}" title="Open"/>   
+                            </a>
+                        </td>
+                        <td>{!tsk.RecordType.Name}</td>
+                        <td><a href="/{!tsk.id}" target="_blank">{!tsk.Subject}</a></td> 
+                        <td><a href="/{!tsk.what.Id}" target="_blank">{!tsk.What.Name}</a></td>
+                        <td>{!tsk.Opportunity_Stage__c}</td>                                              
+                        <td>
+                            <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                <apex:param value="{!tsk.ActivityDate}" /> 
+                            </apex:outputText>                            
+                        </td>
+                        <td>{!tsk.Owner.Name}</td>
+                    </tr>
+                </apex:repeat>
+                </tbody>
+            </table>
+            <br/>
+            <apex:outputPanel id="pgin">
+                <apex:outputPanel rendered="{!IF(tskList.size > 0 , true, false)}">
+                    Showing Page &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {!pageNumber} of &nbsp;&nbsp;&nbsp;&nbsp; {!totalPages}  &nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:commandLink value="First" action="{!first}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:commandLink value="Previous" action="{!previous}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:commandLink value="Next" action="{!PNext}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:commandLink value="Last" action="{!last}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:form>
+    
+    <script>
+        /*$(document).ready(function() 
+            { 
+                $("#pgTable").tablesorter();
+                
+            } 
+        );*/
+        function editTask(taskId){
+            var url="/apex/EditTaskInlinePage?id="+taskId;
+            //var url="https://na26.salesforce.com/"+taskId;
+            newWin=window.open(url, 'Popup','height=650,width=1000,left=100,top=10,resizable=yes,scrollbars=yes,toolbar=no,status=no');
+            if (window.focus){
+                newWin.focus();
+            }
+            
+        }
+        
+        function refreshParent(){
+            window.top.location = "/home/home.jsp";
+        }
+        
+        function applySort(){
+            $("#pgTable").tablesorter();
+        }
+        
+        function sortCol(colName){
+            sortByColumns(colName);
+        }
+        
+    </script>
+</apex:page>

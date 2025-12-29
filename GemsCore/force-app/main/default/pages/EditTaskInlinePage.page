@@ -1,0 +1,125 @@
+<apex:page standardController="Task" extensions="EditTaskInlineController">
+    <style>
+        .txt{
+            width: 250px;
+            height: 15px;
+        }
+        body .bPageBlock .pbBody .pbSubheader{
+            color : #000 !important;
+            font-weight : bold !important;
+            
+        }
+    </style>
+    <apex:form id="frm">
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:outputPanel rendered="{!!showPanel}">
+            <apex:pageBlock title="Sales Deliverable">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Edit Sales Deliverable" action="{!editTask}"/>
+                    <apex:outputPanel rendered="{!!hideButton}">
+                        <apex:commandButton value="Close Window" onclick="closeWindow(); return false;"/>
+                    </apex:outputPanel>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="1">    
+                    <apex:outputText value="{!task.Subject_Description__c}" />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Sales Deliverable Information" collapsible="false">
+                
+                    <apex:outputField label="Assigned To" value="{!task.OwnerId}"/>
+                    <apex:outputField value="{!task.subject}"/>
+                    <apex:outputField value="{!task.Status}"/>
+                    <apex:outputField value="{!task.ActivityDate}"/>
+                    <apex:outputField value="{!task.What.Name}"/>
+                    
+                </apex:pageBlockSection>
+                <apex:pageBlockSection columns="1">    
+                    <apex:outputField label="Body" value="{!tcomment.Body__c}" rendered="{!!task.Is_closing_note__c}"/>
+                    <apex:outputField label="Body" value="{!opp.OPP_closing_note__c}" rendered="{!task.Is_closing_note__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Attachment" collapsible="false" id="pbs" columns="1">
+                    <apex:pageBlockTable value="{!attTaskList}" var="att">
+                        <apex:column headerValue="Edit">
+                            <apex:commandLink onclick="attaWindow('{!att.Id}'); return false;">Edit</apex:commandLink>
+                        </apex:column>
+                        <apex:column headerValue="View">
+                            <a href="/servlet/servlet.FileDownload?file={!att.Id}" target="_blank">View</a>    
+                        </apex:column>
+                        <apex:column />
+                        <apex:column headerValue="Title" value="{!att.Name}" />
+                        <apex:column headerValue="Description" value="{!att.Description}" />
+                        <apex:column headerValue="Created By" value="{!att.Owner.Name}" />
+                        <apex:column headerValue="LastModified By" value="{!att.Owner.Name}" />    
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!showPanel}">
+            <apex:pageBlock title="Sales Deliverable">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Update Sales Deliverable" action="{!updateTask}"/>
+                    <apex:outputPanel rendered="{!!hideButton}">
+                        <apex:commandButton value="Close Window" onclick="closeWindow(); return false;"/>
+                    </apex:outputPanel>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="1">    
+                    <apex:outputText value="{!task.Subject_Description__c}" />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Sales Deliverable Information" collapsible="false">
+                
+                    <apex:inputField label="Assigned To" value="{!task.OwnerId}"/>
+                    <apex:outputField value="{!task.subject}"/>
+                    <apex:selectList label="Status" size="1" multiselect="false" value="{!selectedStatus}" rendered="{!IF(task.status != 'Inactive',true,false)}">
+                        <apex:selectOption itemLabel="--None--" itemValue=""></apex:selectOption>
+                        <apex:selectOption itemLabel="Completed" itemValue="Completed"></apex:selectOption>
+                    </apex:selectList>
+                    <apex:inputField value="{!task.ActivityDate}"/>
+                    <apex:outputField value="{!task.What.Name}"/>
+                    
+                </apex:pageBlockSection>
+                <apex:pageBlockSection columns="1">
+                    <apex:inputTextarea label="Body" value="{!tcomment.Body__c}" richText="true" rows="12" cols="50" rendered="{!!task.Is_closing_note__c}"/>
+                    <apex:inputTextarea label="Body" value="{!opp.OPP_closing_note__c}" richText="true" rows="12" cols="50" rendered="{!task.Is_closing_note__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Attachment" collapsible="false" id="pbs" columns="2">
+                    <apex:repeat value="{!attList}" var="att" >
+                        <apex:inputField value="{!att.Description}" styleClass="txt"/>
+                        <apex:inputFile value="{!att.body}" filename="{!att.name}"/>
+                    </apex:repeat>
+                    
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <input type="hidden" id="mytext"/>
+    </apex:form>
+    <script>
+        window.onload = function() {
+          document.getElementById("mytext").focus();
+        };
+        
+        function closeWindow() {
+              var winMain=window.opener;
+              if (null==winMain)
+              {
+                 winMain=window.parent.opener;
+              }
+              window.close();
+              winMain.refreshParent();
+              
+        }
+        
+        function parentRefresh(){
+            window.top.location = window.top.location;
+        }
+        
+        function attaWindow(attId){
+            var url="/apex/EditAttachment?attId="+attId;
+            childWin=window.open(url, 'MsgWindow', 'Popup','height=650,width=1000,left=100,top=10,resizable=yes,scrollbars=yes,toolbar=no,status=no');
+            if (window.focus){
+                childWin.focus();
+            }
+            
+        }
+        
+    </script>
+</apex:page>

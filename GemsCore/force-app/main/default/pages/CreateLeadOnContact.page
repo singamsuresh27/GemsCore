@@ -1,0 +1,4 @@
+<apex:page controller="CreateLeadOnContactController" action="{!createLead}">
+    <apex:pageMessages />
+    <p style="padding-left:21px">Click <a href="/{!contactID}">here</a> to go back to contact Page.</p>
+</apex:page>

@@ -1,0 +1,1171 @@
+<apex:page standardController="Percall_Plan__c" docType="html-5.0" extensions="PreCallPlanController" cache="true" standardStylesheets="true" sidebar="true" showHeader="true" id="pg">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=7,IE=8,IE=9,IE=10,IE=11,IE=Edge" />
+    
+    
+    <apex:includeScript value="{!URLFOR($Resource.JDialog,'JDialog/js/jquery-1.9.1.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.JDialog,'JDialog/js/jquery-ui-1.10.3.custom.js')}"/> 
+    
+    <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/css/sunny/jquery-ui-1.10.3.custom.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/css/sunny/jquery-ui-1.10.3.custom.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/development-bundle/themes/sunny/jquery.ui.all.css')}"/>
+    
+    <style>
+        #orgChart{
+            width: auto;
+            height: auto;
+        }
+        
+        div.orgChart div.node{
+            width: 100px;
+            height: 30px;    
+        }
+        
+        div.orgChart h2 {
+            font-size: 12px;
+            font-weight: normal;
+        }
+        #orgChartContainer{
+            width: 1000px;
+            height: 500px;
+            margin-left:10px;
+            overflow: auto;
+            background: #eeeeee;
+        }
+        .node{
+            padding:0px !important;
+        }
+        .ui-timepicker-container{
+            width: 116px !important;
+        }
+        .ui-timepicker-viewport{
+            padding-right:0px !important;
+        }
+        .ui-menu-item{
+            width: 80px !important;
+        }
+    </style>
+    <script>
+        window.onload = function(){
+            document.getElementById('printBtnDiv').focus();
+        }
+        
+         $(function(){            
+            if( '{!preCallPlan.Convert_to_Post_Call__c}' == 'true'){
+                convertPostCall(true);
+            }else{
+                convertPostCall(false);
+            }
+            
+            if(document.getElementById("img_pg:frm:orgchart:orgChartSec") != null ){
+                twistSection(document.getElementById("img_pg:frm:orgchart:orgChartSec"));
+            }
+            
+            var dlg = $( "#divConBox" ).dialog({
+               autoOpen:false,
+               width:900,
+               title:'Select Contact',
+               height:600
+            });
+            
+            dlg.parent().appendTo("#pg\\:frm");
+            
+            var dlgTripReport = $( "#divTripReportBox" ).dialog({
+               autoOpen:false,
+               width:600,
+               title:'Select Sections To Print',
+               height:400
+            });
+            
+            dlgTripReport.parent().appendTo("#pg\\:frm");
+            
+            var dlgReportTo = $( "#divReportToBox" ).dialog({
+               autoOpen:false,
+               width:700,
+               title:'Change Contact ReportsTo Setting',
+               height:600
+            });
+            
+            dlgReportTo.parent().appendTo("#pg\\:frm");
+            
+            var dlgNewContact = $( "#divNewContactBox" ).dialog({
+               autoOpen:false,
+               width:700,
+               title:'New Contact',
+               height:400
+            });
+            
+            dlgNewContact.parent().appendTo("#pg\\:frm");
+            $("[id='pg\\:frm:pbTripSummery']").css('border-top','3px solid green');
+            $("[id='pg\\:frm:pbTask']").css('border-top','3px solid green');
+        });
+        
+             
+           
+        function openBox(st){
+            $( "#divConBox" ).dialog(st);
+        }
+        
+        function openTripReportBox(st){
+            $( "#divTripReportBox").dialog(st);
+        }
+        
+        function openReportsToBox(st){
+            $( "#divReportToBox").dialog(st); 
+            if(st == 'close'){
+                actUpdateOrgChartSection();
+            }   
+        }
+        
+        function openNewContactBox(st){
+            $( "#divNewContactBox").dialog(st);
+            if(st == 'close'){
+                actCreateandUpdateOrgChartSection();
+            }
+        }  
+        function convertPostCall(flag){
+            if( document.getElementById("pg:frm:pbTripSummery:tripsummary") != null ){
+                if(flag){
+                    document.getElementById("pg:frm:pbTripSummery:tripsummary").style.display = 'block';
+                    document.getElementById("pg:frm:pbTripSummery:pbTask").style.display = 'block';
+                }else{
+                    document.getElementById("pg:frm:pbTripSummery:tripsummary").style.display = 'none';
+                    document.getElementById("pg:frm:pbTripSummery:pbTask").style.display = 'none';
+                }
+            }
+        }
+       </script>
+
+       <apex:outputPanel id="outFun">
+           <script>
+            function openMsDocButton(){            
+                var myurl = "/apex/PreCallPlanMsDocPage?id={!preCallPlan.id }&sectnames={!sections}" ;
+                $( "#divTripReportBox").dialog('close');
+                var win = window.open(myurl,'_blank');
+                win.focus();
+            } 
+            
+            function openPDFButton(){
+            
+                var myurl = "/apex/PreCallPlanPDFPage?id={!preCallPlan.id }&sectnames={!sections}" ;
+                $( "#divTripReportBox").dialog('close');
+                var win = window.open(myurl,'_blank');
+                win.focus();
+            } 
+           </script>
+       </apex:outputPanel>
+    
+    <apex:form id="frm">
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:actionFunction name="actCreateandUpdateOrgChartSection" status="orgStatus" action="{!saveNewContact}" rerender="orgchart,outReportToBox,orgChartData,outConDiv,outNewContactBox"/>
+        <apex:actionFunction name="actUpdateOrgChartSection" status="orgStatus" action="{!saveReportsToSetting}" rerender="orgchart,outReportToBox,orgChartData"/>
+        <apex:actionFunction name="actOpenAccount" action="{!openAccount}"/>
+        <apex:actionFunction name="actOpenOpportunity" action="{!openOpportunity}"/>
+        <apex:actionFunction name="actOpenPreCallPlan" action="{!openPreCallPlan}"/>
+        <apex:actionFunction name="actSaveContactFromList" action="{!saveContact}"/>
+        <apex:actionFunction name="actForCloseContactBox" action="{!justCalling}" status="conStatus" reRender="pbcon,outConDiv" oncomplete="actSaveContactFromList();">
+            <apex:param name="p1" value="" assignTo="{!isNewPreCallPlanContact}"/>
+        </apex:actionFunction>
+                
+        <apex:actionFunction name="actRemoveContact" action="{!removeContact}" />
+        <apex:actionFunction name="actForRemoveContact" action="{!justCalling}" status="conStatus" oncomplete="actRemoveContact();">
+            <apex:param name="p1" value="" assignTo="{!preCallPlanContactId}"/>
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actRemoveCallObjective" action="{!removeCallObjective}" />
+        <apex:actionFunction name="actForRemoveObjective" action="{!justCalling}"  status="callStatus" oncomplete="actRemoveCallObjective();">
+            <apex:param name="p1" value="" assignTo="{!callObjectiveId}" />
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actRemoveQuestion" action="{!removeQuestion}" />
+        <apex:actionFunction name="actForRemoveQuestion" action="{!justCalling}"  status="QuestionsStatus" oncomplete="actRemoveQuestion();">
+            <apex:param name="p1" value="" assignTo="{!questionId}" />
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actRemoveObjection" action="{!removeObjection}" />
+        <apex:actionFunction name="actForRemoveObjection" action="{!justCalling}"  status="objectionStatus" oncomplete="actRemoveObjection();">
+            <apex:param name="p1" value="" assignTo="{!objectionId}" />
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actRemoveTask" action="{!removeTask}" />
+        <apex:actionFunction name="actForRemoveTask" action="{!justCalling}"  status="taskStatus" oncomplete="actRemoveTask();">
+            <apex:param name="p1" value="" assignTo="{!taskId}" />
+        </apex:actionFunction>
+        
+        <!-- Action Functions For Contact Part --> 
+        <apex:actionFunction name="actAddingMore" action="{!addingMorePreCallPlanContactModel}" status="conStatus" reRender="pbcon"/>
+        <apex:actionFunction name="actSavePrePlanContact" action="{!savePreCallPlanContact}" status="conStatus" reRender="pbcon,outConDiv,orgchart,orgChartData"/>
+        <apex:actionFunction name="actCancelContact" action="{!cancelMoreContact}" status="conStatus" reRender="pbcon"/>
+        <apex:actionFunction name="actForAddingNewContact" action="{!justCalling}" status="conStatus" rerender="pbcon" oncomplete="actAddingMore();">
+            <apex:param name="pr1" value="" assignTo="{!isNewPreCallPlanContact}"/>           
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actSavingNewContact" action="{!justCalling}"  status="conStatus" rerender="pbcon" oncomplete="actSavePrePlanContact();">
+            <apex:param name="pr2" value="" assignTo="{!isNewPreCallPlanContact}"/>
+             
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actCancelNewContact" action="{!justCalling}" status="conStatus" rerender="pbcon" oncomplete="actCancelContact();">
+            <apex:param name="pr3" value="" assignTo="{!isNewPreCallPlanContact}"/>
+        </apex:actionFunction>
+        
+        
+        <!-- Action Functions for Call Objective Part --> 
+        <apex:actionFunction name="actAddingMoreCallObj" action="{!addingMoreCallObjectiveModel}" status="callStatus" reRender="pbCallObj"/>       
+        <apex:actionFunction name="actSaveCallObjective" action="{!saveCallObjectives}" status="callStatus" reRender="pbCallObj"/>
+        <apex:actionFunction name="actCancelObjective" action="{!cancelMoreObjective}" status="callStatus" reRender="pbCallObj"/>                
+        <apex:actionFunction name="actForNewCallObjective" action="{!justCalling}" status="callStatus" reRender="pbCallObj" oncomplete="actAddingMoreCallObj();">
+            <apex:param name="cl1" value="" assignTo="{!isNewCallObjective}"/>
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actForSavingCallObjective" action="{!justCalling}"  status="callStatus" rerender="pbCallObj" oncomplete="actSaveCallObjective();">
+            <apex:param name="cl2" value="" assignTo="{!isNewCallObjective}"/>
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actForCancelCallObjective" action="{!justCalling}" status="callStatus" rerender="pbCallObj" oncomplete="actCancelObjective();">
+            <apex:param name="cl3" value="" assignTo="{!isNewCallObjective}"/>
+        </apex:actionFunction>
+        
+        <!-- Action Functions for Questions Part -->
+        <apex:actionFunction name="actAddingMoreQuestion" action="{!addingMoreQuestions}" status="QuestionsStatus" reRender="pbqstObj"/>
+        <apex:actionFunction name="actSavingQuestions" action="{!saveKeyQuestions}" status="QuestionsStatus" reRender="pbqstObj"/>
+        <apex:actionFunction name="actCancelQuestion" action="{!cancelMoreQuestions}" status="QuestionsStatus" reRender="pbqstObj" />
+        <apex:actionFunction name="actForAddingNewQuestion" action="{!justCalling}" status="QuestionsStatus" reRender="pbqstObj" oncomplete="actAddingMoreQuestion();">
+            <apex:param name="qs1" value="" assignTo="{!isNewQuestion}"/>
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actForSavingNewQuestion" action="{!justCalling}" status="QuestionsStatus" reRender="pbqstObj" oncomplete="actSavingQuestions();">
+            <apex:param name="qs2" value="" assignTo="{!isNewQuestion}"/>
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actForCancelNewQuestion" action="{!justCalling}" status="QuestionsStatus" reRender="pbqstObj" oncomplete="actCancelQuestion();">
+            <apex:param name="qs3" value="" assignTo="{!isNewQuestion}"/>
+        </apex:actionFunction>
+                
+        <!-- Action Functions for Objections Part -->   
+        <apex:actionFunction name="actAddingMoreObjections" action="{!addingMoreObjections}" status="objectionStatus" reRender="pbobjetObj" />
+        <apex:actionFunction name="actSavingObjections" action="{!saveObjections}" status="objectionStatus" reRender="pbobjetObj" />
+        <apex:actionFunction name="actCancelObjection" action="{!cancelMoreObjection}" status="objectionStatus" reRender="pbobjetObj"/>
+        <apex:actionFunction name="actForAddingNewObjection" action="{!justCalling}" status="objectionStatus" reRender="pbobjetObj" oncomplete="actAddingMoreObjections();">
+            <apex:param name="objet1" value="" assignTo="{!isNewObjection}"/>
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actForSavingNewObjection" action="{!justCalling}" status="objectionStatus" reRender="pbobjetObj" oncomplete="actSavingObjections();">
+            <apex:param name="objet2" value="" assignTo="{!isNewObjection}"/>
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="actForCancelNewObjection" action="{!justCalling}" status="objectionStatus" reRender="pbobjetObj"  oncomplete="actCancelObjection();">
+            <apex:param name="objet3" value="" assignTo="{!isNewObjection}"/>
+        </apex:actionFunction>
+        
+        
+       
+        <!-- Action Function for Task Sections -->
+          
+        <apex:actionFunction name="actAddingMoreTask" action="{!addingMoreTask}"  status="taskStatus" reRender="pbTask"/>
+        <apex:actionFunction name="actSaveTask" action="{!saveTask}" status="taskStatus"  reRender="pbTask,pbTripSummery"/>
+        <apex:actionFunction name="actCancelTask" action="{!cancelMoreTask}" status="taskStatus"  reRender="pbTask"/>
+        <apex:actionFunction name="actForAddingNewTask" action="{!justCalling}" status="taskStatus" reRender="pbTask" oncomplete="actAddingMoreTask();">
+            <apex:param name="ts1" value="" assignTo="{!isNewTask}"/>
+        </apex:actionFunction> 
+        
+        <apex:actionFunction name="actForSavingNewTask" action="{!justCalling}" status="taskStatus" reRender="pbTask" oncomplete="actSaveTask();return false;">
+            <apex:param name="ts1" value="" assignTo="{!isNewTask}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="actForCancelNewTask" action="{!justCalling}" status="taskStatus" reRender="pbTask" oncomplete="actCancelTask();">
+            <apex:param name="ts1" value="" assignTo="{!isNewTask}"/>
+        </apex:actionFunction>
+        
+        <div id="printBtnDiv">
+            <span style="float:left;"> <apex:commandButton value="Print" onclick="openTripReportBox('open');return false;" rendered="{!isRecordSaved}"/></span> 
+        </div>
+        <style>
+            .dateFormat a{
+                color:white !important;
+            }
+        </style>
+        <apex:pageBlock id="pgb">
+            <link rel="stylesheet" href="{!URLFOR($Resource.timepicker,'timepicker/jquery.timepicker.min.css')}"/>            
+            <script type="text/javascript" src="{!URLFOR($Resource.timepicker,'timepicker/jquery.timepicker.min.js')}"></script>
+                        
+            <!-- Pre-Plan Section Start -->
+                <script>
+                    var myVar ;
+                    $(document).ready(function(){
+                        $('#timedivID').hide();
+                        $('input[id*=timepic]').timepicker({ 
+                            timeFormat: 'h:mm p' ,                            
+                            interval :15,
+                            defaultTime : '{!nextVisitTime}'   ,
+                            startTime: new Date(0,0,0,15,0,0)                          
+                        }); 
+                        
+                        //Code By Vishnu on 30-9-2015 : Created custom time picker of IE
+                        $('input[id*=timepic]').click(function () {
+                            copyLIdata();
+                            var pos = $("input[id*=timepic]").position();
+                            $('.ui-timepicker-container').hide();
+                            $('#timedivID').css({
+                                top: pos.top + $("input[id*=timepic]").height()  + 3,
+                                left: pos.left+10
+                            });
+                            $('#timedivID').show();    
+                        }); 
+                        $('.timeDivHide').click(function () {
+                              $('#timedivID').hide();    
+                        });                   
+                    });
+                    
+                    //Code By Vishnu on 30-9-2015 : Created custom time picker of IE
+                    function copyLIdata(){
+                        var htmlstr = '<table style="padding: 0;" width="100%">';
+                        var lis = document.getElementsByClassName("ui-timepicker-viewport")[0].getElementsByClassName("ui-menu-item");
+                        for(var i=0;i<lis.length ; i++){
+                            var timeStr = lis[i].getElementsByClassName("ui-corner-all")[0].text;
+                            htmlstr +=  '<tr><td align="center" class="mytd"><a style="cursor: pointer;text-decoration: none;" onclick="visitTime(\''+timeStr+'\');return false;">'+timeStr+'</a></td></tr>';
+                        }
+                        htmlstr += '</table>';
+                        $('#timedivID').html(htmlstr);
+                    }
+                    
+                    //Code By Vishnu on 30-9-2015 : Created custom time picker of IE
+                    function visitTime(timesr){
+                        $('input[id*=timepic]').val(timesr);
+                        $('#timedivID').hide();
+                    }
+                </script>
+            <style>
+                .dateFormat{
+                    display:none !important;
+                }
+                .ui-menu-item{
+                    font-size:10px !important;
+                    opacity: 0.0 !important;
+                }
+                .ui-timepicker-viewport{
+                    background-color: white;
+                }
+                .mytd:Hover{
+                    background-color: beige;
+                    border-radius: 3px;                    
+                }
+            </style>
+            
+            <table  class="list" width="100%" border="1" cellspacing="1" cellpadding="1" align="center"  >
+                <tr class="headerRow">
+                    <td rowspan="2" width="70%" style="background:#483D8B;font-size:30px;font-weight:bold;text-align:center;color:white;" class="timeDivHide"> Pre-Call Plan </td>
+                    <td width="30%" style="background:#483D8B;color:white;">Next Visit Date : &nbsp;&nbsp;&nbsp;&nbsp;
+                        <!---<apex:inputField value="{!preCallPlan.Date_of_Visit__c}" rendered="{!!isRecordSaved}"/>--->
+                        <apex:outputField value="{!preCallPlan.Date_of_Visit__c}" rendered="{!isRecordSaved}"/>
+                        <apex:inputField value="{!conDateOfVisit.birthdate}" rendered="{!!isRecordSaved}"/>
+                        <apex:inputText value="{!nextVisitTimeStr}"  id="timepic"   style="width: 75px;margin-left: 10px;" rendered="{!!isRecordSaved}"/>    
+                        <div id="timedivID" style="position: absolute;width: 108px;height: 200px;z-index: 10000;background-color: white;overflow: auto;display:none"></div>
+                        <!---<apex:input  type="date" value="{!dateOfVisit}" rendered="{!!isRecordSaved}"/>
+                        <apex:input type="time" value="{!nextVisitTime}" rendered="{!!isRecordSaved}"/>--->
+                    </td>
+                </tr>
+                <tr class="headerRow timeDivHide">
+                    <td width="30%" style="background:#483D8B;color:white;">Last Visit Date: &nbsp;&nbsp;&nbsp;&nbsp;<apex:outputField value="{!preCallPlan.Date_of_last_visit__c}"/></td>
+                </tr>            
+            </table>
+            <!-- Pre-Plan Section End -->
+            
+            <!-- Customer Section Start -->
+            <table class="list timeDivHide" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial;" >
+                <tr class="headerRow">
+                    <td class="headerRow" style="font-weight:bold;width:12%;"> Pre-Call Plan Name : </td>
+                    <td class="dataCell" style="width:38%;"> <apex:inputField value="{!preCallPlan.Name}" rendered="{!!isRecordSaved}"/> <apex:outputLink value="{!preCallPlan.Name}"  rendered="{!isRecordSaved}" onclick="actOpenPreCallPlan();return false;"> {!preCallPlan.Name}</apex:outputLink></td>   
+                    <td class="headerRow" style="font-weight:bold;width:12%;"> Opportunity : </td>
+                    <td class="dataCell" style="width:38%;"> <apex:outputLink onclick="actOpenOpportunity();return false;"> {!if(opp != null, opp.Name, '')}</apex:outputLink>   </td>
+                </tr>
+                <tr class="headerRow">
+                    <td class="headerRow" style="font-weight:bold;width:12%;"> Customer : </td>
+                    <td class="dataCell" style="width:38%;"> <!-- <apex:inputField value="{!preCallPlan.Account__c}" rendered="{!!isRecordSaved}"/> <apex:outputField value="{!preCallPlan.Account__c}" rendered="{!isRecordSaved}"/> --> <apex:outputLink value="{!acc.Name}" onclick="actOpenAccount();return false;" >{!acc.Name} </apex:outputLink>   </td>
+                    <td class="headerRow" style="font-weight:bold;width:12%;" > Address : <!-- &nbsp;&nbsp; <span> {!acc.shippingStreet}, {!acc.shippingCity},  {!acc.shippingState}  </span> --></td>
+                    <td class="dataCell" style="width:38%;"> {!acc.shippingStreet}, {!acc.shippingCity},  {!acc.shippingState} </td> 
+                </tr>
+                <tr class="headerRow">
+                    <td class="headerRow" style="font-weight:bold;width:12%;"> Meeting Address : </td>
+                    <td class="dataCell" style="width:38%;"> 
+                        <apex:inputField value="{!preCallPlan.Meeting_Address__c}" rendered="{!!isRecordSaved}"/> 
+                        <apex:outputField value="{!preCallPlan.Meeting_Address__c}" rendered="{!isRecordSaved}"/>
+                    </td>
+                    <td class="headerRow" style="font-weight:bold;width:12%;" > Owner : </td>
+                    <td class="dataCell" style="width:38%;"> <apex:outputField value="{!preCallPlan.account__r.ownerid}"/> </td> 
+                </tr>
+            </table>
+            <!-- Customer Section End -->
+            
+            <!-- Account Overview Section Start -->
+            <table width="75%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial;" class="list timeDivHide" >
+                <tr class="headerRow">
+                    <td class="headerRow" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Account Overview </td>
+                </tr>
+                <tr class="dataRow">
+                    <td class="dataCell"> <apex:inputField value="{!acc.Description}" style="width:98%;" rendered="{!!isRecordSaved}"/> <apex:outputField value="{!acc.Description}" rendered="{!isRecordSaved}"/></td>
+                </tr>
+            </table>    
+            <!-- Account Overview Section End -->
+            
+            <!-- Situation  Update Section Start -->
+            <table width="75%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial;" class="list timeDivHide" >
+                <tr class="headerRow">
+                    <td class="headerRow" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Situation  Update </td>
+                </tr>
+                <tr class="dataRow">
+                    <td class="dataCell"> 
+                        <apex:inputTextarea rows="5" richText="true" value="{!preCallPlan.Situation_Update__c}" style="width:98%;" rendered="{!!isRecordSaved}"/> 
+                        <apex:outputField value="{!preCallPlan.Situation_Update__c}" rendered="{!isRecordSaved}"/>
+                    </td>
+                </tr>
+            </table>    
+            <!-- Situation  Update Section End -->
+            
+
+            
+            <apex:outputPanel id="outButtonPanel" > 
+            <table width="75%" border="0" align="center">
+                <tr>
+                    <td align="center"> <apex:commandButton value="Edit" action="{!editPreCallPlan}" style="width:100px;height:25px;font-size:10pt;" rendered="{!isRecordSaved}"/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="Save" action="{!savePreCallPlan}" rendered="{!!isRecordSaved}" style="width:100px;height:25px;font-size:10pt;"/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <apex:commandButton value="Cancel" action="{!cancelPage}" style="width:100px;height:25px;font-size:10pt;"/></td>
+                </tr>
+            </table>
+            </apex:outputPanel>
+
+            <!-- Funnel Section Start -->
+            <apex:outputPanel id="outDownPanelFunnel" rendered="{!isRecordSaved}"> 
+                <apex:outputPanel id="funnelpanle" >   <!--rendered="{!if(isNewPreCallPlanContact == 'false', true, false)}"-->                     
+                    <table width="75%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial;" class="list">
+                        <tr class="headerRow">
+                            <td colspan="8" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;"> Funnel </td>
+                        </tr>
+                        <tr class="headerRow">
+                            <th class="headerRow">
+                                <apex:actionStatus id="funstatus">        
+                                    <apex:facet name="start">
+                                        <div style="width: 20px;">
+                                            <img src="/img/loading24.gif" style="vertical-align:middle;margin-left: 3px;height: 16px;"/>
+                                        </div>
+                                    </apex:facet>
+                                </apex:actionStatus>
+                            </th>
+                            <apex:repeat value="{!lstOppFields}" var="oph">                        
+                                <th class="headerRow"> {!oph}</th>
+                            </apex:repeat>
+                        </tr>
+                        <apex:repeat value="{!oppModelList}" var="op">
+                            <tr class="dataRow">
+                                <td class="dataCell"><apex:inputCheckbox disabled="{!!isFunnelEdit}" value="{!op.isChecked}"/></td>
+                                <td class="dataCell"><apex:outputField value="{!op.oppObj.Opportunity_Number__c}"/></td>
+                                <td class="dataCell"><apex:outputField value="{!op.oppObj.Name}"/></td>
+                                <td class="dataCell"><apex:outputField value="{!op.oppObj.Estimated_Amount__c}"/></td>
+                                <td class="dataCell"><apex:outputField value="{!op.oppObj.StageName}"/></td>
+                                <td class="dataCell"><apex:outputField value="{!op.oppObj.Product_Model__c}"/></td>
+                                <td class="dataCell"><apex:outputField value="{!op.oppObj.NextStep}"/></td>
+                                <td class="dataCell"><apex:outputField value="{!op.oppObj.CloseDate}"/></td>
+                            </tr>
+                        </apex:repeat>
+                        <tr>
+                            <td colspan="8" >
+                                <apex:commandButton value="Edit" action="{!goToEditForFunnel}" rendered="{!!isFunnelEdit}" reRender="funnelpanle" status="funstatus"/>
+                                <apex:commandButton value="Save" action="{!saveFunnelOpp}" rendered="{!isFunnelEdit}"  reRender="funnelpanle" status="funstatus"/>
+                                <apex:commandButton value="Cancel" action="{!initForFunnel}" rendered="{!isFunnelEdit}" reRender="funnelpanle" status="funstatus" style="margin-left: 25px;"/>
+                            </td>
+                        </tr>
+                    </table> 
+                </apex:outputPanel>  
+            </apex:outputPanel> 
+            <!-- Funnel Section End -->
+            
+        </apex:pageBlock> 
+        
+        
+        <!-- Down Panel Start -->
+        <apex:outputPanel id="outDownPanel" rendered="{!isRecordSaved}"> 
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="width: 500px;">
+                        <img src="/img/loading24.gif" style="vertical-align:middle;margin-left:50px;"/>
+                        <span style="margin-left:10px; font-size: 12px; font-weight: bold; color: #000000;">Please Wait...............</span>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+            
+             
+            
+            <!-- Contact Section Start -->
+            <apex:actionStatus id="conStatus">
+                <apex:facet name="start">
+                    <div style="width: 500px;">
+                        <img src="/img/loading24.gif" style="vertical-align:middle;margin-left:50px;"/>
+                        <span style="margin-left:10px; font-size: 12px; font-weight: bold; color: #000000;">Please Wait...............</span>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+            
+            <apex:pageBlock id="pbcon" title="Meeting Attendees">              
+                <apex:outputPanel rendered="{!if(isNewPreCallPlanContact == 'true', true, false)}">
+                    <table class="list">
+                        <tr class="headerRow">
+                            <th class="headerRow">Row <br/> No#</th>
+                            <th class="headerRow">Internal <br/> Contact </th>
+                            <th class="headerRow">Title </th>
+                            <th class="headerRow">First Name </th>
+                            <th class="headerRow">Last Name </th>
+                            <th class="headerRow">Email</th>
+                            <th class="headerRow">Phone</th>
+                            <th class="headerRow">DMU</th>
+                            <th class="headerRow">Reports To</th>
+                            <th class="headerRow">Business Unit </th>
+                            <th class="headerRow">Notes </th>                            
+                        </tr>
+                        <apex:variable value="{!1}" var="rn"/>
+                        <apex:repeat value="{!lstPreCallContactModel}" var="preConMod">
+                            <tr class="dataRow">
+                                <td class="dataCell"> {!rn} </td>
+                                <td class="dataCell"> <apex:inputCheckbox value="{!preConMod.doNotAddContact}"/></td>
+                                <td class="dataCell"> <apex:inputField style="width: 130px;" value="{!preConMod.tempConObj.Title}"/></td>
+                                <td class="dataCell"> <apex:inputField style="width: 130px;" value="{!preConMod.tempConObj.FirstName}"/></td>
+                                <td class="dataCell"> <apex:inputField style="width: 130px;" value="{!preConMod.tempConObj.LastName}"/></td>
+                                <td class="dataCell"> <apex:inputField style="width: 130px;" value="{!preConMod.tempConObj.Email}"/></td>
+                                <td class="dataCell"> <apex:inputField style="width: 130px;" value="{!preConMod.tempConObj.Phone}"/></td>
+                                <td class="dataCell"> <apex:inputField style="width: 130px;" value="{!preConMod.tempConObj.DMU__c }"/></td>
+                                <td class="dataCell"> <apex:selectList style="width: 130px;" value="{!preConMod.reportsToValue}" size="1" multiselect="false"> <apex:selectOptions value="{!lstReportsToContact}"></apex:selectOptions> </apex:selectList> </td> 
+                                <td class="dataCell"> <apex:outputField style="width: 130px;" value="{!preConMod.tempConObj.Business_Unit__c}"/></td>
+                                <td class="dataCell"> <apex:inputTextarea style="width: 130px;" value="{!preConMod.notesText}" rows="1" cols="50"/></td>
+                            </tr>
+                            <apex:variable var="rn" value="{!rn+1}"/>
+                        </apex:repeat>
+                    </table>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!if(isNewPreCallPlanContact == 'false', true, false)}">
+                     <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial;" class="list">
+                        <tr class="headerRow">
+                             <apex:repeat value="{!lstContactFields}" var="conh">
+                                <th class="headerRow"> {!conh}</th>
+                            </apex:repeat>   
+                        </tr>  
+                        <apex:variable value="{!1}" var="rn"/>
+                        <apex:repeat value="{!lstContacts}" var="con">
+                            <tr class="dataRow">
+                                <td class="dataCell" width="5%"> <a href="#" onclick="actForRemoveContact('{!con.id}');return false;"> Remove </a></td>
+                                <td class="dataCell" width="5%" align="center"> {!rn}</td>
+                                <td class="dataCell" width="5%" align="center"> {!if(con.Contact__c == null,'Yes','No')} </td>
+                                <td class="dataCell"> <apex:outputField value="{!con.Name}"/></td>
+                                <td class="dataCell"> <apex:outputField value="{!con.Email__c}"/></td>
+                                <td class="dataCell"> <apex:outputField value="{!con.Phone__c}"/></td>
+                                <td class="dataCell"> {!con.Contact__r.DMU__c}</td>
+                                <td class="dataCell"> <apex:outputField value="{!con.Title__c}"/></td>
+                                <td class="dataCell"> <apex:outputField value="{!con.ReportsTo__c}"/> </td> 
+                                <td class="dataCell"> {!con.Notes__c}</td>                                
+                            </tr>
+                            <apex:variable var="rn" value="{!rn+1}"/>
+                        </apex:repeat>                   
+                     </table>   
+                </apex:outputPanel>
+                <table class="list">
+                    <tr class="headerRow">
+                        <td class="headerRow"> 
+                            <apex:commandButton value="Add/Edit" onclick="actForAddingNewContact('true');return false;" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                            <apex:commandButton value="Save" onclick="actSavingNewContact('false');return false;"  /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                            <apex:commandButton value="Cancel" onclick="actCancelNewContact('false');return false;" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Select from List" onclick="openBox('open');return false;" />                            
+                         </td>
+                    </tr>
+                </table>
+            </apex:pageBlock>
+            <!-- Contact Section End -->
+            
+            
+            <!-- Call Objective/Agenda Start -->
+            <apex:actionStatus id="callStatus">
+                <apex:facet name="start">
+                    <div style="width: 500px;">
+                        <img src="/img/loading24.gif" style="vertical-align:middle;margin-left:50px;"/>
+                        <span style="margin-left:10px; font-size: 12px; font-weight: bold; color: #000000;">Please Wait...............</span>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+            <apex:pageBlock title="Call Objective / Agenda"  id="pbCallObj">
+                <apex:outputPanel rendered="{!if(isNewCallObjective == 'true', true, false)}" id="outObj">
+                    <table width="100%"  class="list">
+                        <tr class="headerRow">
+                            <th class="headerRow"> Objective No.</th>
+                            <th class="headerRow"> Objective </th>
+                            <apex:outputPanel layout="none"  rendered="{!! (conDateOfVisit.birthdate > today()) }" >
+                                <th class="headerRow"> Post-Call Comments<font style="color:red;font-size: 17px;"> *</font> </th>
+                            </apex:outputPanel>
+                        </tr>
+                        <apex:variable var="callrow" value="{!1}" />
+                        <apex:repeat value="{!lstCallObjectiveModel}" var="callObj">
+                            <tr class="dataRow">
+                                <td width="2%" class="dataRow"> {!callrow}</td>
+                                <td  width="45%" class="dataRow"> 
+                                    <apex:inputTextarea rows="1" cols="80"  value="{!callObj.objectiveText}" />
+                                </td>
+                                <apex:outputPanel layout="none" rendered="{!! (conDateOfVisit.birthdate > today()) }" >
+                                    <td  width="45%" class="dataRow"> <apex:inputTextArea cols="80" rows="1" value="{!callObj.PostCallComment}" /></td>
+                                </apex:outputPanel>
+                            </tr>    
+                            <apex:variable value="{!callrow+1}" var="callrow"/>
+                        </apex:repeat>               
+                    </table>
+                </apex:outputPanel> 
+                
+                <apex:outputPanel rendered="{!if(isNewCallObjective == 'false', true, false)}">
+                    <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial;" class="list">
+                        <tr class="headerRow">
+                            <th class="headerRow"> &nbsp; </th>
+                            <th class="headerRow"> &nbsp; </th>
+                            <th class="headerRow"> Objectives </th>
+                            <apex:outputPanel layout="none" rendered="{!! (conDateOfVisit.birthdate > today()) }" >
+                                <th class="headerRow"> Post-Call Comments<font style="color:red;font-size: 17px;"> *</font> </th>
+                            </apex:outputPanel>
+                        </tr>
+                        <apex:variable var="callrow1" value="{!1}" />
+                        <apex:repeat value="{!lstObjectives}" var="obj">
+                            <tr class="dataRow">
+                                <td class="dataCell" width="5%"> <a href="#" onclick="actForRemoveObjective('{!obj.id}');return false;"> Remove </a></td>
+                                <td class="dataCell" width="5%" align="center"> {!callrow1}  </td>
+                                <td class="dataCell" width="45%"><apex:outputField value="{!obj.Objective__c}"/></td>
+                                <apex:outputPanel layout="none" rendered="{!! (conDateOfVisit.birthdate >today()) }" >
+                                    <td class="dataCell" width="45%"><apex:outputField value="{!obj.Post_Call_Comment__c}"/></td>
+                                </apex:outputPanel>
+                            </tr>
+                            <apex:variable value="{!callrow1+1}" var="callrow1"/>
+                        </apex:repeat>
+                    </table>            
+                </apex:outputPanel>    
+                <table class="list">
+                    <tr class="dataRow">
+                        <td class="dataCell"> 
+                            <apex:commandButton value="Add/Edit" onclick="actForNewCallObjective('true');return false;"  /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Save" onclick="actForSavingCallObjective('false');return false;" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Cancel" onclick="actForCancelCallObjective('false');return false;" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            
+                        </td>
+                    </tr> 
+                </table>                 
+            </apex:pageBlock>  
+            <!-- Call Objective/Agenda End -->    
+            
+            
+            
+            <!-- Key Questions and Notes Section Start -->
+            <apex:actionStatus id="QuestionsStatus">
+                <apex:facet name="start">
+                    <div style="width: 500px;">
+                        <img src="/img/loading24.gif" style="vertical-align:middle;margin-left:50px;"/>
+                        <span style="margin-left:10px; font-size: 12px; font-weight: bold; color: #000000;">Please Wait...............</span>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+            <apex:pageBlock title="Key Questions to Ask" id="pbqstObj">
+                <apex:outputPanel id="outKeyqst" rendered="{!if(isNewQuestion == 'true', true, false)}">
+                    <table width="100%" border="1" class="list">
+                        <tr class="headerRow">
+                            <th class="headerRow"> Question No. </th>
+                            <th class="headerRow"> Key Question </th>
+                            <apex:outputPanel layout="none" rendered="{!! (conDateOfVisit.birthdate > today()) }" >
+                                <th class="headerRow"> Post-Call Comments<font style="color:red;font-size: 17px;"> *</font> </th>
+                            </apex:outputPanel>
+                        </tr>
+                        <apex:variable var="qstrow" value="{!1}" />
+                        <apex:repeat value="{!lstKeyQuestionsModel}" var="qstObj">
+                            <tr class="dataRow">
+                                <td width="2%" class="dataCell"> {!qstrow}</td>
+                                <td width="45%" class="dataCell"> <apex:inputTextarea value="{!qstObj.questions}" rows="1" cols="80"/></td>
+                                <apex:outputPanel layout="none" rendered="{!! (conDateOfVisit.birthdate > today()) }" >
+                                    <td class="dataCell" width="45%"> <apex:inputTextarea value="{!qstObj.notes}" rows="1" cols="80"/></td>
+                                </apex:outputPanel>
+                            </tr>    
+                            <apex:variable value="{!qstrow+1}" var="qstrow"/>
+                        </apex:repeat>                
+                    </table>    
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!if(isNewQuestion == 'false', true, false)}">
+                    <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial;" class="list">
+                        <tr class="headerRow">
+                            <th class="headerRow"> &nbsp; </th>
+                            <th class="headerRow"> &nbsp; </th>
+                            <th class="headerRow"> Key Questions </th>
+                            <apex:outputPanel layout="none" rendered="{!! (conDateOfVisit.birthdate > today()) }" >
+                                <th class="headerRow"> Post-Call Comments<font style="color:red;font-size: 17px;"> *</font> </th>
+                            </apex:outputPanel>
+                        </tr>
+                        <apex:variable var="qstrow1" value="{!1}" />
+                        <apex:repeat value="{!lstQuestions }" var="qstobj">
+                            <tr class="dataRow">
+                                <td class="dataCell" width="5%"> <a href="#" onclick="actForRemoveQuestion('{!qstObj.id}');return false;"> Remove </a></td>
+                                <td class = "dataCell" width="5%" align="center">{!qstrow1}</td>
+                                <td class = "dataCell" width="45%"><apex:outputField value="{!qstobj.Question__c}"/></td>
+                                <apex:outputPanel layout="none" rendered="{!! (conDateOfVisit.birthdate > today()) }" >
+                                    <td class = "dataCell" width="45%"><apex:outputField value="{!qstobj.Note__c}"/></td>
+                                </apex:outputPanel>
+                            </tr>
+                            <apex:variable value="{!qstrow1+1}" var="qstrow1"/>
+                        </apex:repeat>
+                    </table>    
+                </apex:outputPanel>
+                <table class="list">
+                    <tr class="dataRow">
+                        <td class="dataCell"> 
+                            <apex:commandButton value="Add/Edit" onclick="actForAddingNewQuestion('true');return false;"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Save" onclick="actForSavingNewQuestion('false');return false;" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Cancel" onclick="actForCancelNewQuestion('false');return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </apex:pageBlock>
+            <!-- Key Questions and Notes Section End -->
+            
+            
+            <!-- Objecctions and Response Section Start -->
+            
+            <apex:actionStatus id="objectionStatus">
+                <apex:facet name="start">
+                    <div style="width: 500px;">
+                        <img src="/img/loading24.gif" style="vertical-align:middle;margin-left:50px;"/>
+                        <span style="margin-left:10px; font-size: 12px; font-weight: bold; color: #000000;">Please Wait...............</span>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+            <apex:pageBlock title="Customer Objections" id="pbobjetObj">
+                <apex:outputPanel rendered="{!if(isNewObjection == 'true', true, false)}" id="objetout">
+                    <table width="100%" border="1" class="list">
+                        <tr class="headerRow">
+                            <th class="headerRow"> Objection No. </th>
+                            <th class="headerRow"> Objections </th>
+                            <th class="headerRow"> GEMS Response </th>
+                        </tr>
+                        <apex:variable var="objetrow" value="{!1}" />
+                        <apex:repeat value="{!lstObjectionModel}" var="objetObj">
+                            <tr class="dataRow">
+                                <td width="8%" class="dataCell"> {!objetrow}</td>
+                                <td width="45%" class="dataCell"> <apex:inputTextarea value="{!objetObj.objectionText }" rows="2" cols="80"/></td>
+                                <td width="45%" class="dataCell"> <apex:inputTextarea value="{!objetObj.responseText}" rows="2" cols="80"/></td>
+                            </tr>    
+                            <apex:variable value="{!objetrow+1}" var="objetrow"/>
+                        </apex:repeat> 
+                                      
+                    </table>    
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!if(isNewObjection == 'false', true, false)}">
+                    <table width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial;" class="list">
+                        <tr class="headerRow">
+                            <th class="headerRow"> &nbsp; </th>
+                            <th class="headerRow"> &nbsp; </th>
+                            <th class="headerRow"> Objections </th>
+                            <th class="headerRow"> Gems Response </th>
+                        </tr>
+                        <apex:variable var="objetrow1" value="{!1}" />
+                        <apex:repeat value="{!lstObjections}" var="objetObj">
+                            <tr class="dataRow">
+                                <td class = "dataCell" width="5%"> <a href="#" onclick="actForRemoveObjection('{!objetObj.id}');return false;"> Remove </a></td>
+                                <td class = "dataCell" width="5%" align="center">{!objetrow1} </td>
+                                <td class = "dataCell" width="40%"><apex:outputField value="{!objetObj.Objection__c}" /> </td>
+                                <td class = "dataCell" width="40%"> <apex:outputField value="{!objetObj.Response__c}"/> </td>
+                            </tr>
+                            <apex:variable value="{!objetrow1+1}" var="objetrow1"/>
+                        </apex:repeat>
+                    </table>    
+                </apex:outputPanel>
+                <table class="list">
+                    <tr class="dataRow">
+                            <td class="dataCell"> 
+                                <apex:commandButton value="Add/Edit" onclick="actForAddingNewObjection('true');return false;"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:commandButton value="Save" onclick="actForSavingNewObjection('false');return false;" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:commandButton value="Cancel" onclick="actForCancelNewObjection('false');return false;"  />
+                            </td>
+                    </tr> 
+                </table>
+            </apex:pageBlock>
+            <!-- Objecctions and Response Section End -->
+                       
+            <apex:pageBlock id="pbTripSummery"  rendered="{!! (conDateOfVisit.birthdate > today()) }" >
+                <apex:outputPanel rendered="{!postcallError!=''}" >
+                    <apex:pageMessage detail="{!postcallError}" severity="error"  />
+                </apex:outputPanel>
+                <!-- Post-Plan Section Start -->
+                <table  class="list" width="100%" border="1" cellspacing="1" cellpadding="1" align="center"  >
+                    <tr class="headerRow">
+                        <td width="100%" style="background: #483D8B;font-weight: bold;color: white;vertical-align: inherit;">
+                            <b style="background: #483D8B;font-size: 15px;">
+                            <apex:inputCheckbox id="convertpostcall" rendered="{!!preCallPlan.Convert_to_Post_Call__c}" onclick="convertPostCall(this.checked);" value="{!preCallPlan.Convert_to_Post_Call__c}"/> 
+                            <apex:inputCheckbox disabled="true" rendered="{!preCallPlan.Convert_to_Post_Call__c}" value="{!preCallPlan.Convert_to_Post_Call__c}"/> 
+                            Convert to Post Call
+                            </b>
+                            <b style="background:#483D8B;font-size:30px;margin-left: 20%;">Post-Call Summary</b>
+                        </td>                        
+                    </tr>           
+                </table>
+                <!-- Post-Plan Section End -->
+                <!-- Trip Summmary Section Start -->
+                <apex:outputPanel id="tripsummary">
+                <table id="tripsummary" width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial;" class="list">
+                    <tr class="headerRow">
+                        <td style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;">Trip Summary</td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td>
+                            <apex:inputField value="{!preCallPlan.Trip_Summary__c}" rendered="{!isTripSummaryOn }" />
+                            <apex:outputField value="{!preCallPlan.Trip_Summary__c}" rendered="{!!isTripSummaryOn}"/>
+                        </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="dataCell"> 
+                            <apex:commandButton value="Add/Edit" action="{!editTripSummary}" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Save" action="{!saveTripSummary}"/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Cancel" action="{!cancelTripSummary}"  />
+                        </td>
+                    </tr> 
+                </table>
+                </apex:outputPanel>
+                <!-- Trip Summmary SectionEnd -->
+                
+                <!--Attachment Section Start Here-->
+                <apex:actionFunction name="removeAtc" action="{!removeAttach}" reRender="atcArea" status="AtcStatus">
+                    <apex:param value="at" name="at" assignTo="{!removeAtcId}"/>
+                </apex:actionFunction>
+                <apex:actionStatus id="AtcStatus">
+                    <apex:facet name="start">
+                        <div style="width: 500px;margin-bottom:-20px">
+                            <img src="/img/loading24.gif" style="vertical-align:middle;margin-left:0px;"/>
+                            <span style="margin-left:10px; font-size: 12px; font-weight: bold; color: #000000;">Please Wait...............</span>
+                        </div>
+                    </apex:facet>
+                </apex:actionStatus>
+                <apex:outputPanel id="atcArea">
+                <table width="75%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:20px;font-family:Arial;" class="list">
+                    <tr class="headerRow">
+                        <td colspan="4" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;">Attachment</td>
+                    </tr>                    
+                    <apex:outputPanel layout="none" rendered="{!!isNewAttach}">
+                    <tr class="headerRow">
+                        <th width="5%" class="headerRow"></th>
+                        <th width="5%" class="headerRow"></th>
+                        <th class="headerRow">Attachment Name</th>
+                        <th class="headerRow">Description</th>
+                    </tr>                    
+                    <apex:repeat value="{!lstAttachs}" var="lst">
+                        <tr class="dataRow">
+                            <td class="dataCell"><a style="cursor: pointer;text-decoration: underline;" onclick="removeAtc('{!lst.AtcObj.id}'); return false;">Remove</a></td>
+                            <td class="dataCell">{!lst.index}</td>
+                            <td class="dataCell"><a href="/{!lst.AtcObj.id}" target="_blank">{!lst.AtcObj.name}</a></td>
+                            <td class="dataCell">{!lst.AtcObj.Description}</td>
+                        </tr>
+                    </apex:repeat>
+                    </apex:outputPanel>
+                   
+                    <apex:outputPanel layout="none" rendered="{!isNewAttach}">
+                        <apex:repeat value="{!lstAttachs}" var="alist" >
+                        <tr>
+                            <td>
+                                <table width="98%" border="0" align="center" style="border:0px solid black">
+                                    <tr>
+                                        <th>{!alist.index}. Select the File</th>
+                                    </tr>
+                                    <tr>
+                                        <td valign="middle"><apex:inputFile style="width:100%" id="fileToUpload" value="{!alist.atcObj.body}" filename="{!alist.atcObj.Name}"/> </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Enter Description<br/><small>Not more than 500 Character</small></th>
+                                    </tr>
+                                    <tr>
+                                        <td><apex:inputTextarea rows="2" cols="120" id="newDesc" value="{!alist.atcObj.Description}"/></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        </apex:repeat>
+                    </apex:outputPanel>
+                    <tr>
+                        <td colspan="4">
+                            <apex:commandButton rendered="{!!isNewAttach}" value="Add" action="{!AddOneRowAtc}" style="margin-right:20px"/>
+                            <apex:commandButton rendered="{!isNewAttach}" value="Attach another file" action="{!AddOneMoreRow}" style="margin-right:20px"/>
+                            <apex:commandButton rendered="{!isNewAttach}" value="Save" action="{!saveAttachs}" style="margin-right:20px"/>
+                            <apex:commandButton rendered="{!isNewAttach}" value="Cancel" action="{!cancelForAttach}"/>
+                        </td>
+                    </tr>
+                </table>
+                </apex:outputPanel>
+                <!--Attachment Section Start End-->
+                
+                <apex:actionStatus id="taskStatus">
+                    <apex:facet name="start">
+                        <div style="width: 500px;margin-bottom:-20px">
+                            <img src="/img/loading24.gif" style="vertical-align:middle;margin-left:0px;"/>
+                            <span style="margin-left:10px; font-size: 12px; font-weight: bold; color: #000000;">Please Wait...............</span>
+                        </div>
+                    </apex:facet>
+                </apex:actionStatus>
+                <!-- Other Key Section (Task) Section Start -->            
+                <apex:outputPanel id="pbTask" >
+                    <apex:outputPanel rendered="{!if(isNewTask == 'true', true, false)}">
+                        <table width="100%" border="1" class="list" style="  margin-top: 20px;">
+                            <tr class="headerRow">
+                                <td colspan="6" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;">Key Actions</td>
+                            </tr>
+                            <tr class="headerRow">
+                                <th class="headerRow"> Task No. </th>
+                                <th class="headerRow"> Subject </th>
+                                <th class="headerRow"> Due Date </th>
+                                <th class="headerRow"> Status </th>
+                                <th class="headerRow"> Assigned To</th>
+                                <th class="headerRow"> Description </th>
+                            </tr>
+                            <apex:variable var="tskRow" value="{!1}" />
+                            <apex:repeat value="{!lstTaskModel}" var="tskmd">
+                                <tr class="dataRow">
+                                    <td width="5%" class="dataCell"> {!tskRow}</td>
+                                    <td class="dataCell"> <apex:inputTextarea value="{!tskmd.taskSubject}" rows="1" cols="80"/></td>
+                                    <td class="dataCell"> <apex:inputField value="{!tskmd.taskObj.ActivityDate}"/></td>
+                                    <td class="dataCell"> <apex:inputField value="{!tskmd.taskObj.Status}"/></td>
+                                    <td class="dataCell"> <apex:inputField value="{!tskmd.taskObj.OwnerId}"/> </td>
+                                    <td class="dataCell"> <apex:inputField value="{!tskmd.taskObj.description}"/> </td>
+                                </tr>    
+                                <apex:variable value="{!tskRow+1}" var="tskRow"/>
+                            </apex:repeat>              
+                        </table>    
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!if(isNewTask == 'false', true, false)}">
+                        <table id="keyactions" width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:20px;font-family:Arial;" class="list">
+                            <tr class="headerRow">
+                                <td colspan="7" style="background-color:#cde0ff;text-align:center;font-size:14px;font-weight:bold;">Key Actions</td>
+                            </tr>
+                            <tr class="headerRow">
+                                <th class="headerRow"> &nbsp; </th>
+                                <th class="headerRow"> &nbsp; </th>
+                                <th class="headerRow"> Subject </th>
+                                <th class="headerRow"> Due Date </th>
+                                <th class="headerRow"> Status </th>
+                                <th class="headerRow"> Assign To </th>
+                                <th class="headerRow"> Description </th>
+                            </tr>
+                            <apex:variable var="tskR" value="{!1}"/>
+                            <apex:repeat value="{!preCallPlan.Tasks}" var="tsk">
+                                <tr class="dataRow">
+                                    <td class="dataCell" width="5%"> <a href="#" onclick="actForRemoveTask('{!tsk.id}');return false;"> Remove </a></td>
+                                    <td class="dataCell" width="5%" align="center"> {!tskR} <!-- <apex:outputField value="{!obj.Name}"/> --> </td>
+                                    <td class="dataCell"> <a href="/{!tsk.id}" target="_blank"> <apex:outputField value="{!tsk.Subject}"/> </a></td>
+                                    <td class="dataCell"> <apex:outputField value="{!tsk.ActivityDate}"/></td>
+                                    <td class="dataCell"> <apex:outputField value="{!tsk.Status}"/></td>
+                                    <td class="dataCell"> <apex:outputField value="{!tsk.OwnerId}"/></td>
+                                    <td class="dataCell"> <apex:outputField value="{!tsk.Description}"/></td>
+                                </tr>
+                                <apex:variable var="tskR" value="{!tskR+1}"/>
+                            </apex:repeat>
+                        </table>
+                    </apex:outputPanel> 
+                    <table class="list">
+                        <tr class="dataRow">
+                            <td class="dataCell"> 
+                                <apex:commandButton value="Add/Edit" onClick="actForAddingNewTask('true');return false;"  /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:commandButton value="Save" onClick="actForSavingNewTask('false');return false;"  /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:commandButton value="Cancel" onclick="actForCancelNewTask('false');return false;"  />
+                            </td>
+                        </tr>  
+                    </table>
+                </apex:outputPanel>
+                <!-- Other Key Section (Task) Section End -->
+            </apex:pageBlock>
+         
+            
+            <!-- OrgChart Section --> 
+            <apex:actionStatus id="orgStatus">
+                <apex:facet name="start">
+                    <div style="width: 500px;">
+                        <img src="/img/loading24.gif" style="vertical-align:middle;margin-left:50px;"/>
+                        <span style="margin-left:10px; font-size: 12px; font-weight: bold; color: #000000;">Please Wait...............</span>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+            <style>
+                div.orgChart div.node {
+                    box-shadow: 0px 0px 10px 1px #5E5E5E;
+                }
+                .mylink:hover {
+                    text-decoration: underline;
+                    color: #015ba7;
+                    BACKGROUND-COLOR: rgb(252, 252, 252);
+                    font-weight: 700;
+                }
+            </style>
+            <apex:pageBlock id="orgchart">
+                <apex:pageBlockSection collapsible="true" columns="1" title="Org Chart" id="orgChartSec">
+                <apex:pageblockSectionItem >
+                    <apex:outputPanel layout="none">
+                        <apex:commandLink value="Build Org Chart" onclick="openReportsToBox('open');return false;"/> &nbsp; &nbsp;
+                        <apex:commandLink value="New Contact" onclick="openNewContactBox('open');return false;"/>
+                        <!--Commented one line here and added on line after it BY VISHNU-->
+                        <!----<div id="orgChartContainer" style="  margin-left: -4px;background-color: rgb(248, 248, 248) !important;width: 100% !important;margin-top: 5px !important;">-->
+                        <div id="orgChartContainer" style="  margin-left: -4px;background-color: rgb(248, 248, 248) !important;width: 1080px !important;margin-top: 5px !important;overflow: scroll;">
+                              <div id="orgChart" style="background-color: rgb(248, 248, 248);margin: 0px;"></div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageblockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+
+            <!-- Link Section Start -->
+            <table class="list" width="100%" border="1" cellspacing="1" cellpadding="1" align="center" style="margin-top:0px;font-family:Arial;">
+                <tr class="dataRow" >
+                    <td class="dataCell" valign="middle"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="{!linkToReport}" target="_blank" style="font-size:14pt;">  Link to a Business Object Report </a>  </td>
+                </tr>
+                
+            </table>
+            <!-- Link Section End -->
+            
+        </apex:outputPanel>
+        
+        <!-- Contact Dialog Start --> 
+        <div id="divConBox" style="background-color:silver;">
+            <apex:pageBlock id="outConDiv" >
+                <apex:pageBlockSection title="Customer Contact" columns="1" collapsible="false">
+                    <apex:pageblockSectionItem >
+                        <apex:pageBlockTable value="{!lstConModel}" var="m" >
+                            <apex:column headerValue="Select">
+                                <apex:inputCheckbox value="{!m.flg}"/>
+                            </apex:column>
+                            <apex:column headerValue="Title" value="{!m.conObj.Title}"/>
+                            <apex:column headerValue="Name" value="{!m.conObj.Name}"/>
+                            <apex:column headerValue="Reports To" value="{!m.conObj.ReportsTo.Name}"/>
+                            <apex:column headerValue="Email" value="{!m.conObj.Email}"/>
+                        </apex:pageBlockTable>
+                    </apex:pageblockSectionItem>
+                </apex:pageblockSection>
+                
+                <apex:pageBlockSection title="Gems Contact" columns="1" collapsible="false">
+                    <apex:pageblockSectionItem >
+                        <apex:pageBlockTable value="{!gemsUsrList}" var="gemusr" >
+                            <apex:column headerValue="Select">
+                                <apex:inputCheckbox value="{!gemusr.isChecked}"/>
+                            </apex:column>
+                            <apex:column headerValue="Title" value="{!gemusr.usrObj.Title}"/>
+                            <apex:column headerValue="Name" value="{!gemusr.usrObj.Name}"/>
+                            <apex:column headerValue="Email" value="{!gemusr.usrObj.Email}"/>
+                        </apex:pageBlockTable>
+                    </apex:pageblockSectionItem>
+                </apex:pageblockSection>
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Add To Pre-Call Plan" onclick="actForCloseContactBox('false');return false;"/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     <apex:commandButton value="Cancel" onclick="openBox('close');return false;"/>
+                </apex:pageBlockButtons>
+            </apex:pageBlock>
+        </div>
+        <!-- Contact Dialog End -->
+        
+        <!-- Trip Report Dialog Start --> 
+        <div id="divTripReportBox" style="background-color:silver;">
+            <apex:pageBlock id="outTripReport">
+                <apex:pageBlockButtons location="top">
+                    <apex:commandButton value="Print Pdf" action="{!openPDFPage}" reRender="outFun" oncomplete="openPDFButton();"/>
+                    <apex:commandButton value="Print Doc" action="{!openPDFPage}" reRender="outFun" oncomplete="openMsDocButton();"/>
+                    
+                    <apex:commandButton value="Cancel" />
+                </apex:pageBlockButtons>
+                
+                <apex:pageBlockTable value="{!lstTripReportModel}" var="tpr">
+                    <apex:column headerValue="">
+                        <apex:inputCheckbox value="{!tpr.isShow}"/>
+                    </apex:column>
+                    <apex:column value="{!tpr.sectionName}" headerValue="Section Name"/>
+                </apex:pageBlockTable> 
+               
+            </apex:pageBlock>
+            
+        </div> 
+        
+        <!-- ReportsTo  Dialog Start --> 
+        <div id="divReportToBox" style="background-color:silver;">
+            <apex:pageBlock id="outReportToBox">
+                <apex:pageBlockButtons location="top">
+                    <apex:commandButton value="Save" onclick="openReportsToBox('close');return false;" />
+                    <apex:commandButton value="Cancel" onclick="openReportsToBox('close');return false;"/>
+                </apex:pageBlockButtons>
+                
+                <apex:pageBlockTable value="{!lstreportToModel}" var="rpt">
+                    <apex:column headerValue="Contact Name" value="{!rpt.conObj.Name}"/>    
+                    <apex:column headerValue="Job Title" value="{!rpt.conObj.Title}"/>
+                    <apex:column headerValue="Reports To">
+                        <apex:selectList value="{!rpt.reportsToId}" size="1" multiselect="false">
+                            <apex:selectOptions value="{!lstReportsToContact}"></apex:selectOptions>
+                        </apex:selectList>
+                    </apex:column>
+                    <apex:column headerValue="DMU" >
+                        <apex:selectList value="{!rpt.conObj.DMU__c}" size="1" multiselect="false">
+                            <apex:selectOptions value="{!lstDMUSelOpt}"></apex:selectOptions>
+                        </apex:selectList>
+                    </apex:column>
+                </apex:pageBlockTable> 
+               
+            </apex:pageBlock>
+            
+        </div> 
+        
+        <!-- New Contact Dialog Start --> 
+        <div id="divNewContactBox" style="background-color:silver;">
+            <apex:pageBlock id="outNewContactBox">
+                <apex:pageBlockButtons location="top">
+                    <apex:commandButton value="Save" onclick="openNewContactBox('close');return false;"/>
+                    <apex:commandButton value="Cancel" onclick="openNewContactBox('close');return false;"/>
+                </apex:pageBlockButtons>
+                <table class="list">
+                    <tr class="dataRow">
+                        <td class="headerRow"> First Name </td>                        
+                        <td class="dataRow"> <apex:inputField value="{!newConObj.FirstName}"/> </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="headerRow"> Last Name </td>                        
+                        <td class="dataRow"> <apex:inputField value="{!newConObj.LastName}"/> </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="headerRow"> Phone </td>                        
+                        <td class="dataRow"> <apex:inputField value="{!newConObj.Phone}"/> </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="headerRow"> Email </td>                        
+                        <td class="dataRow"> <apex:inputField value="{!newConObj.Email}"/></td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="headerRow"> Job Title </td>                        
+                        <td class="dataRow"> <apex:inputField value="{!newConObj.title}"/> </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="headerRow"> Bussines Unit </td>                        
+                        <td class="dataRow"> <apex:inputField value="{!newConObj.Business_Unit__c}" style="width: 142px;"/> </td>
+                    </tr>
+                    <tr class="dataRow">
+                        <td class="headerRow"> Reports To </td>                        
+                        <td class="dataRow">
+                            <apex:selectList value="{!newConObj.ReportsToId}" size="1" multiselect="false"> 
+                                <apex:selectOptions value="{!lstReportsToContact}"></apex:selectOptions> 
+                            </apex:selectList>
+                        </td>
+                    </tr>                    
+                    <tr class="dataRow">
+                        <td class="headerRow">DMU</td>                        
+                        <td class="dataRow"><apex:inputField value="{!newConObj.DMU__c }" style="width: 142px;"/> </td>
+                    </tr>
+                </table>
+            </apex:pageBlock>
+            
+        </div>
+    </apex:form>
+    <!-- For Org Chart ---> 
+    <!-- <apex:includeScript value="{!URLFOR($Resource.OrgChart,'OrgChart/jquery-1.11.1.min.js')}"/> -->
+    <apex:includeScript value="{!URLFOR($Resource.OrgChart,'OrgChart/jquery.orgchart.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.OrgChart,'/OrgChart/jquery.orgchart.css')}"/>
+    <script src="{!URLFOR($Resource.oppjsonmaster,'jsonmaster/json2.js')}"></script>  
+    <apex:outputPanel id="orgChartData">
+        <script>
+            var testData = JSON.parse('{!JSENCODE(orgChartDataInJson)}');
+            $(function(){
+            org_chart = $('#orgChart').orgChart({
+                data: testData,
+                showControls: false,
+                allowEdit: false,
+            });
+        });
+        </script>
+    </apex:outputPanel>
+</apex:page>

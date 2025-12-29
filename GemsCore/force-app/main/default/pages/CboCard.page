@@ -1,0 +1,168 @@
+<apex:page sidebar="false" showHeader="false" contentType="application/msword" cache="true" standardController="CBO__c">
+<html>
+<head>
+<style type="text/css">
+div.styled
+{
+    border-width:2px; 
+    border-style:dashed dashed dashed dashed;
+    border-color:#ff9900;
+}
+body
+{
+    font-size: 16px;
+        font-family: verdana, Arial, Helvetica;
+}
+.text1
+{
+    font-size: 11px;
+    font-family: verdana, Arial, Helvetica;
+}
+.text2
+{
+    font-size: 11px;
+    font-family: verdana, Arial, Helvetica;
+    font-weight:bold;
+}
+.text3
+{
+    font-size: 32px;
+    font-family: verdana, Arial, Helvetica;
+    color:#4679BD;
+    font-weight:bold;
+    text-align:center;
+}
+.text4
+{
+    font-size: 20px;
+    font-family: verdana, Arial, Helvetica;
+}
+.text5
+{
+    font-size: 16px;
+    font-family: verdana, Arial, Helvetica;
+}
+.text6
+{
+    font-size: 10px;
+    font-family: verdana, Arial, Helvetica;
+}
+.standardBackground {  
+    background-color: #0000FF;  
+}
+.square {     
+    display: table;     
+    width: 200px;     
+    height: 200px;     
+    background: #4679BD; 
+} 
+
+</style>
+</head>
+ <table id="tbl0" cellSpacing="1" cellPadding="2" width="95%" align="center" border="0">
+        <tr><td height="150"></td></tr>        
+        <tr><td>
+            <div class="styled">                        
+                <table id="tbl1" cellSpacing="0" cellPadding="0" width="80%" align="center" border="1">
+                    <tr> 
+                        <td>Customer: <apex:outputField value="{!CBO__c.Opportunityid__r.Account.Name }"/></td>
+                        <td>CBO:<apex:outputField value="{!CBO__c.Name }"/></td>
+                    </tr>
+                    <tr>
+                        <td Colspan="2">Opp Name: <apex:outputField value="{!CBO__c.Opportunityid__r.Name}"/></td>                       
+                    </tr>
+                    <tr>
+                        <td>Product: <apex:outputField value="{!CBO__c.Productid__r.ProductCode}"/></td>
+                        <td>Owner: <apex:outputField value="{!CBO__c.Opportunityid__r.Owner.FirstName}"/> <apex:outputField value="{!CBO__c.Opportunityid__r.Owner.LastName}"/></td>
+                    </tr>
+                    <tr><td>What's Special:</td></tr>
+                    <tr>
+                        <td Colspan="2">
+                            <table id="tbl2" cellSpacing="0" cellPadding="0" width="100%" align="center" border="0">
+                                <tr>
+                                    <td></td>
+                                    <td class="text2"><i>Sample</i></td>
+                                    <td class="text2"><i>First</i></td>
+                                    <td class="text2"><i>In Year</i></td>                                                                                                           
+                                </tr>
+                                <tr>
+                                    <td>Qty:</td>
+                                    <td><apex:outputField value="{!CBO__c.Prototype_Qty__c}"/></td>
+                                    <td><apex:outputField value="{!CBO__c.First_Prod_Order_Qty__c}"/></td>
+                                    <td><apex:outputField value="{!CBO__c.UV1__c}"/></td>                                                                                                           
+                                </tr>
+                                <tr>
+                                    <td Colspan="2">Revenue: In Year <apex:outputField value="{!CBO__c.Current_Year_Rev__c}"/></td>
+                                    <td Colspan="2">Full Year  <apex:outputField value="{!CBO__c.R1__c}"/></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td Colspan="2">
+                            <table id="tbl3" cellSpacing="0" cellPadding="0" width="100%" align="center" border="1">
+                                <tr>
+                                    <td></td>
+                                    <td class="text2">Create</td>
+                                    <td class="text2">OK to quote</td>
+                                    <td class="text2">Build/Ship</td> 
+                                    <td class="text2">Win/ECO</td>                                                                                                                                              
+                                </tr>
+                                <tr>
+                                    <td class="text1">Key Dates:</td>
+                                    <td class="text1">
+                                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                        <apex:param value="{!CBO__c.CreatedDate}" /> 
+                                    </apex:outputText>
+                                    </td>
+                                    <td class="text1"><apex:outputField value="{!CBO__c.Project_Approved__c}"/></td>
+                                    <td class="text1"><apex:outputField value="{!CBO__c.Prototype_Date__c}"/></td> 
+                                    <td class="text1"><apex:outputField value="{!CBO__c.Opportunityid__r.CloseDate}"/></td>                                                                                                         
+                                </tr>
+                                <tr>
+                                    <td Colspan="2">GGH: <apex:outputField value="{!CBO__c.GG_Required__c}"/>  </td>
+                                    <td Colspan="2">Trial Ballon:</td>
+                                    <td>Vitality: <apex:outputField value="{!CBO__c.Vitality_Product__c}"/></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <table border="0" width="100%">
+                                            <tr>
+                                                <td Width="70%"  Height="60"></td><td Class="text3" Width="70%"  Height="50">setra</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>                   
+                    <tr><td colspan="2"></td></tr>
+                    <hr></hr>                                       
+                </table> 
+                <table id="tbl4" cellSpacing="0" cellPadding="0" width="80%" align="center" border="1">
+                    <tr>
+                        <td>Customer: <apex:outputField value="{!CBO__c.Opportunityid__r.Account.Name }"/></td>
+                    </tr>
+                    <tr>
+                        <td>Owner: <apex:outputField value="{!CBO__c.Opportunityid__r.Owner.FirstName}"/> <apex:outputField value="{!CBO__c.Opportunityid__r.Owner.LastName}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Next Review:</td>
+                    </tr>                                       
+                    <tr>
+                        <td>
+                            <table width="100%"  id="tbl5"  border="1"><tr><td style="text-align:left;vertical-align:top;padding:0" height="75">Notes:</td></tr></table>
+                        </td>
+                    </tr>
+                    <tr><td>Changes</td></tr>
+                    <tr><td>1. </td></tr>
+                    <tr><td>2. </td></tr>
+                    <tr><td>3. </td></tr>
+                    <tr><td>4. </td></tr>
+                    <tr><td>5. </td></tr>
+                </table>                                            
+            </div>        
+        </td></tr>               
+ </table>
+</html>
+</apex:page>

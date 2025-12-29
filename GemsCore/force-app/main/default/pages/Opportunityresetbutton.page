@@ -1,0 +1,2 @@
+<apex:page standardController="Opportunity" extensions="opporesetcontroller" action="{!reset}">
+</apex:page>

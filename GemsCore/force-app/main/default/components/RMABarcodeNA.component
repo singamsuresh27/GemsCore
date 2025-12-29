@@ -1,0 +1,19 @@
+<apex:component controller="generateBarcodeNA" access="global">
+    <apex:attribute type="string" assignTo="{!caseId}" name="RMA" description="RMA number for generate barcode"/>
+    <b>From:</b><br/>
+    {!CaseObj.Account.Name}<br/>
+    {!CaseObj.Account.ShippingStreet},{!CaseObj.Account.ShippingCity}<br/>
+    {!CaseObj.Account.ShippingState},{!CaseObj.Account.ShippingCountry} {!CaseObj.Account.ShippingPostalCode}<br/><br/>
+    
+    <b>To:</b><br/>
+    Gems Sensors and Controls<br/>
+    ATTN: Returns Dept <br/>
+    1 Cowles Rd <br/>
+    Plainville,CT 06062<br/><br/>
+    
+    <b>Gems Part# : </b>{!CaseObj.Product_Number__c}<br/>
+    <b>Qty : </b>{!CaseObj.Quantity__c} <br/><br/>
+    <b>RMA Number: </b>{!CaseObj.CaseNumber} <br/><br/>
+    <!-- <apex:image value="https://www.barcodesinc.com/generator/image.php?code={!LineItem.Name}&style=325&type=C128B&width=200&height=50&xres=1&font=3" /><br/>
+    <span style="padding-left:70px;padding-top:10px;"> {!LineItem.Name}</span> --> 
+</apex:component>

@@ -1,0 +1,50 @@
+<apex:page controller="newOpportunityController" tabStyle="Opportunity">
+<script>
+function confirmCancel() {
+var isCancel = confirm("Are you sure you wish to cancel?");
+if (isCancel)
+{ 
+    return true;
+}
+else
+{
+    return false;
+}
+}
+</script>
+<apex:sectionHeader title="New Customer Opportunity" subtitle="Step 1 of 3"/>
+<apex:form >
+<apex:pageBlock title="Customer Information" mode="edit">
+<!-- The pageBlockButtons tag defines the buttons that appear at the top and bottom of the pageBlock. Like a facet, it can appear anywhere in a pageBlock, but always defines the button areas.-->
+<!-- The Next button contained in this pageBlockButtons area calls the step2 controller method, which returns a pageReference to the next step of the wizard. -->
+<apex:pageBlockButtons >
+<apex:commandButton action="{!step2}" value="Next"/>
+<apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true"/>
+</apex:pageBlockButtons>
+<apex:pageBlockSection title="Account Information">
+<!-- Within a pageBlockSection, inputFields always display with their corresponding output label. -->
+<apex:inputField id="accountName" value="{!account.name}"/>
+<apex:inputField id="accountType" value="{!account.Account_Type__c}"/>
+<apex:inputField id="fax" value="{!account.Fax}"/>
+<apex:inputField id="website" value="{!account.Website}"/>
+</apex:pageBlockSection>
+<apex:pageBlockSection title="Contact Information">
+<apex:inputField id="contactSalutation" value="{!contact.Salutation}"/>
+<apex:inputField id="contactEmail" value="{!contact.Email}"/>
+<apex:inputField id="contactLastName" value="{!contact.lastName}"/>
+<apex:inputField id="contactHasOptedOutOfEmail" value="{!contact.HasOptedOutOfEmail}"/>
+<apex:inputField id="contactFirstName" value="{!contact.firstName}"/>
+<apex:inputField id="contactPhone" value="{!contact.phone}"/>
+<apex:inputField id="contactTitle" value="{!contact.Title}"/>
+<apex:inputField id="contactMobilePhone" value="{!contact.MobilePhone}"/>
+<apex:inputField id="contactDepartment" value="{!contact.Department}"/>
+<apex:inputField id="businessUnit" value="{!contact.Business_Unit__c}"/>
+<apex:inputField id="contactMailingStreet" value="{!contact.MailingStreet}"/>
+<apex:inputField id="contactMailingCity" value="{!contact.MailingCity}"/>
+<apex:inputField id="contactMailingState" value="{!contact.MailingState}"/>
+<apex:inputField id="contactMailingPostalCode" value="{!contact.MailingPostalCode}"/>
+<apex:inputField id="contactMailingCountry" value="{!contact.MailingCountry}"/>
+</apex:pageBlockSection>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

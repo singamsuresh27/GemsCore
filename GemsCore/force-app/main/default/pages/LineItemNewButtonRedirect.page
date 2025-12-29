@@ -1,0 +1,22 @@
+<apex:page standardController="Case_Detail__c">
+  <html>
+    <head>
+      <style>
+
+      </style>
+    </head>
+        <table id="tbl0" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+            <TR><TD>
+                <Table id="tbl1" cellSpacing="1" cellPadding="2" width="70%" align="center" border="0">
+                    <TR>
+                        <TD><b>Invalid Operation</b></TD>
+                    </TR>     
+                    <TR>
+                        <TD><b>Please try the New RA/CM tab or Request links on bottom left navigation pan.</b></TD>
+                    </TR>
+                </Table>
+            </TD></TR>
+        </table>
+  <!-- End Default Content REMOVE THIS -->
+  </html>
+</apex:page>

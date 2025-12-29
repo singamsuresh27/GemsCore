@@ -1,0 +1,16 @@
+<!--
+  @description       : LWC Component to get redirected to the record Id passed as parameter
+  @author            : Thirumoorthy
+  @group             : 
+  @last modified on  : 09-09-2024
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner
+            alternative-text="Loading..." variant="brand" class="slds-is-fixed">
+        </lightning-spinner>
+    </template>
+    Please wait while you are getting redirected.
+    <!-- {recordIdToRedirect} -->
+</template>

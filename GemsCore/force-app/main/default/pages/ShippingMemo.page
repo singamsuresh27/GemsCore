@@ -1,0 +1,137 @@
+<apex:page sidebar="false" renderas="pdf" showHeader="false" standardController="Case_Detail__c">
+<html>
+<head>
+<style>
+.shippingMemoText
+{
+font-size: 8px;
+font-family: verdana, Arial, Helvetica;
+}
+.shippingMemoText1
+{
+font-size: 8px;
+font-family: verdana, Arial, Helvetica;
+}
+.shippingMemoText2
+{
+font-size: 8px;
+font-family: verdana, Arial, Helvetica;
+}
+</style>
+</head>
+    <Table id="tbl0" class="text1" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">
+        <tr>
+            <td>
+            <Table id="tbl1" cellSpacing="1" cellPadding="2" width="80%" align="center" border="0">
+                <tr><td>
+                    <Table id="tbl2" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">                        
+                        <tr>
+                            <td align="center" colSpan="4">PROFORMA INVOICE </td>                           
+                        </tr>
+                        <tr>
+                            <td align="center" colSpan="4">Gems RA #: <apex:outputField value="{!Case_Detail__c.Name}"/></td>                           
+                        </tr>
+                        <tr>
+                            <td align="center" colSpan="4">Supplier Ref. No: <apex:outputField value="{!Case_Detail__c.Supplier_Ref_No__c}"/></td>                          
+                        </tr>                       
+                         <tr>
+                            <td align="left" colSpan="4">Gems Sensors inc.</td>
+                         </tr>
+                         <tr>
+                            <td align="left" colSpan="4">1 Cowles Road</td>
+                         </tr>
+                         <tr>
+                            <td align="left" colSpan="4">Plainville, CT 06062</td>
+                         </tr>
+                         <tr>
+                            <td align="left" colSpan="4">Fax: 860-747-4244 </td>
+                         </tr>
+                         <TR>
+                            <TD colSpan="4" height="20">&nbsp;</TD>
+                         </TR> 
+                         
+                         <TR>
+                            <TD class="shippingMemoText"><B>Bill To:</B></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.Name}"/></TD>
+                            <TD class="shippingMemoText"><B>Ship To:</B></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.Name}"/></TD>
+                        </TR>
+                        <TR>
+                            <TD></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.BillingStreet}"/></TD>
+                            <TD></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.ShippingStreet}"/></TD>
+                        </TR>
+                        <TR>
+                            <TD></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.BillingCity}"/></TD>
+                            <TD></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.ShippingCity}"/></TD>
+                        </TR>
+                        <TR>
+                            <TD></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.BillingState}"/></TD>
+                            <TD></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.ShippingState}"/></TD>
+                        </TR>
+                        <TR>
+                            <TD></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.BillingPostalCode}"/></TD>
+                            <TD></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.ShippingPostalCode}"/></TD>
+                        </TR>
+                        <TR>
+                            <TD></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.BillingCountry}"/></TD>
+                            <TD></TD>
+                            <TD class="shippingMemoText"><apex:outputField value="{!Case_Detail__c.Supplierid__r.ShippingCountry}"/></TD>
+                        </TR>
+                        <TR>
+                            <TD></TD>
+                            <TD class="shippingMemoText"></TD>
+                            <TD></TD>
+                            <TD class="shippingMemoText"></TD>
+                        </TR>                                                                       
+                    </Table> 
+                    <Table id="tbl3" cellSpacing="1" cellPadding="2" width="100%" align="center" border="1">
+                        <tr>
+                            <td class="shippingMemoText" align="center">Part Number</td>
+                            <td class="shippingMemoText" align="center">Description</td>
+                            <td class="shippingMemoText" align="center">Quantity (PCS)</td>
+                            <td class="shippingMemoText" align="center">Unit Price</td>
+                        </tr> 
+                        <tr>
+                            <td class="shippingMemoText" align="center"><apex:outputField value="{!Case_Detail__c.Order_Shipment__r.Productid__r.ProductCode}"/></td>
+                            <td class="shippingMemoText" align="center"><apex:outputField value="{!Case_Detail__c.Order_Shipment__r.Productid__r.Description }"/></td>
+                            <td class="shippingMemoText" align="center"><apex:outputField value="{!Case_Detail__c.Quantity__c}"/></td>
+                            <td class="shippingMemoText" align="center"><apex:outputField value="{!Case_Detail__c.Credit_per_unit__c}"/></td>
+                        </tr>
+                        <tr>
+                            <td class="shippingMemoText" align="center"></td>
+                            <td class="shippingMemoText" align="center">Total Invoice Value:</td>
+                            <td class="shippingMemoText" align="center"><apex:outputField value="{!Case_Detail__c.Amount__c}"/></td>
+                            <td class="shippingMemoText" align="center"></td>
+                        </tr>
+                        <tr>
+                            <td class="shippingMemoText" colspan="4">Goods are products being returned for evaluation and repair only.</td>
+                        </tr>
+                        <tr>
+                            <td class="shippingMemoText" colspan="3">Goods have been previously invoiced and shipped.</td>
+                        </tr>
+
+                    </Table>
+                    <Table id="tbl3" cellSpacing="1" cellPadding="2" width="100%" align="center" border="0">
+                        <tr><td>&nbsp;</td></tr>
+                        <tr><td>&nbsp;</td></tr>
+                        <tr>
+                            <td class="shippingMemoText">Signature:___________________________________________</td>
+                        </tr>
+                    </Table>                        
+                </td></tr>
+                
+            </Table>    
+            </td>
+        </tr>
+</Table>
+</html>
+</apex:page>

@@ -1,0 +1,232 @@
+<apex:page Controller="BuildOrgChartController" standardStylesheets="true" sidebar="true" showHeader="true" id="pg">
+    <apex:includeScript value="{!URLFOR($Resource.JDialog,'JDialog/js/jquery-1.9.1.js')}"/> 
+    <apex:includeScript value="{!URLFOR($Resource.JDialog,'JDialog/js/jquery-ui-1.10.3.custom.js')}"/> 
+    
+    <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/css/sunny/jquery-ui-1.10.3.custom.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/css/sunny/jquery-ui-1.10.3.custom.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JDialog,'/JDialog/development-bundle/themes/sunny/jquery.ui.all.css')}"/>
+    
+    
+    <style>
+        #orgChart{
+            width: auto;
+            height: auto;
+        }
+        
+        div.orgChart div.node{
+            width: 100px;
+            height: 30px;    
+        }
+        
+        div.orgChart h2 {
+            font-size: 12px;
+            font-weight: normal;
+        }
+        #orgChartContainer{
+            width: 1000px;
+            height: 500px;
+            margin-left:10px;
+            overflow: auto;
+            background: #eeeeee;
+        }
+        div.orgChart div.node {
+            box-shadow: 0px 0px 10px 1px #5E5E5E;
+        }      
+        .node{
+            padding:0px !important;
+        }  
+    </style>
+<script>
+    $(function(){
+        var dlg = $( "#divConBox" ).dialog({
+           autoOpen:false,
+           width:900,
+           title:'Select Contact',
+           height:600
+        });
+        
+        dlg.parent().appendTo("#pg\\:frm");
+        
+        var dlgTripReport = $( "#divTripReportBox" ).dialog({
+           autoOpen:false,
+           width:600,
+           title:'Select Sections To Print',
+           height:400
+        });
+        
+        dlgTripReport.parent().appendTo("#pg\\:frm");
+        
+        var dlgReportTo = $( "#divReportToBox" ).dialog({
+           autoOpen:false,
+           width:700,
+           title:'Change Contact ReportsTo Setting',
+           height:600
+        });
+        
+        dlgReportTo.parent().appendTo("#pg\\:frm");
+        
+        var dlgNewContact = $( "#divNewContactBox" ).dialog({
+           autoOpen:false,
+           width:700,
+           title:'New Contact',
+           height:400
+        });
+        
+        dlgNewContact.parent().appendTo("#pg\\:frm");
+        $("[id='pg\\:frm:pbTripSummery']").css('border-top','3px solid green');
+        $("[id='pg\\:frm:pbTask']").css('border-top','3px solid green');
+    });
+    
+         
+       
+    function openBox(st){
+        $( "#divConBox" ).dialog(st);
+    }
+    
+    function openTripReportBox(st){
+        $( "#divTripReportBox").dialog(st);
+    }
+    
+    function openReportsToBox(st){
+        $( "#divReportToBox").dialog(st); 
+        if(st == 'close'){
+            actUpdateOrgChartSection();
+        }   
+    }
+    
+    function openNewContactBox(st){
+        $( "#divNewContactBox").dialog(st);
+        if(st == 'close'){
+            actCreateandUpdateOrgChartSection();
+        }
+    }  
+</script>
+    
+<apex:form id="frm">        
+    <apex:actionFunction name="actCreateandUpdateOrgChartSection" status="orgStatus" action="{!saveNewContact}" rerender="orgchart,outReportToBox,orgChartData,outConDiv,outNewContactBox"/>
+    <apex:actionFunction name="actUpdateOrgChartSection" status="orgStatus" action="{!saveReportsToSetting}" rerender="orgchart,outReportToBox,orgChartData"/>
+        
+<!-- OrgChart Section Start--> 
+<apex:actionStatus id="orgStatus">
+    <apex:facet name="start">
+        <div style="width: 500px;">
+            <img src="/img/loading24.gif" style="vertical-align:middle;margin-left:5px;"/>
+            <span style="margin-left:10px; font-size: 12px; font-weight: bold; color: #000000;">Please Wait...............</span>
+        </div>
+    </apex:facet>
+</apex:actionStatus>
+<apex:pageBlock id="orgchart" title="Org Chart">
+    <apex:commandLink value="Build Org Chart" onclick="openReportsToBox('open');return false;"/> &nbsp; &nbsp;
+    <apex:commandLink value="New Contact" onclick="openNewContactBox('open');return false;"/>
+    <!--Commented one line here and added on line after it BY VISHNU-->
+    <!----<div id="orgChartContainer" style="  margin-left: -4px;background-color: rgb(248, 248, 248) !important;width: 100% !important;margin-top: 5px !important;">-->
+    <div id="orgChartContainer" style="  margin-left: -4px;background-color: rgb(248, 248, 248) !important;width: 1080px !important;margin-top: 5px !important;overflow: scroll;">
+          <div id="orgChart" style="background-color: rgb(248, 248, 248);margin: 0px;"></div>
+    </div>
+</apex:pageBlock>
+<!-- OrgChart Section End--> 
+
+<!-- Contact Dialog Start --> 
+<div id="divConBox" style="background-color:silver;">
+    <apex:pageBlock id="outConDiv">
+        <apex:pageBlockTable value="{!lstConModel}" var="m">
+            <apex:column headerValue="Select">
+                <apex:inputCheckbox value="{!m.flg}"/>
+            </apex:column>
+            <apex:column headerValue="Title" value="{!m.conObj.Title}"/>
+            <apex:column headerValue="Name" value="{!m.conObj.Name}"/>
+            <apex:column headerValue="Reports To" value="{!m.conObj.ReportsTo.Name}"/>
+            <apex:column headerValue="Email" value="{!m.conObj.Email}"/>
+        </apex:pageBlockTable>
+        <apex:commandButton value="Add To Pre-Call Plan" onclick="actForCloseContactBox('false');return false;"/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <apex:commandButton value="Cancel" onclick="openBox('close');return false;"/>
+    </apex:pageBlock>
+</div>
+<!-- Contact Dialog End -->                 
+        
+<!-- ReportsTo  Dialog Start --> 
+<div id="divReportToBox" style="background-color:silver;">
+    <apex:pageBlock id="outReportToBox">
+        <apex:pageBlockButtons location="top">
+            <apex:commandButton value="Save" onclick="openReportsToBox('close');return false;" />
+            <apex:commandButton value="Cancel" onclick="openReportsToBox('close');return false;"/>
+        </apex:pageBlockButtons>
+        <apex:pageBlockTable value="{!lstreportToModel}" var="rpt">
+            <apex:column headerValue="Contact Name" value="{!rpt.conObj.Name}"/>  
+            <apex:column headerValue="Job Title" value="{!rpt.conObj.Title}"/>                       
+            <apex:column headerValue="Reports To">
+                <apex:selectList value="{!rpt.reportsToId}" size="1" multiselect="false">
+                    <apex:selectOptions value="{!lstReportsToContact}"></apex:selectOptions>
+                </apex:selectList>
+            </apex:column>
+            <apex:column headerValue="DMU" >
+                <apex:selectList value="{!rpt.conObj.DMU__c}" size="1" multiselect="false">
+                    <apex:selectOptions value="{!lstDMUSelOpt}"></apex:selectOptions>
+                </apex:selectList>
+            </apex:column>
+        </apex:pageBlockTable> 
+    </apex:pageBlock>
+</div> 
+<!-- ReportsTo  Dialog End --> 
+     
+<!-- New Contact Dialog Start --> 
+<div id="divNewContactBox" style="background-color:silver;">
+    <apex:pageBlock id="outNewContactBox">
+        <apex:pageBlockButtons location="top">
+            <apex:commandButton value="Save" onclick="openNewContactBox('close');return false;"/>
+            <apex:commandButton value="Cancel" onclick="openNewContactBox('close');return false;"/>
+        </apex:pageBlockButtons>
+        <table class="list">
+            <tr class="dataRow">
+                <td class="headerRow"> First Name </td>                        
+                <td class="dataRow"> <apex:inputField value="{!newConObj.FirstName}"/> </td>
+            </tr>
+            <tr class="dataRow">
+                <td class="headerRow"> Last Name </td>                        
+                <td class="dataRow"> <apex:inputField value="{!newConObj.LastName}"/> </td>
+            </tr>
+            <tr class="dataRow">
+                <td class="headerRow"> Phone </td>                        
+                <td class="dataRow"> <apex:inputField value="{!newConObj.Phone}"/> </td>
+            </tr>
+            <tr class="dataRow">
+                <td class="headerRow"> Email </td>                        
+                <td class="dataRow"> <apex:inputField value="{!newConObj.Email}"/></td>
+            </tr>
+            <tr class="dataRow">
+                <td class="headerRow"> Job Title </td>                        
+                <td class="dataRow"> <apex:inputField value="{!newConObj.title}"/> </td>
+            </tr>
+            <tr class="dataRow">
+                <td class="headerRow"> Bussines Unit </td>                        
+                <td class="dataRow"> <apex:inputField value="{!newConObj.Business_Unit__c}"/> </td>
+            </tr>
+            <tr class="dataRow">
+                <td class="headerRow"> Reports To </td>                        
+                <td class="dataRow"> <!-- <apex:inputField value="{!newConObj.ReportsToId}"/> --> <apex:selectList value="{!newConObj.ReportsToId}" size="1" multiselect="false"> <apex:selectOptions value="{!lstReportsToContact}"></apex:selectOptions> </apex:selectList></td>
+            </tr>
+            <tr class="dataRow">
+                <td class="headerRow">DMU</td>                        
+                <td class="dataRow"><apex:inputField value="{!newConObj.DMU__c }" style="width: 142px;"/> </td>
+            </tr>
+        </table>
+    </apex:pageBlock>
+</div>
+<!-- New Contact Dialog End --> 
+</apex:form>
+
+<apex:includeScript value="{!URLFOR($Resource.OrgChart,'OrgChart/jquery.orgchart.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.OrgChart,'/OrgChart/jquery.orgchart.css')}"/>
+<script src="{!URLFOR($Resource.oppjsonmaster,'jsonmaster/json2.js')}"></script>  
+<apex:outputPanel id="orgChartData">
+    <script>
+        var testData = JSON.parse('{!JSENCODE(orgChartDataInJson)}');
+        $(function(){
+        org_chart = $('#orgChart').orgChart({
+            data: testData,
+            showControls: false,
+            allowEdit: false,
+        });
+    });
+    </script>
+</apex:outputPanel>
+</apex:page>

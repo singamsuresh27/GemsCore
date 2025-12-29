@@ -1,0 +1,18 @@
+<apex:component controller="generateBarcode" access="global">
+    <apex:attribute type="string" assignTo="{!caseDetailId}" name="RMA" description="RMA number for generate barcode"/>
+    <b>From:</b><br/>
+    {!LineItem.Case__r.Account.Name}<br/>
+    {!LineItem.Case__r.Account.ShippingStreet},{!LineItem.Case__r.Account.ShippingCity}<br/>
+    {!LineItem.Case__r.Account.ShippingState},{!LineItem.Case__r.Account.ShippingCountry} {!LineItem.Case__r.Account.ShippingPostalCode}<br/><br/>
+    
+    <b>To:</b><br/>
+    Gems Sensors and Controls<br/>
+    Lennox Road<br/>
+    Basingstoke, Hampshire RG22 4AW<br/><br/>
+    
+    <b>Gems Part# : </b>{!LineItem.Gems_PartNumber__c}<br/>
+    <b>Qty : </b>{!LineItem.Quantity__c} <br/><br/>
+    <b>RMA Number: </b>{!LineItem.Name} <br/><br/>
+    <apex:image value="https://www.barcodesinc.com/generator/image.php?code={!LineItem.Name}&style=325&type=C128B&width=200&height=50&xres=1&font=3" /><br/>
+    <span style="padding-left:70px;padding-top:10px;"> {!LineItem.Name}</span>  
+</apex:component>
